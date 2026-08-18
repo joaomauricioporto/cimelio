@@ -97,6 +97,26 @@ export async function enviarFotoPeca(
     return path;
 }
 
+/**
+ * Avatar do perfil.
+ *
+ * Usa o mesmo prefixo peca/{userId} de propósito: a política do storage
+ * compara o segundo nível do caminho com auth.uid(), e criar um prefixo
+ * novo exigiria outra política. Reaproveitar mantém uma regra só —
+ * menos superfície para errar.
+ */
+export async function enviarAvatar(userId: string, arquivo: File): Promise<string> {
+    const blob = await prepararImagem(arquivo);
+    const path = `peca/${userId}/avatar/${idArquivo()}.jpg`;
+
+    const { error } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+    if (error) throw new Error(error.message);
+
+    return path;
+}
+
 export async function apagarFotoPeca(id: number, path: string): Promise<void> {
     // Arquivo primeiro. Se apagasse a linha antes e o arquivo falhasse,
     // ele viraria órfão sem nenhum registro apontando para ele.

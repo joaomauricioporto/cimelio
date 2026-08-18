@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/auth';
+import { urlDaFoto } from './lib/fotos';
 import { Catalogo } from './paginas/Catalogo';
 import { CamisaPagina } from './paginas/CamisaPagina';
 import { Entrar } from './paginas/Entrar';
@@ -8,6 +9,7 @@ import { Lancamentos } from './paginas/Lancamentos';
 import { NaoAchou } from './paginas/NaoAchou';
 import { CadastrarCamisa } from './paginas/CadastrarCamisa';
 import { Moderacao } from './paginas/Moderacao';
+import { EditarPerfil } from './paginas/EditarPerfil';
 
 function Cabecalho() {
     const { perfil, carregando, sair } = useAuth();
@@ -27,7 +29,11 @@ function Cabecalho() {
                     {!carregando && perfil?.is_admin && <Link to="/moderacao">Moderação</Link>}
                     {!carregando && (perfil
                         ? <>
-                            <Link to={`/perfil/${perfil.username}`}>@{perfil.username}</Link>
+                            <Link to={`/perfil/${perfil.username}`} className="eu">
+                                {perfil.avatar_path &&
+                                    <img className="avatar-mini" src={urlDaFoto(perfil.avatar_path)} alt="" />}
+                                @{perfil.username}
+                            </Link>
                             <button className="link" onClick={sair}>sair</button>
                           </>
                         : <Link to="/entrar">Entrar</Link>
@@ -51,6 +57,7 @@ export default function App() {
                     <Route path="/perfil/:username" element={<Perfil />} />
                     <Route path="/cadastrar"     element={<CadastrarCamisa />} />
                     <Route path="/moderacao"     element={<Moderacao />} />
+                    <Route path="/editar-perfil" element={<EditarPerfil />} />
                     <Route path="*"              element={<NaoAchou />} />
                 </Routes>
             </AuthProvider>

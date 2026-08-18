@@ -27,6 +27,8 @@ export function Perfil() {
     const { username } = useParams<{ username: string }>();
     const { perfil: meu } = useAuth();
     const [nome, setNome] = useState<string | null>(null);
+    const [bio, setBio] = useState<string | null>(null);
+    const [avatar, setAvatar] = useState<string | null>(null);
     const [pecas, setPecas] = useState<PecaNaEstante[]>([]);
     const [estado, setEstado] = useState<'carregando' | 'pronto' | 'nao_achou'>('carregando');
 
@@ -35,12 +37,14 @@ export function Perfil() {
 
         (async () => {
             const { data: p } = await supabase
-                .from('perfil').select('id,username,nome')
+                .from('perfil').select('id,username,nome,bio,avatar_path')
                 .eq('username', username).maybeSingle();
 
             if (cancelado) return;
             if (!p) { setEstado('nao_achou'); return; }
             setNome(p.nome || p.username);
+            setBio((p as { bio: string | null }).bio);
+            setAvatar((p as { avatar_path: string | null }).avatar_path);
 
             // Um join só, em vez de N+1: sem isto, uma coleção de 80
             // camisas dispara 81 requisições e a página trava.
@@ -81,10 +85,23 @@ export function Perfil() {
 
     return (
         <div className="container">
-            <h1 style={{ fontSize: 26, fontWeight: 500, marginBottom: 2 }}>{nome}</h1>
-            <p className="suave" style={{ marginTop: 0 }}>
-                @{username} · {pecas.length} {pecas.length === 1 ? 'camisa' : 'camisas'}
-            </p>
+            <div className="cabecalho-perfil">
+                {avatar
+                    ? <img className="avatar" src={urlDaFoto(avatar)} alt="" />
+                    : <div className="avatar vazio-avatar" aria-hidden="true" />}
+
+                <div className="dados-perfil">
+                    <h1>{nome}</h1>
+                    <p className="suave">
+                        @{username} · {pecas.length} {pecas.length === 1 ? 'camisa' : 'camisas'}
+                    </p>
+                    {bio && <p className="bio">{bio}</p>}
+                </div>
+
+                {meu?.username === username && (
+                    <Link to="/editar-perfil" className="link">editar perfil</Link>
+                )}
+            </div>
 
             {pecas.length === 0 && (
                 <div className="vazio">

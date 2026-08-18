@@ -9,6 +9,8 @@ interface Perfil {
     id: string;
     username: string;
     nome: string | null;
+    bio: string | null;
+    avatar_path: string | null;
     is_admin: boolean;
 }
 
@@ -17,11 +19,15 @@ interface Contexto {
     perfil: Perfil | null;
     /** false só depois que a sessão do disco foi resolvida. */
     carregando: boolean;
+    /** Relê o perfil. Chamado ao salvar edição, senão o cabeçalho
+        continua mostrando o username antigo até dar F5. */
+    recarregarPerfil: () => Promise<void>;
     sair: () => Promise<void>;
 }
 
 const Ctx = createContext<Contexto>({
     user: null, perfil: null, carregando: true,
+    recarregarPerfil: async () => {},
     sair: async () => {},
 });
 
@@ -54,20 +60,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => sub.subscription.unsubscribe();
     }, []);
 
+    async function lerPerfil(id: string) {
+        const { data } = await supabase
+            .from('perfil')
+            .select('id,username,nome,bio,avatar_path,is_admin')
+            .eq('id', id)
+            .maybeSingle();
+        setPerfil((data as Perfil) ?? null);
+    }
+
     useEffect(() => {
         if (!session?.user) { setPerfil(null); return; }
-
-        let cancelado = false;
-        supabase
-            .from('perfil')
-            .select('id,username,nome,is_admin')
-            .eq('id', session.user.id)
-            .maybeSingle()
-            .then(({ data }) => {
-                if (!cancelado) setPerfil((data as Perfil) ?? null);
-            });
-
-        return () => { cancelado = true; };
+        lerPerfil(session.user.id);
     }, [session?.user?.id]);
 
     return (
@@ -75,6 +79,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user: session?.user ?? null,
             perfil,
             carregando,
+            recarregarPerfil: async () => {
+                if (session?.user) await lerPerfil(session.user.id);
+            },
             sair: async () => { await supabase.auth.signOut(); },
         }}>
             {children}
