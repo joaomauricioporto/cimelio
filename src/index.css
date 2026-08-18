@@ -153,10 +153,6 @@ main { padding: 0 0 70px; }
     color: #FFFFFF;
     max-width: 15ch;
 }
-/* A segunda linha em dourado: a quebra é onde o sentido vira, então a
-   cor marca o mesmo ponto que o texto marca. */
-.hero-titulo br + * , .hero-titulo { }
-.hero-titulo::after { content: ''; }
 
 .hero-linha {
     color: #B4B0A7; font-size: clamp(15px, 1.6vw, 17.5px);
