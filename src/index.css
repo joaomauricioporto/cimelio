@@ -803,3 +803,48 @@ main { padding: 0 0 70px; }
 .pessoa-mini .botao { padding: 7px 16px; font-size: 13.5px; }
 .botao.vazado.escuro-nao { border-color: var(--linha); color: var(--ink); background: var(--carta); }
 .botao.vazado.escuro-nao:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ======================================================= LOTE
+   Uma linha por foto: miniatura à esquerda, campos à direita. A foto
+   fica visível o tempo todo porque é ela que diz qual camisa é — quem
+   subiu vinte de uma vez não lembra a ordem.
+   ========================================================= */
+
+.lote-acoes { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 20px 0 8px; }
+.lote { display: grid; gap: 14px; margin-top: 18px; }
+
+.lote-item {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 14px;
+    transition: border-color .16s, opacity .16s;
+}
+.lote-item.pronto { border-color: #9CC27A; opacity: .72; }
+.lote-item.erro { border-color: var(--alerta); }
+.lote-item.enviando { border-color: var(--gold); }
+
+.lote-foto { position: relative; flex-shrink: 0; }
+.lote-foto img {
+    width: 132px; height: 132px; object-fit: cover;
+    border-radius: 10px; background: var(--papel); display: block;
+}
+.selo {
+    position: absolute; left: 8px; bottom: 8px;
+    background: var(--certo); color: #FFFFFF;
+    padding: 3px 9px; border-radius: 5px;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 11px; text-transform: uppercase;
+}
+.selo.cinza { background: var(--ink); color: var(--gold); }
+
+.lote-campos { flex: 1 1 300px; min-width: 0; }
+.lote-campos .rotulo { margin-top: 8px; }
+
+.opcoes-camisa { display: flex; gap: 8px; flex-wrap: wrap; }
+.opcao-camisa {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 10px; padding: 8px 10px; cursor: pointer;
+    font-family: var(--corpo); font-size: 11.5px; color: var(--fraco);
+}
+.opcao-camisa.ativa { border-color: var(--ink); background: var(--papel); color: var(--ink); }

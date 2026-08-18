@@ -315,6 +315,12 @@ export function CadastrarCamisa() {
                 {editando ? 'Corrigir camisa' : 'Cadastrar camisa'}
             </h1>
             {!editando && termo && <p className="suave">Você buscou por “{termo}”.</p>}
+            {!editando && (
+                <p className="suave">
+                    Tem várias para registrar?{' '}
+                    <Link to="/lote" className="link-inline">Cadastre em lote pelas fotos</Link>
+                </p>
+            )}
             {editando && statusAtual === 'pendente' && (
                 <p className="suave">Esta camisa ainda está aguardando moderação.</p>
             )}

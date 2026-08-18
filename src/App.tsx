@@ -14,6 +14,7 @@ import { EditarPerfil } from './paginas/EditarPerfil';
 import { CadastrarTime } from './paginas/CadastrarTime';
 import { Pessoas } from './paginas/Pessoas';
 import { Feed } from './paginas/Feed';
+import { CadastroLote } from './paginas/CadastroLote';
 
 function Cabecalho() {
     const { perfil, carregando, sair } = useAuth();
@@ -82,6 +83,7 @@ export default function App() {
                     <Route path="/entrar"        element={<Entrar />} />
                     <Route path="/perfil/:username" element={<Perfil />} />
                     <Route path="/cadastrar"     element={<CadastrarCamisa />} />
+                    <Route path="/lote"          element={<CadastroLote />} />
                     <Route path="/camisa/:slug/editar" element={<CadastrarCamisa />} />
                     <Route path="/moderacao"     element={<Moderacao />} />
                     <Route path="/editar-perfil" element={<EditarPerfil />} />
