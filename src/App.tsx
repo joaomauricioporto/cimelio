@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/auth';
 import { urlDaFoto } from './lib/fotos';
+import { Logo } from './componentes/Logo';
 import { Catalogo } from './paginas/Catalogo';
 import { CamisaPagina } from './paginas/CamisaPagina';
 import { Entrar } from './paginas/Entrar';
@@ -20,7 +21,8 @@ function Cabecalho() {
         <header className="topo">
             <div className="container barra">
                 <Link to="/" className="marca">
-                    Cimelio <span>· toda camisa tem uma história</span>
+                    <Logo />
+                    Cimelio <span>toda camisa tem uma história</span>
                 </Link>
 
                 <nav className="nav">
@@ -53,8 +55,10 @@ export default function App() {
         <BrowserRouter>
             <AuthProvider>
                 <Cabecalho />
+                <main>
                 <Routes>
                     <Route path="/"              element={<Catalogo />} />
+                    <Route path="/liga/:ligaSlug" element={<Catalogo />} />
                     <Route path="/camisa/:slug"  element={<CamisaPagina />} />
                     <Route path="/lancamentos"   element={<Lancamentos />} />
                     <Route path="/entrar"        element={<Entrar />} />
@@ -67,6 +71,7 @@ export default function App() {
                     <Route path="/pessoas"       element={<Pessoas />} />
                     <Route path="*"              element={<NaoAchou />} />
                 </Routes>
+                </main>
             </AuthProvider>
         </BrowserRouter>
     );

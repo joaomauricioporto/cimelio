@@ -1,115 +1,301 @@
+/* =====================================================================
+   CIMELIO — sistema visual
+   =====================================================================
+
+   Direção: o vocabulário do futebol é institucional e impresso — número
+   nas costas, tabela de classificação, placar. A personalidade vem da
+   TIPOGRAFIA, não de decoração: Archivo em largura expandida e peso
+   alto para títulos, que é a mesma lógica de numeração de camisa —
+   pesada, geométrica, legível de longe.
+
+   O corpo usa Instrument Sans, mais estreita e neutra, para o contraste
+   de largura ser o que separa hierarquia. Diferenciar por LARGURA e não
+   por família é a decisão tipográfica central deste projeto.
+
+   A camisa é o conteúdo colorido. Todo o resto é discreto de propósito.
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Instrument+Sans:wght@400..600&display=swap');
+
 :root {
     --ink:    #14161A;
     --gold:   #FFC400;
-    --papel:  #F7F6F3;
-    --linha:  #E2E0DA;
-    --texto:  #14161A;
-    --suave:  #6B6A65;
-    --raio:   10px;
+    --papel:  #EFEDE8;
+    --carta:  #FFFFFF;
+    --linha:  #DCD8D0;
+    --fraco:  #6B675F;
+    --alerta: #A32D2D;
+    --certo:  #3B6D11;
 
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    color: var(--texto);
+    --raio: 10px;
+    --largura: 1080px;
+
+    --corpo: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+    --titulo: 'Archivo', system-ui, sans-serif;
+
+    font-family: var(--corpo);
+    color: var(--ink);
     background: var(--papel);
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
 }
 
 * { box-sizing: border-box; }
 body { margin: 0; }
 a { color: inherit; text-decoration: none; }
+img { max-width: 100%; }
 
-.container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}
+
+/* Títulos: largura expandida, peso alto, caixa alta, entreletra apertada.
+   É a métrica de número de camisa aplicada a texto. */
+h1, h2, h3, .display {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 118;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    margin: 0;
+}
+h1 { font-size: clamp(24px, 3.2vw, 34px); }
+h2 { font-size: 19px; }
+h3 { font-size: 15px; }
+
+/* Temporada, contagem, nota: números alinham em coluna. */
+.num { font-variant-numeric: tabular-nums; }
+
+.container { max-width: var(--largura); margin: 0 auto; padding: 0 20px; }
+
+/* ---------------------------------------------------------------- topo */
 
 .topo {
-    background: var(--ink); color: var(--gold);
-    padding: 14px 0; margin-bottom: 28px;
+    background: var(--ink);
+    position: sticky; top: 0; z-index: 20;
+    border-bottom: 3px solid var(--gold);
 }
-.topo .marca { font-size: 20px; font-weight: 500; letter-spacing: .02em; }
-.topo .marca span { color: #FFFFFF; font-weight: 400; }
+.barra {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; height: 60px;
+}
+.marca {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 122;
+    font-weight: 800; font-size: 20px;
+    letter-spacing: 0.01em; text-transform: uppercase;
+    color: var(--gold);
+}
+.marca svg { display: block; }
+.marca span {
+    font-family: var(--corpo); font-weight: 400; font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+    color: #8C8880;
+}
+@media (max-width: 720px) { .marca span { display: none; } }
+
+.nav { display: flex; align-items: center; gap: 4px; }
+.nav a, .nav .link {
+    color: #C9C5BC; font-size: 14px; font-weight: 500;
+    padding: 7px 11px; border-radius: 7px; text-decoration: none;
+    transition: background .12s, color .12s;
+}
+.nav a:hover, .nav .link:hover { background: #21242A; color: #FFFFFF; }
+.eu { display: inline-flex; align-items: center; gap: 7px; color: var(--gold) !important; }
+.avatar-mini {
+    width: 22px; height: 22px; border-radius: 50%; object-fit: cover;
+    border: 1px solid #3A3D44;
+}
+@media (max-width: 560px) {
+    .barra { height: auto; padding: 10px 0; flex-wrap: wrap; }
+    .nav { width: 100%; overflow-x: auto; }
+}
+
+main, .pagina { padding: 26px 0 60px; }
+
+/* -------------------------------------------------------------- busca */
 
 .busca {
-    width: 100%; padding: 13px 16px; font-size: 16px;
+    width: 100%; padding: 13px 15px;
+    font-family: var(--corpo); font-size: 15.5px;
     border: 1px solid var(--linha); border-radius: var(--raio);
-    background: #FFFFFF; color: var(--texto);
+    background: var(--carta); color: var(--ink);
 }
-.busca:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+.busca::placeholder { color: #9A968E; }
+.busca:focus { outline: 2px solid var(--gold); outline-offset: -1px; border-color: transparent; }
+
+/* ------------------------------------------------- faixa de competição
+   O elemento assinatura. Cada aba carrega o código do país, que é
+   informação real e não enfeite: distingue Serie A italiana de Série A
+   brasileira sem precisar escrever por extenso. */
+
+.faixa {
+    display: flex; gap: 7px; margin: 16px 0 4px;
+    overflow-x: auto; padding-bottom: 6px;
+    scrollbar-width: thin;
+}
+.faixa::-webkit-scrollbar { height: 4px; }
+.faixa::-webkit-scrollbar-thumb { background: var(--linha); border-radius: 2px; }
+
+.competicao {
+    display: inline-flex; align-items: center; gap: 7px;
+    flex-shrink: 0; white-space: nowrap;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--linha); background: var(--carta);
+    font-family: var(--corpo); font-size: 14px; font-weight: 500;
+    color: var(--ink); cursor: pointer;
+    transition: border-color .12s, background .12s;
+}
+.competicao:hover { border-color: var(--ink); }
+.competicao[aria-pressed='true'] {
+    background: var(--ink); border-color: var(--ink); color: var(--gold);
+}
+.pais {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 100;
+    font-weight: 700; font-size: 10px; letter-spacing: 0.06em;
+    padding: 2px 5px; border-radius: 3px;
+    background: var(--papel); color: var(--fraco);
+}
+.competicao[aria-pressed='true'] .pais { background: #2A2D33; color: #A8A49C; }
+
+/* ------------------------------------------------------------- seções */
+
+.secao { margin-top: 30px; }
+.rotulo-secao {
+    display: inline-block; padding-bottom: 5px; margin-bottom: 14px;
+    border-bottom: 3px solid var(--gold);
+    text-transform: uppercase; font-size: 15px;
+}
+
+/* -------------------------------------------------------------- grade */
 
 .grade {
-    display: grid; gap: 16px; margin-top: 22px;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    display: grid; gap: 14px; margin-top: 18px;
+    grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
 }
 
 .card {
-    background: #FFFFFF; border: 1px solid var(--linha);
-    border-radius: var(--raio); padding: 14px;
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 16px 12px 14px;
     display: flex; flex-direction: column; align-items: center;
-    transition: border-color .15s;
+    transition: border-color .14s, transform .14s;
 }
-.card:hover { border-color: var(--ink); }
-.card .time { font-weight: 500; margin-top: 10px; text-align: center; }
-.card .meta { font-size: 13px; color: var(--suave); margin-top: 2px; }
+.card:hover { border-color: var(--ink); transform: translateY(-2px); }
+/* Filete nas cores do clube na borda esquerda: referência de uniforme,
+   quase sem tinta, e amarra cada card ao assunto. */
+.card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--filete, transparent);
+}
+.card .time {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 14px; line-height: 1.2;
+    margin-top: 12px; text-align: center;
+}
+.card .meta {
+    font-size: 12.5px; color: var(--fraco); margin-top: 3px; text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+.card .estampa {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 12px; color: var(--ink);
+    letter-spacing: 0.02em;
+}
+.foto-card, .foto-lancamento {
+    width: 130px; height: 130px; object-fit: cover;
+    border-radius: 6px; background: var(--papel);
+}
+.nota-card { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
 
-.nota { font-size: 13px; color: var(--suave); margin-top: 6px; }
-.nota strong { color: var(--texto); }
+/* ------------------------------------------------------------- vazios */
 
 .vazio {
-    text-align: center; padding: 48px 20px;
+    text-align: center; padding: 44px 22px; margin-top: 20px;
     border: 1px dashed var(--linha); border-radius: var(--raio);
-    margin-top: 22px;
+    background: var(--carta);
 }
-.vazio h2 { font-size: 18px; font-weight: 500; margin: 0 0 6px; }
-.vazio p  { color: var(--suave); margin: 0 0 18px; }
+.vazio h2 { margin-bottom: 6px; }
+.vazio p { color: var(--fraco); margin: 0 0 18px; }
+.convite { text-align: center; color: var(--fraco); margin: 34px 0 0; font-size: 14.5px; }
+
+/* ------------------------------------------------------------ botões */
 
 .botao {
+    display: inline-flex; align-items: center; justify-content: center;
     background: var(--ink); color: var(--gold); border: 0;
     padding: 11px 20px; border-radius: var(--raio);
-    font-size: 15px; cursor: pointer;
+    font-family: var(--corpo); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: opacity .12s;
 }
-
-.detalhe { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
-.detalhe h1 { font-size: 26px; font-weight: 500; margin: 0 0 4px; }
-.detalhe .sub { color: var(--suave); margin: 0 0 18px; }
-.ficha { border-top: 1px solid var(--linha); padding-top: 14px; }
-.ficha div { display: flex; gap: 10px; padding: 5px 0; font-size: 15px; }
-.ficha dt { color: var(--suave); min-width: 130px; }
-.ficha dd { margin: 0; }
-
-/* --- etapa 3: auth, coleção e avaliação --- */
-
-.barra { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.nav { display: flex; align-items: center; gap: 14px; font-size: 15px; }
-.nav a { color: var(--gold); }
-
-.rotulo { display: block; font-size: 14px; color: var(--suave); margin: 14px 0 5px; }
-
+.botao:hover { opacity: .88; }
+.botao:disabled { opacity: .5; cursor: default; }
 .botao.largo { width: 100%; margin-top: 18px; }
-.botao:disabled { opacity: .55; cursor: default; }
 
 .link {
     background: none; border: 0; padding: 0; cursor: pointer;
-    color: var(--suave); font-size: 14px; text-decoration: underline;
-    font-family: inherit;
+    color: var(--fraco); font-family: var(--corpo); font-size: 14px;
+    text-decoration: underline; text-underline-offset: 2px;
 }
-.link-inline { text-decoration: underline; }
+.link:hover { color: var(--ink); }
+.link-inline { text-decoration: underline; text-underline-offset: 2px; }
 
-.erro  { color: #A32D2D; font-size: 14px; margin: 10px 0 0; }
-.aviso { color: #3B6D11; font-size: 14px; margin: 10px 0 0; }
-.ok    { color: #3B6D11; font-size: 14px; margin: 8px 0 0; }
-.suave { color: var(--suave); }
+/* ------------------------------------------------------------- textos */
+
+.erro  { color: var(--alerta); font-size: 14px; margin: 10px 0 0; }
+.aviso { color: var(--certo);  font-size: 14px; margin: 10px 0 0; }
+.ok    { color: var(--certo);  font-size: 14px; margin: 8px 0 0; }
+.suave { color: var(--fraco); }
+.meta  { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+.rotulo { display: block; font-size: 13.5px; color: var(--fraco); margin: 15px 0 5px; font-weight: 500; }
+
+/* -------------------------------------------------- página da camisa */
+
+.detalhe { display: flex; gap: 34px; flex-wrap: wrap; align-items: flex-start; }
+.detalhe > div { flex: 1 1 320px; }
+.titulo-camisa { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.sub { color: var(--fraco); margin: 6px 0 18px; font-variant-numeric: tabular-nums; }
+
+.galeria { text-align: center; flex: 0 0 auto !important; }
+.foto-principal {
+    width: 300px; max-width: 100%; border-radius: var(--raio);
+    background: var(--carta); border: 1px solid var(--linha);
+}
+.tiras { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+.tiras img { width: 54px; height: 54px; object-fit: cover; border-radius: 6px; border: 1px solid var(--linha); }
+
+/* Ficha técnica com a métrica de tabela de classificação: rótulo à
+   esquerda, valor à direita, filete separando cada linha. */
+.ficha { border-top: 1px solid var(--linha); margin-top: 4px; }
+.ficha div {
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 9px 0; border-bottom: 1px solid var(--linha); font-size: 14.5px;
+}
+.ficha dt { color: var(--fraco); }
+.ficha dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------- caixas */
 
 .caixa {
-    background: #FFFFFF; border: 1px solid var(--linha);
-    border-radius: var(--raio); padding: 16px; margin-top: 18px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 16px; margin-top: 16px;
 }
-.titulo-caixa {
-    font-size: 15px; font-weight: 500; margin: 0 0 12px;
-    display: flex; align-items: center; gap: 8px;
-}
+.titulo-caixa { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .contador {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100;
+    font-weight: 800; font-size: 12px;
     background: var(--ink); color: var(--gold);
-    border-radius: 999px; padding: 1px 8px; font-size: 13px;
+    border-radius: 999px; padding: 2px 8px;
 }
 
+/* ---------------------------------------------------------- estrelas */
+
 .estrelas { display: flex; gap: 3px; margin-bottom: 12px; }
-.estrela  { position: relative; display: inline-block; }
+.estrela { position: relative; display: inline-block; }
 .estrela .zona {
     position: absolute; top: 0; height: 100%; width: 50%;
     background: none; border: 0; padding: 0; cursor: pointer;
@@ -118,107 +304,27 @@ a { color: inherit; text-decoration: none; }
 .estrela .direita  { right: 0; }
 
 .texto {
-    width: 100%; padding: 11px 13px; font-size: 15px; font-family: inherit;
+    width: 100%; padding: 11px 13px; font-size: 15px; font-family: var(--corpo);
     border: 1px solid var(--linha); border-radius: var(--raio);
-    resize: vertical; margin-top: 4px;
+    resize: vertical; margin-top: 4px; background: var(--carta);
 }
 .texto:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
 
+/* --------------------------------------------------------- coleção */
+
+.bloco-peca { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
+.bloco-peca:last-of-type { border-bottom: 0; }
 .linha-peca {
     display: flex; justify-content: space-between; align-items: center;
-    gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--linha);
-    font-size: 15px;
+    gap: 12px; padding: 9px 0; font-size: 14.5px;
 }
 .form-peca { margin-top: 14px; }
 .botoes { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
-.card .estampa { font-weight: 500; color: var(--texto); }
 
-/* --- etapa 4: lançamentos --- */
-
-.cabecalho-secao {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 16px; flex-wrap: wrap; margin-bottom: 6px;
-}
-.cabecalho-secao h1 { font-size: 26px; font-weight: 500; margin: 0; }
-
-.abas { display: flex; gap: 6px; }
-.aba {
-    background: none; border: 1px solid var(--linha); border-radius: 999px;
-    padding: 6px 15px; font-size: 14px; font-family: inherit;
-    color: var(--suave); cursor: pointer;
-}
-.aba.ativa { background: var(--ink); border-color: var(--ink); color: var(--gold); }
-
-.secao-liga { margin-top: 26px; }
-.titulo-liga {
-    font-size: 16px; font-weight: 500; margin: 0;
-    padding-bottom: 8px; border-bottom: 1px solid var(--linha);
-}
-
-.foto-lancamento {
-    width: 130px; height: 130px; object-fit: contain;
-    border-radius: 6px; background: #FFFFFF;
-}
-.nota-card { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
-
-/* --- cadastro e moderação --- */
-
-.cadastro { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; margin-top: 18px; }
-.previa {
-    position: sticky; top: 20px;
-    background: #FFFFFF; border: 1px solid var(--linha);
-    border-radius: var(--raio); padding: 20px; text-align: center;
-}
-.previa .meta { margin-top: 10px; line-height: 1.5; }
-.form-cadastro { flex: 1 1 340px; max-width: 460px; }
-
-.dois { display: flex; gap: 12px; }
-.dois > div { flex: 1; }
-
-.checkbox {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 14px; color: var(--suave); margin-top: 12px;
-}
-.checkbox input { width: 16px; height: 16px; }
-
-.campo-cor { margin-top: 4px; }
-.linha-cor { display: flex; align-items: center; gap: 8px; }
-.linha-cor input[type="color"] {
-    width: 42px; height: 42px; padding: 2px; cursor: pointer;
-    border: 1px solid var(--linha); border-radius: var(--raio); background: #FFFFFF;
-}
-.hex { width: 120px; font-family: ui-monospace, monospace; font-size: 14px; }
-.amostra {
-    width: 26px; height: 26px; border-radius: 50%;
-    border: 1px solid var(--linha); cursor: pointer; padding: 0;
-}
-
-.fila-item {
-    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
-    background: #FFFFFF; border: 1px solid var(--linha);
-    border-radius: var(--raio); padding: 14px; margin-top: 12px;
-}
-.fila-dados { flex: 1 1 220px; display: flex; flex-direction: column; gap: 2px; }
-.fila-acoes { display: flex; align-items: center; gap: 14px; }
-
-/* --- fotos --- */
-
-.galeria { text-align: center; }
-.foto-principal {
-    width: 280px; max-width: 100%; border-radius: var(--raio);
-    background: #FFFFFF; border: 1px solid var(--linha);
-}
-.tiras { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
-.tiras img {
-    width: 56px; height: 56px; object-fit: cover;
-    border-radius: 6px; border: 1px solid var(--linha);
-}
-
-.bloco-peca { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
 .fotos-peca { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0 4px; }
 .miniatura { position: relative; }
 .miniatura img {
-    width: 60px; height: 60px; object-fit: cover;
+    width: 58px; height: 58px; object-fit: cover;
     border-radius: 6px; border: 1px solid var(--linha); display: block;
 }
 .miniatura .remover {
@@ -228,70 +334,87 @@ a { color: inherit; text-decoration: none; }
     font-size: 13px; line-height: 1; cursor: pointer;
 }
 .add-foto {
-    width: 60px; height: 60px; border-radius: 6px;
+    width: 58px; height: 58px; border-radius: 6px;
     border: 1px dashed var(--linha); background: none;
-    color: var(--suave); font-size: 13px; cursor: pointer; font-family: inherit;
+    color: var(--fraco); font-size: 12.5px; cursor: pointer; font-family: var(--corpo);
 }
 .add-foto:disabled { opacity: .5; }
 
-.foto-card {
-    width: 130px; height: 130px; object-fit: cover;
-    border-radius: 6px; border: 1px solid var(--linha);
-    background: #FFFFFF;
-}
+/* ------------------------------------------------------- formulários */
 
-/* --- perfil --- */
+.cadastro { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; margin-top: 18px; }
+.previa {
+    position: sticky; top: 80px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 22px; text-align: center;
+}
+.form-cadastro { flex: 1 1 330px; max-width: 460px; }
+.dois { display: flex; gap: 12px; }
+.dois > div { flex: 1; }
+.checkbox { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--fraco); margin-top: 12px; }
+.checkbox input { width: 16px; height: 16px; }
 
-.cabecalho-perfil {
-    display: flex; align-items: flex-start; gap: 16px;
-    flex-wrap: wrap; margin-bottom: 4px;
+.campo-cor { margin-top: 4px; }
+.linha-cor { display: flex; align-items: center; gap: 8px; }
+.linha-cor input[type='color'] {
+    width: 42px; height: 42px; padding: 2px; cursor: pointer;
+    border: 1px solid var(--linha); border-radius: var(--raio); background: var(--carta);
 }
-.dados-perfil { flex: 1 1 200px; }
-.dados-perfil h1 { font-size: 26px; font-weight: 500; margin: 0 0 2px; }
-.dados-perfil p { margin: 0; }
-.bio { margin-top: 8px !important; line-height: 1.5; max-width: 46ch; }
-
-.avatar, .avatar-grande {
-    border-radius: 50%; object-fit: cover;
-    border: 1px solid var(--linha); background: #FFFFFF;
-}
-.avatar { width: 68px; height: 68px; }
-.avatar-grande { width: 96px; height: 96px; }
-.vazio-avatar {
-    display: flex; align-items: center; justify-content: center;
-    color: var(--suave); font-size: 12px; background: #EFEDE8;
-}
-
-.avatar-mini {
-    width: 22px; height: 22px; border-radius: 50%;
-    object-fit: cover; vertical-align: middle; margin-right: 6px;
-}
-.eu { display: inline-flex; align-items: center; }
+.hex { width: 118px; font-family: ui-monospace, monospace; font-size: 13.5px; }
+.amostra { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--linha); cursor: pointer; padding: 0; }
 
 .linha-avatar { display: flex; align-items: center; gap: 16px; margin: 18px 0 6px; flex-wrap: wrap; }
 .linha-user { display: flex; align-items: center; gap: 6px; }
-.arroba { color: var(--suave); font-size: 17px; }
+.arroba { color: var(--fraco); font-size: 17px; }
 
-.convite {
-    text-align: center; color: var(--suave);
-    margin: 32px 0 12px; font-size: 15px;
+/* --------------------------------------------------------- moderação */
+
+.fila-item {
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 14px; margin-top: 12px;
 }
+.fila-dados { flex: 1 1 220px; display: flex; flex-direction: column; gap: 2px; }
+.fila-acoes { display: flex; align-items: center; gap: 14px; }
 
-.titulo-camisa { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-.titulo-camisa h1 { margin-bottom: 0 !important; }
+/* ----------------------------------------------------------- perfil */
 
-/* --- pessoas --- */
+.cabecalho-perfil { display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap; margin-bottom: 4px; }
+.dados-perfil { flex: 1 1 200px; }
+.dados-perfil p { margin: 4px 0 0; }
+.bio { margin-top: 9px !important; line-height: 1.55; max-width: 48ch; }
 
-.lista-pessoas { display: grid; gap: 12px; margin-top: 20px; }
+.avatar, .avatar-grande { border-radius: 50%; object-fit: cover; border: 1px solid var(--linha); background: var(--carta); }
+.avatar { width: 70px; height: 70px; }
+.avatar-grande { width: 96px; height: 96px; }
+.vazio-avatar { display: flex; align-items: center; justify-content: center; color: var(--fraco); font-size: 12px; background: #E3E0D9; }
+
+.lista-pessoas { display: grid; gap: 11px; margin-top: 20px; }
 .cartao-pessoa {
     display: flex; align-items: center; gap: 14px;
-    background: #FFFFFF; border: 1px solid var(--linha);
-    border-radius: var(--raio); padding: 14px;
-    transition: border-color .15s;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 14px; transition: border-color .14s;
 }
 .cartao-pessoa:hover { border-color: var(--ink); }
 .dados-pessoa { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.bio-curta {
-    color: var(--suave); font-size: 14px; margin-top: 4px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52ch;
+.dados-pessoa strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 15px;
+}
+.bio-curta { color: var(--fraco); font-size: 14px; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52ch; }
+
+/* ------------------------------------------------------- lançamentos */
+
+.cabecalho-secao { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+.abas { display: flex; gap: 6px; }
+.aba {
+    background: var(--carta); border: 1px solid var(--linha); border-radius: 999px;
+    padding: 6px 15px; font-size: 14px; font-family: var(--corpo);
+    color: var(--fraco); cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.aba.ativa { background: var(--ink); border-color: var(--ink); color: var(--gold); }
+.secao-liga { margin-top: 26px; }
+.titulo-liga {
+    display: inline-block; padding-bottom: 5px; margin: 0 0 4px;
+    border-bottom: 3px solid var(--gold); text-transform: uppercase; font-size: 15px;
 }
