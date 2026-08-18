@@ -353,6 +353,12 @@ export function CadastrarCamisa() {
                                 <option key={t.id} value={t.id}>{t.nome}</option>)}
                         </optgroup>
                     </select>
+                    {/* O travamento estava aqui: sem o time na lista, não
+                        havia como seguir. O link resolve no mesmo fluxo. */}
+                    <p className="suave" style={{ fontSize: 13, marginTop: 4 }}>
+                        Não achou o time?{' '}
+                        <Link to="/cadastrar-time" className="link-inline">Cadastre ele</Link>
+                    </p>
 
                     <div className="dois">
                         <div>

@@ -6,6 +6,12 @@ import { Camisa } from '../componentes/Camisa';
 import { ROTULO_TIPO, type TipoCamisa } from '../lib/tipos';
 import type { Padrao } from '../lib/camisaSvg';
 
+interface TimePendente {
+    id: number; nome: string; slug: string; tipo: string; pais: string;
+    cor_1: string | null; cor_2: string | null;
+    autor: { username: string } | null;
+}
+
 interface Pendente {
     id: number; slug: string;
     temporada_ini: number; temporada_fim: number;
@@ -21,6 +27,7 @@ interface Pendente {
 export function Moderacao() {
     const { perfil, carregando } = useAuth();
     const [itens, setItens] = useState<Pendente[]>([]);
+    const [times, setTimes] = useState<TimePendente[]>([]);
     const [lendo, setLendo] = useState(true);
     const [erro, setErro] = useState<string | null>(null);
 
@@ -37,11 +44,29 @@ export function Moderacao() {
 
         if (error) setErro(error.message);
         else setItens((data as unknown as Pendente[]) ?? []);
+
+        // Time pendente vem numa fila própria e precisa ser julgado
+        // primeiro: sem o time aprovado, as camisas dele ficam invisíveis
+        // para todos menos o autor.
+        const { data: ts } = await supabase
+            .from('time')
+            .select('id,nome,slug,tipo,pais,cor_1,cor_2,autor:enviado_por ( username )')
+            .eq('status', 'pendente')
+            .order('id');
+        setTimes((ts as unknown as TimePendente[]) ?? []);
+
         setLendo(false);
     }
 
     useEffect(() => { if (perfil?.is_admin) carregar(); else setLendo(false); },
              [perfil?.is_admin]);
+
+    async function julgarTime(id: number, status: 'aprovada' | 'rejeitada') {
+        const antes = times;
+        setTimes(t => t.filter(x => x.id !== id));
+        const { error } = await supabase.from('time').update({ status }).eq('id', id);
+        if (error) { setErro(error.message); setTimes(antes); }
+    }
 
     async function julgar(id: number, status: 'aprovada' | 'rejeitada') {
         // Some da lista antes da resposta do servidor: a fila precisa
@@ -72,15 +97,54 @@ export function Moderacao() {
     return (
         <div className="container">
             <h1 style={{ fontSize: 26, fontWeight: 500 }}>
-                Moderação {itens.length > 0 && <span className="contador">{itens.length}</span>}
+                Moderação {(itens.length + times.length) > 0 &&
+                    <span className="contador">{itens.length + times.length}</span>}
             </h1>
 
             {erro && <p role="alert" className="erro">{erro}</p>}
 
-            {itens.length === 0 && (
+            {times.length > 0 && (
+                <>
+                    <h2 className="titulo-liga" style={{ marginTop: 22 }}>
+                        Times aguardando ({times.length})
+                    </h2>
+                    {times.map(t => (
+                        <div key={t.id} className="fila-item">
+                            <Camisa padrao="listras" corBase={t.cor_1 ?? '#FFFFFF'}
+                                    corSecundaria={t.cor_2} tamanho={80}
+                                    descricao={t.nome} />
+                            <div className="fila-dados">
+                                <strong>{t.nome}</strong>
+                                <span className="meta">
+                                    {t.tipo === 'clube' ? 'Clube' : 'Seleção'} · {t.pais}
+                                </span>
+                                <span className="meta">
+                                    enviado por @{t.autor?.username ?? 'desconhecido'}
+                                </span>
+                            </div>
+                            <div className="fila-acoes">
+                                <button className="botao" onClick={() => julgarTime(t.id, 'aprovada')}>
+                                    Aprovar
+                                </button>
+                                <button className="link" onClick={() => julgarTime(t.id, 'rejeitada')}>
+                                    rejeitar
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </>
+            )}
+
+            {times.length > 0 && itens.length > 0 && (
+                <h2 className="titulo-liga" style={{ marginTop: 30 }}>
+                    Camisas aguardando ({itens.length})
+                </h2>
+            )}
+
+            {itens.length === 0 && times.length === 0 && (
                 <div className="vazio">
                     <h2>Fila vazia</h2>
-                    <p>Nenhuma camisa esperando aprovação.</p>
+                    <p>Nada esperando aprovação.</p>
                 </div>
             )}
 

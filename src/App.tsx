@@ -10,6 +10,8 @@ import { NaoAchou } from './paginas/NaoAchou';
 import { CadastrarCamisa } from './paginas/CadastrarCamisa';
 import { Moderacao } from './paginas/Moderacao';
 import { EditarPerfil } from './paginas/EditarPerfil';
+import { CadastrarTime } from './paginas/CadastrarTime';
+import { Pessoas } from './paginas/Pessoas';
 
 function Cabecalho() {
     const { perfil, carregando, sair } = useAuth();
@@ -23,6 +25,7 @@ function Cabecalho() {
 
                 <nav className="nav">
                     <Link to="/lancamentos">Lançamentos</Link>
+                    <Link to="/pessoas">Pessoas</Link>
                     {/* Nada é renderizado enquanto a sessão não resolve:
                         mostrar "Entrar" e trocar por "@fulano" meio segundo
                         depois é o pisca clássico de app com Supabase. */}
@@ -60,6 +63,8 @@ export default function App() {
                     <Route path="/camisa/:slug/editar" element={<CadastrarCamisa />} />
                     <Route path="/moderacao"     element={<Moderacao />} />
                     <Route path="/editar-perfil" element={<EditarPerfil />} />
+                    <Route path="/cadastrar-time" element={<CadastrarTime />} />
+                    <Route path="/pessoas"       element={<Pessoas />} />
                     <Route path="*"              element={<NaoAchou />} />
                 </Routes>
             </AuthProvider>
