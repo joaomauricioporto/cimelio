@@ -14,6 +14,7 @@ export function CamisaPagina() {
     const { perfil } = useAuth();
     const [c, setC] = useState<CamisaDetalhe | null>(null);
     const [fotos, setFotos] = useState<string[]>([]);
+    const [atual, setAtual] = useState(0);
     const [tenho, setTenho] = useState(0);
     const [oficial, setOficial] = useState<{ url: string; credito: string } | null>(null);
     const [estado, setEstado] = useState<'carregando' | 'pronto' | 'nao_achou'>('carregando');
@@ -41,7 +42,10 @@ export function CamisaPagina() {
                     .select('path, peca:peca_id!inner(camisa_id)')
                     .eq('peca.camisa_id', (data as CamisaDetalhe).id)
                     .limit(8);
-                if (!cancelado) setFotos(((fs ?? []) as { path: string }[]).map(x => x.path));
+                if (!cancelado) {
+                    setFotos(((fs ?? []) as { path: string }[]).map(x => x.path));
+                    setAtual(0);
+                }
 
                 const { data: of } = await supabase
                     .from('camisa_foto')
@@ -80,16 +84,31 @@ export function CamisaPagina() {
                 <div className="galeria">
                     {fotos.length > 0 ? (
                         <>
-                            <img className="foto-principal" src={urlDaFoto(fotos[0])}
+                            <img className="foto-principal" src={urlDaFoto(fotos[atual])}
                                  alt={`${c.time_nome} ${c.temporada}`} />
+
+                            {/* As miniaturas eram <img> solta e não abriam nada.
+                                Viram botão de verdade: clicável, navegável por
+                                teclado, e com estado de qual está aberta. */}
                             {fotos.length > 1 && (
-                                <div className="tiras">
-                                    {fotos.slice(1).map(p => (
-                                        <img key={p} src={urlDaFoto(p)} alt="" loading="lazy" />
+                                <div className="tiras" role="tablist" aria-label="Fotos">
+                                    {fotos.map((p, i) => (
+                                        <button key={p} type="button" role="tab"
+                                                aria-selected={i === atual}
+                                                aria-label={`Foto ${i + 1} de ${fotos.length}`}
+                                                className={`tira ${i === atual ? 'ativa' : ''}`}
+                                                onClick={() => setAtual(i)}>
+                                            <img src={urlDaFoto(p)} alt="" loading="lazy" />
+                                        </button>
                                     ))}
                                 </div>
                             )}
-                            <p className="meta">{fotos.length} foto(s) da comunidade</p>
+
+                            <p className="meta">
+                                {fotos.length > 1
+                                    ? `${atual + 1} de ${fotos.length} fotos da comunidade`
+                                    : '1 foto da comunidade'}
+                            </p>
                         </>
                     ) : oficial ? (
                         <>

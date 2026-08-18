@@ -383,8 +383,17 @@ main { padding: 0 0 70px; }
     width: 300px; max-width: 100%; border-radius: var(--raio);
     background: var(--carta); border: 1px solid var(--linha);
 }
-.tiras { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
-.tiras img { width: 54px; height: 54px; object-fit: cover; border-radius: 6px; border: 1px solid var(--linha); }
+.tiras { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+.tira {
+    padding: 0; border: 2px solid var(--linha); border-radius: 8px;
+    background: none; cursor: pointer; line-height: 0; overflow: hidden;
+    transition: border-color .14s, transform .14s;
+}
+.tira:hover { border-color: var(--fraco); }
+/* A borda dourada diz qual está aberta. Sem marca de estado, clicar
+   parece não ter feito nada quando as fotos são parecidas. */
+.tira.ativa { border-color: var(--gold); transform: translateY(-2px); }
+.tira img { width: 56px; height: 56px; object-fit: cover; display: block; }
 
 /* Ficha técnica com a métrica de tabela de classificação: rótulo à
    esquerda, valor à direita, filete separando cada linha. */
