@@ -55,8 +55,12 @@ export function Camisa({
                       stroke={corDetalhe!} strokeWidth={5} strokeLinecap="round" />
             ))}
 
+            {/* A cor do contorno vem do contexto, não do componente:
+                camisa preta sobre fundo escuro perde a silhueta se o
+                traço também for escuro. Quem sabe qual é o fundo é o
+                fundo. */}
             <path d={CAMINHO_CAMISA} fill="none"
-                  stroke="rgba(0,0,0,.35)" strokeWidth={1.5} />
+                  stroke="var(--contorno-camisa, rgba(0,0,0,.35))" strokeWidth={1.5} />
         </svg>
     );
 }

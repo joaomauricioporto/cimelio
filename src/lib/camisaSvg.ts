@@ -132,6 +132,6 @@ export function camisaParaSvg(a: AtributosCamisa, tamanho = 120): string {
         + `<g clip-path="url(#${id})">`
         + `<rect x="${CAIXA.x - 8}" y="66" width="${CAIXA.w + 16}" height="126" fill="${a.corBase}"/>`
         + formas + `</g>` + detalhes
-        + `<path d="${CAMINHO_CAMISA}" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>`
+        + `<path d="${CAMINHO_CAMISA}" fill="none" stroke="var(--contorno-camisa, rgba(0,0,0,.35))" stroke-width="1.5"/>`
         + `</svg>`;
 }

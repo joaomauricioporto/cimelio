@@ -678,52 +678,109 @@ main { padding: 0 0 70px; }
 }
 
 /* ================================================================ FEED
-   A linha do tempo é uma coluna estreita, não uma grade. Grade é para
-   navegar acervo; coluna é para ler o que as pessoas fizeram — e a
-   diferença entre as duas telas precisa ser sentida antes de lida.
+   A linha é coluna estreita, e cada evento é um pôster: a camisa ocupa
+   a largura toda sobre fundo escuro, com o texto reduzido a legenda.
+
+   O erro da primeira versão foi tratar o feed como lista de recados —
+   avatar, frase, miniatura. Num app cujo conteúdo é camisa, a camisa
+   não pode ser o menor elemento da tela.
    ================================================================== */
 
-.linha-tempo { max-width: 620px; margin: 22px auto 0; display: grid; gap: 14px; }
+.topo-linha {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+    max-width: 620px; margin: 0 auto 4px;
+}
+.titulo-linha {
+    font-size: clamp(30px, 5vw, 44px);
+    font-variation-settings: 'wdth' 124;
+    text-transform: uppercase; font-weight: 900;
+    letter-spacing: -0.02em;
+}
+.titulo-linha::after {
+    content: ''; display: block; width: 56px; height: 5px;
+    background: var(--gold); margin-top: 10px;
+}
+
+.linha-tempo { max-width: 620px; margin: 24px auto 0; display: grid; gap: 20px; }
 
 .evento {
     position: relative; overflow: hidden;
     background: var(--carta); border: 1px solid var(--linha);
-    border-radius: 14px; padding: 16px 18px 18px;
+    border-radius: 16px;
+    transition: box-shadow .18s, transform .18s;
 }
-.evento::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
-    background: var(--filete, var(--linha));
+.evento:hover { box-shadow: 0 14px 32px rgba(20,22,26,.10); transform: translateY(-2px); }
+
+.evento-topo {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 14px 18px;
 }
-.evento-autor { display: inline-flex; align-items: center; gap: 9px; }
+.evento-autor { display: inline-flex; align-items: center; gap: 10px; }
 .evento-autor b {
-    font-family: var(--titulo); font-variation-settings: 'wdth' 110;
-    font-weight: 700; font-size: 15px;
+    display: block; font-family: var(--titulo);
+    font-variation-settings: 'wdth' 110; font-weight: 700; font-size: 15px;
+}
+.evento-autor em {
+    display: block; font-style: normal; color: var(--fraco);
+    font-size: 12.5px; margin-top: 1px;
 }
 .avatar-mini.claro {
-    width: 30px; height: 30px; border: 1px solid var(--linha);
-    display: inline-block;
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    border: 1px solid var(--linha); display: inline-block; flex-shrink: 0;
 }
-.evento-acao { margin: 3px 0 14px 39px; color: var(--fraco); font-size: 13.5px; }
 
-.evento-camisa { display: flex; align-items: center; gap: 16px; }
-.evento-img {
-    flex-shrink: 0; width: 104px; height: 104px;
+/* O palco. Fundo escuro para a camisa recortar, e o filete de cor do
+   uniforme atravessando embaixo. */
+.palco {
     display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(180deg, #FBFAF8, var(--carta));
-    border: 1px solid var(--linha); border-radius: 10px;
+    position: relative;
+    background: linear-gradient(160deg, #1D2027, #101215 62%);
+    min-height: 300px; padding: 26px 0;
+    border-top: 1px solid var(--linha);
+    border-bottom: 5px solid var(--filete, var(--gold));
 }
-.evento-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 9px; }
+/* Fundo escuro exige contorno claro: sem isso, camisa preta some. */
+.palco { --contorno-camisa: rgba(255,255,255,.5); }
+.hero { --contorno-camisa: rgba(255,255,255,.42); }
+.palco::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(60% 70% at 50% 30%, rgba(255,255,255,.08), transparent 70%);
+    pointer-events: none;
+}
+.palco-foto {
+    max-width: 100%; max-height: 380px; width: auto;
+    border-radius: 8px; position: relative;
+}
+.palco svg { filter: drop-shadow(0 10px 26px rgba(0,0,0,.5)); position: relative; }
+
+/* A estampa das costas em plaqueta, como numa etiqueta de leilão. */
+.palco-estampa {
+    position: absolute; left: 16px; bottom: 16px;
+    background: var(--gold); color: var(--ink);
+    padding: 5px 11px; border-radius: 6px;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 116;
+    font-weight: 800; font-size: 13px; letter-spacing: 0.05em;
+}
+
+.evento-pe {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; padding: 15px 18px;
+}
 .evento-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .evento-info strong {
-    font-family: var(--titulo); font-variation-settings: 'wdth' 116;
-    font-weight: 800; font-size: 17px; text-transform: uppercase; line-height: 1.15;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 118;
+    font-weight: 800; font-size: 19px; text-transform: uppercase; line-height: 1.1;
 }
-.evento-nota { margin-top: 5px; }
-.evento-nota .estrelas { margin-bottom: 0; }
+.evento-pe .estrelas { margin-bottom: 0; flex-shrink: 0; }
+
 .evento-texto {
-    margin: 14px 0 0; padding-left: 14px;
-    border-left: 3px solid var(--gold);
-    line-height: 1.55; font-size: 15px;
+    margin: 0; padding: 0 18px 18px;
+    line-height: 1.6; font-size: 15.5px;
+}
+.evento-texto::before {
+    content: ''; display: block; width: 34px; height: 3px;
+    background: var(--gold); margin-bottom: 12px;
 }
 
 /* ------------------------------------------------- sugestões de gente */

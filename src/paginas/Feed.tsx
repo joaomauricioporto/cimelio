@@ -97,8 +97,10 @@ export function Feed() {
 
     return (
         <div className="container pagina">
-            <div className="cabecalho-secao">
-                <h1>{modo === 'seguindo' ? 'Sua linha' : 'Descobrir'}</h1>
+            <div className="topo-linha">
+                <h1 className="titulo-linha">
+                    {modo === 'seguindo' ? 'Sua linha' : 'Descobrir'}
+                </h1>
                 {user && (
                     <div className="abas">
                         <button className={`aba ${modo === 'seguindo' ? 'ativa' : ''}`}
@@ -150,49 +152,58 @@ export function Feed() {
                 {eventos.map(e => (
                     <article key={`${e.tipo}-${e.ref_id}`} className="evento"
                              style={{ '--filete': e.cor_secundaria ?? e.cor_base } as React.CSSProperties}>
-                        <Link to={`/perfil/${e.username}`} className="evento-autor">
-                            {e.avatar_path
-                                ? <img className="avatar-mini claro" src={urlDaFoto(e.avatar_path)} alt="" />
-                                : <span className="avatar-mini claro vazio-avatar" aria-hidden="true" />}
-                            <b>{e.nome || e.username}</b>
+                        {/* Autor primeiro, discreto: quem fez importa, mas o
+                            que ele fez é a camisa — e ela vem logo abaixo,
+                            grande. */}
+                        <header className="evento-topo">
+                            <Link to={`/perfil/${e.username}`} className="evento-autor">
+                                {e.avatar_path
+                                    ? <img className="avatar-mini claro" src={urlDaFoto(e.avatar_path)} alt="" />
+                                    : <span className="avatar-mini claro vazio-avatar" aria-hidden="true" />}
+                                <span>
+                                    <b>{e.nome || e.username}</b>
+                                    <em>
+                                        {e.tipo === 'peca'
+                                            ? 'registrou na coleção'
+                                            : e.nota ? 'avaliou' : 'resenhou'}
+                                    </em>
+                                </span>
+                            </Link>
+                            <span className="meta">{quando(e.ocorrido_em)}</span>
+                        </header>
+
+                        {/* O palco: a camisa ocupa a largura toda, sobre fundo
+                            escuro. Num app de camisa, a camisa não pode ser o
+                            menor elemento da tela. */}
+                        <Link to={`/camisa/${e.camisa_slug}`} className="palco">
+                            {e.foto_path
+                                ? <img className="palco-foto" src={urlDaFoto(e.foto_path)}
+                                       alt={`${e.time_nome} ${e.temporada}`} loading="lazy" />
+                                : <Camisa padrao={e.padrao} corBase={e.cor_base}
+                                          corSecundaria={e.cor_secundaria}
+                                          corDetalhe={e.cor_detalhe} tamanho={230}
+                                          descricao={`${e.time_nome} ${e.temporada}`} />}
+
+                            {e.tipo === 'peca' && e.nome_estampa && (
+                                <span className="palco-estampa">
+                                    {e.nome_estampa} {e.numero ?? ''}
+                                </span>
+                            )}
                         </Link>
 
-                        <p className="evento-acao">
-                            {e.tipo === 'peca'
-                                ? 'registrou na coleção'
-                                : e.nota ? 'avaliou' : 'resenhou'}
-                            <span className="meta"> · {quando(e.ocorrido_em)}</span>
-                        </p>
-
-                        <Link to={`/camisa/${e.camisa_slug}`} className="evento-camisa">
-                            <span className="evento-img">
-                                {e.foto_path
-                                    ? <img src={urlDaFoto(e.foto_path)} alt="" loading="lazy" />
-                                    : <Camisa padrao={e.padrao} corBase={e.cor_base}
-                                              corSecundaria={e.cor_secundaria}
-                                              corDetalhe={e.cor_detalhe} tamanho={92} />}
-                            </span>
-
-                            <span className="evento-info">
+                        <div className="evento-pe">
+                            <Link to={`/camisa/${e.camisa_slug}`} className="evento-info">
                                 <strong>{e.time_nome}</strong>
                                 <span className="meta">
                                     {e.temporada} · {ROTULO_TIPO[e.tipo_camisa]}
+                                    {e.tamanho && ` · ${e.tamanho}`}
                                 </span>
+                            </Link>
 
-                                {e.tipo === 'peca' && (e.nome_estampa || e.tamanho) && (
-                                    <span className="meta">
-                                        {[e.nome_estampa && `${e.nome_estampa} ${e.numero ?? ''}`.trim(),
-                                          e.tamanho].filter(Boolean).join(' · ')}
-                                    </span>
-                                )}
-
-                                {e.tipo === 'resenha' && e.nota && (
-                                    <span className="evento-nota">
-                                        <Estrelas valor={e.nota} tamanho={15} />
-                                    </span>
-                                )}
-                            </span>
-                        </Link>
+                            {e.tipo === 'resenha' && e.nota && (
+                                <Estrelas valor={e.nota} tamanho={17} />
+                            )}
+                        </div>
 
                         {e.tipo === 'resenha' && e.texto && (
                             <p className="evento-texto">{e.texto}</p>
