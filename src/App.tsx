@@ -26,6 +26,7 @@ function Cabecalho() {
                     {/* Nada é renderizado enquanto a sessão não resolve:
                         mostrar "Entrar" e trocar por "@fulano" meio segundo
                         depois é o pisca clássico de app com Supabase. */}
+                    {!carregando && perfil && <Link to="/cadastrar">+ Camisa</Link>}
                     {!carregando && perfil?.is_admin && <Link to="/moderacao">Moderação</Link>}
                     {!carregando && (perfil
                         ? <>
@@ -56,6 +57,7 @@ export default function App() {
                     <Route path="/entrar"        element={<Entrar />} />
                     <Route path="/perfil/:username" element={<Perfil />} />
                     <Route path="/cadastrar"     element={<CadastrarCamisa />} />
+                    <Route path="/camisa/:slug/editar" element={<CadastrarCamisa />} />
                     <Route path="/moderacao"     element={<Moderacao />} />
                     <Route path="/editar-perfil" element={<EditarPerfil />} />
                     <Route path="*"              element={<NaoAchou />} />

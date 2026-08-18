@@ -82,6 +82,16 @@ export function Catalogo() {
             <div className="grade">
                 {itens.map(c => <CamisaCard key={c.id} c={c} />)}
             </div>
+
+            {/* Quem navega sem buscar nada nunca vê a tela de "não achei",
+                que era o único caminho até o cadastro. Catálogo aberto
+                só cresce se o convite estiver visível. */}
+            {!carregando && itens.length > 0 && (
+                <p className="convite">
+                    Falta alguma camisa aqui?{' '}
+                    <Link to="/cadastrar" className="link-inline">Cadastre você mesmo</Link>
+                </p>
+            )}
         </div>
     );
 }

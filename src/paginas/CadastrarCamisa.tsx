@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { Camisa } from '../componentes/Camisa';
@@ -23,9 +23,20 @@ const PADROES: { valor: Padrao; rotulo: string }[] = [
 const TIPOS = Object.keys(ROTULO_TIPO) as TipoCamisa[];
 
 export function CadastrarCamisa() {
-    const { user } = useAuth();
+    const { user, perfil } = useAuth();
     const navegar = useNavigate();
     const [params] = useSearchParams();
+
+    // Mesma página serve para criar e para corrigir. O que decide é a
+    // presença do slug na rota. Duplicar o formulário garantiria que as
+    // duas versões divergissem na primeira alteração.
+    const { slug: slugEdicao } = useParams<{ slug: string }>();
+    const editando = Boolean(slugEdicao);
+    const [carregandoCamisa, setCarregandoCamisa] = useState(editando);
+    const [camisaId, setCamisaId] = useState<number | null>(null);
+    const [statusAtual, setStatusAtual] = useState<string>('pendente');
+    const [fotoId, setFotoId] = useState<number | null>(null);
+    const [semPermissao, setSemPermissao] = useState(false);
 
     const [times, setTimes] = useState<Time[]>([]);
     const [marcas, setMarcas] = useState<Marca[]>([]);
@@ -56,6 +67,72 @@ export function CadastrarCamisa() {
         supabase.from('marca').select('id,nome').order('nome')
             .then(({ data }) => setMarcas((data as Marca[]) ?? []));
     }, []);
+
+    useEffect(() => {
+        if (!editando || !user) return;
+        let cancelado = false;
+
+        (async () => {
+            const { data } = await supabase
+                .from('camisa')
+                .select(`id,time_id,marca_id,temporada_ini,temporada_fim,tipo,
+                         patrocinador,variante,padrao,cor_base,cor_secundaria,
+                         cor_detalhe,status,enviado_por`)
+                .eq('slug', slugEdicao)
+                .maybeSingle();
+
+            if (cancelado) return;
+            if (!data) { setSemPermissao(true); setCarregandoCamisa(false); return; }
+
+            const c = data as Record<string, unknown>;
+
+            // Espelha a RLS na interface: admin edita qualquer uma, autor
+            // edita a própria enquanto pendente. O banco recusaria de
+            // qualquer forma, mas mostrar formulário que não salva é
+            // pior que não mostrar formulário.
+            const podeEditar = perfil?.is_admin
+                || (c.enviado_por === user.id && c.status === 'pendente');
+            if (!podeEditar) { setSemPermissao(true); setCarregandoCamisa(false); return; }
+
+            setCamisaId(c.id as number);
+            setStatusAtual(c.status as string);
+            setF({
+                time_id: String(c.time_id),
+                marca_id: c.marca_id ? String(c.marca_id) : '',
+                temporada_ini: String(c.temporada_ini),
+                partida: c.temporada_fim !== c.temporada_ini,
+                tipo: c.tipo as TipoCamisa,
+                patrocinador: (c.patrocinador as string) ?? '',
+                variante: (c.variante as string) ?? '',
+                foto_url: '', foto_credito: '',
+                padrao: c.padrao as Padrao,
+                cor_base: c.cor_base as string,
+                cor_secundaria: (c.cor_secundaria as string) ?? null,
+                cor_detalhe: (c.cor_detalhe as string) ?? null,
+            });
+
+            const { data: foto } = await supabase
+                .from('camisa_foto')
+                .select('id,url_externa,credito')
+                .eq('camisa_id', c.id)
+                .not('url_externa', 'is', null)
+                .order('posicao').limit(1).maybeSingle();
+
+            if (!cancelado && foto) {
+                const fo = foto as Record<string, unknown>;
+                setFotoId(fo.id as number);
+                setF(a => ({
+                    ...a,
+                    foto_url: (fo.url_externa as string) ?? '',
+                    foto_credito: (fo.credito as string) ?? '',
+                }));
+            }
+
+            setCarregandoCamisa(false);
+        })();
+
+        return () => { cancelado = true; };
+    }, [editando, slugEdicao, user?.id, perfil?.is_admin]);
 
     const timeEscolhido = useMemo(
         () => times.find(t => String(t.id) === f.time_id),
@@ -96,6 +173,52 @@ export function CadastrarCamisa() {
         ].join('-');
 
         setEnviando(true);
+
+        if (editando && camisaId) {
+            // O slug NÃO é regerado ao editar, mesmo mudando time ou ano.
+            // Slug é endereço público: já pode estar em link compartilhado,
+            // em histórico, indexado. Corrigir um erro de digitação não
+            // deve quebrar quem já tem o link.
+            const { error } = await supabase.from('camisa').update({
+                time_id: Number(f.time_id),
+                marca_id: f.marca_id ? Number(f.marca_id) : null,
+                temporada_ini: ano,
+                temporada_fim: fim,
+                tipo: f.tipo,
+                patrocinador: f.patrocinador.trim() || null,
+                variante: f.variante.trim() || null,
+                padrao: f.padrao,
+                cor_base: f.cor_base,
+                cor_secundaria: f.padrao === 'lisa' ? null : f.cor_secundaria,
+                cor_detalhe: f.cor_detalhe,
+            }).eq('id', camisaId);
+
+            if (error) {
+                setEnviando(false);
+                return setErro(error.message.includes('camisa_unica')
+                    ? 'Já existe outra camisa com esse time, ano e uniforme.'
+                    : error.message);
+            }
+
+            const url = f.foto_url.trim();
+            if (url && fotoId) {
+                await supabase.from('camisa_foto').update({
+                    url_externa: url,
+                    credito: f.foto_credito.trim() || 'Divulgação',
+                }).eq('id', fotoId);
+            } else if (url) {
+                await supabase.from('camisa_foto').insert({
+                    camisa_id: camisaId, url_externa: url, origem: 'oficial',
+                    credito: f.foto_credito.trim() || 'Divulgação',
+                });
+            } else if (fotoId) {
+                await supabase.from('camisa_foto').delete().eq('id', fotoId);
+            }
+
+            setEnviando(false);
+            navegar(`/camisa/${slugEdicao}`);
+            return;
+        }
 
         // Duas falhas possíveis, com significados opostos:
         //   camisa_unica   -> a camisa já existe. Leva o usuário até ela.
@@ -157,6 +280,22 @@ export function CadastrarCamisa() {
         setEnviando(false);
     }
 
+    if (carregandoCamisa)
+        return <div className="container"><p className="suave">Carregando…</p></div>;
+
+    if (semPermissao)
+        return (
+            <div className="container">
+                <div className="vazio">
+                    <h2>Você não pode corrigir esta camisa</h2>
+                    <p>Só o autor, enquanto ela está pendente, ou a moderação.</p>
+                    <Link to="/" className="botao" style={{ display: 'inline-block' }}>
+                        Voltar ao catálogo
+                    </Link>
+                </div>
+            </div>
+        );
+
     if (!user)
         return (
             <div className="container">
@@ -172,8 +311,13 @@ export function CadastrarCamisa() {
 
     return (
         <div className="container">
-            <h1 style={{ fontSize: 26, fontWeight: 500 }}>Cadastrar camisa</h1>
-            {termo && <p className="suave">Você buscou por “{termo}”.</p>}
+            <h1 style={{ fontSize: 26, fontWeight: 500 }}>
+                {editando ? 'Corrigir camisa' : 'Cadastrar camisa'}
+            </h1>
+            {!editando && termo && <p className="suave">Você buscou por “{termo}”.</p>}
+            {editando && statusAtual === 'pendente' && (
+                <p className="suave">Esta camisa ainda está aguardando moderação.</p>
+            )}
 
             <div className="cadastro">
                 {/* Prévia grudada: o desenho muda a cada ajuste, sem precisar
@@ -311,11 +455,13 @@ export function CadastrarCamisa() {
                     )}
 
                     <button className="botao largo" disabled={enviando}>
-                        {enviando ? 'Enviando…' : 'Cadastrar'}
+                        {enviando ? 'Salvando…' : editando ? 'Salvar correções' : 'Cadastrar'}
                     </button>
-                    <p className="suave" style={{ fontSize: 13 }}>
-                        Entra como pendente e aparece no catálogo depois da moderação.
-                    </p>
+                    {!editando && (
+                        <p className="suave" style={{ fontSize: 13 }}>
+                            Entra como pendente e aparece no catálogo depois da moderação.
+                        </p>
+                    )}
                 </form>
             </div>
         </div>

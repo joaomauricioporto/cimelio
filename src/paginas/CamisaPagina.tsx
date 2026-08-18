@@ -6,9 +6,11 @@ import { ROTULO_TIPO, type CamisaDetalhe } from '../lib/tipos';
 import { TenhoEssa } from '../componentes/TenhoEssa';
 import { Avaliar } from '../componentes/Avaliar';
 import { urlDaFoto } from '../lib/fotos';
+import { useAuth } from '../lib/auth';
 
 export function CamisaPagina() {
     const { slug } = useParams<{ slug: string }>();
+    const { perfil } = useAuth();
     const [c, setC] = useState<CamisaDetalhe | null>(null);
     const [fotos, setFotos] = useState<string[]>([]);
     const [oficial, setOficial] = useState<{ url: string; credito: string } | null>(null);
@@ -112,7 +114,12 @@ export function CamisaPagina() {
                 </div>
 
                 <div style={{ flex: '1 1 320px' }}>
-                    <h1>{c.time_nome}</h1>
+                    <div className="titulo-camisa">
+                        <h1>{c.time_nome}</h1>
+                        {perfil?.is_admin && (
+                            <Link to={`/camisa/${c.slug}/editar`} className="link">corrigir</Link>
+                        )}
+                    </div>
                     <p className="sub">{c.temporada} · {ROTULO_TIPO[c.tipo]}</p>
 
                     <p className="nota">

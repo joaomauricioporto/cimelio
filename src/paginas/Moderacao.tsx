@@ -113,6 +113,10 @@ export function Moderacao() {
                             <button className="botao" onClick={() => julgar(c.id, 'aprovada')}>
                                 Aprovar
                             </button>
+                            {/* Moderação binária desperdiça contribuição: erro
+                                de digitação vira rejeição quando poderia virar
+                                correção. */}
+                            <Link className="link" to={`/camisa/${c.slug}/editar`}>corrigir</Link>
                             <button className="link" onClick={() => julgar(c.id, 'rejeitada')}>
                                 rejeitar
                             </button>
