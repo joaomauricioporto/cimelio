@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './lib/auth';
 import { urlDaFoto } from './lib/fotos';
 import { Logo } from './componentes/Logo';
 import { NavInferior } from './componentes/NavInferior';
+import { Lateral } from './componentes/Lateral';
 import { Catalogo } from './paginas/Catalogo';
 import { CamisaPagina } from './paginas/CamisaPagina';
 import { Entrar } from './paginas/Entrar';
@@ -74,6 +75,8 @@ export default function App() {
         <BrowserRouter>
             <AuthProvider>
                 <Cabecalho />
+                <div className="casca">
+                <Lateral />
                 <main>
                 <Routes>
                     <Route path="/"              element={<Inicio />} />
@@ -93,6 +96,7 @@ export default function App() {
                     <Route path="*"              element={<NaoAchou />} />
                 </Routes>
                 </main>
+                </div>
                 <NavInferior />
             </AuthProvider>
         </BrowserRouter>

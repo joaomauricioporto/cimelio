@@ -1009,3 +1009,118 @@ main { padding: 0 0 70px; }
     .hero-titulo { font-size: 30px; }
     .grade { gap: 9px; }
 }
+
+/* ========================================== ESTRUTURA DE DESKTOP
+
+   A navegação sai do topo e vira coluna. O cabeçalho tinha oito itens
+   numa linha e quebrava em duas — o problema não era espaçamento, era
+   usar formato de cabeçalho de site para navegação de aplicativo.
+
+   Na vertical cabe tudo com folga, e a área central sobra para o
+   conteúdo, que numa tela de 1900px estava desperdiçada.
+   ================================================================= */
+
+.lateral { display: none; }
+.casca { display: block; }
+
+@media (min-width: 900px) {
+    .topo { display: none; }
+
+    .casca { display: grid; grid-template-columns: 244px minmax(0, 1fr); }
+
+    .lateral { display: block; }
+    .lateral-fixa {
+        position: sticky; top: 0; height: 100vh;
+        display: flex; flex-direction: column;
+        background: var(--ink); color: #FFFFFF;
+        padding: 22px 16px 20px;
+        border-right: 1px solid #23262C;
+    }
+
+    .lateral-marca {
+        display: flex; align-items: center; gap: 11px;
+        color: var(--gold); padding: 0 8px 22px;
+        font-family: var(--titulo); font-variation-settings: 'wdth' 122;
+        font-weight: 800; font-size: 21px; text-transform: uppercase;
+        letter-spacing: 0.01em;
+    }
+
+    .lateral-nav { display: flex; flex-direction: column; gap: 3px; }
+    .lateral-item {
+        display: flex; align-items: center; gap: 13px;
+        padding: 11px 12px; border-radius: 10px;
+        color: #A6A29A; font-size: 15px; font-weight: 500;
+        transition: background .12s, color .12s;
+    }
+    .lateral-item svg { width: 21px; height: 21px; flex-shrink: 0; }
+    .lateral-item:hover { background: #1E2127; color: #FFFFFF; }
+    /* O item ativo é preenchido, não sublinhado: numa coluna vertical o
+       preenchimento é o único marcador que se lê de relance. */
+    .lateral-item.ativo { background: #23262C; color: var(--gold); }
+
+    .lateral-registrar { margin-top: 18px; width: 100%; }
+
+    .lateral-pe {
+        margin-top: auto; padding-top: 16px;
+        border-top: 1px solid #23262C;
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .lateral-eu { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .lateral-eu img, .lateral-eu .vazio-avatar {
+        width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+        border: 1px solid #33363C; flex-shrink: 0;
+    }
+    .lateral-eu b {
+        display: block; font-size: 13.5px; color: #FFFFFF;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
+    }
+    .lateral-eu em {
+        display: block; font-style: normal; font-size: 12px; color: #7C786F;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
+    }
+    .lateral-pe .link { color: #7C786F; font-size: 12.5px; flex-shrink: 0; }
+
+    main { padding: 30px 0 70px; }
+    .container { max-width: 1020px; padding: 0 30px; }
+}
+
+/* ---------------------------------------- coluna de apoio no feed */
+
+.coluna-aside { display: none; }
+.coluna-principal { min-width: 0; }
+
+@media (min-width: 1180px) {
+    .com-aside {
+        display: grid; gap: 34px;
+        grid-template-columns: minmax(0, 1fr) 288px;
+        max-width: 1080px;
+    }
+    /* Sem o auto na coluna principal, a linha do tempo continuaria
+       centrada e a coluna de apoio ficaria flutuando longe dela. */
+    .com-aside .linha-tempo { margin-left: 0; margin-right: 0; max-width: none; }
+    .com-aside .topo-linha { margin-left: 0; margin-right: 0; }
+
+    .coluna-aside { display: block; }
+    .bloco-aside {
+        position: sticky; top: 26px;
+        background: var(--carta); border: 1px solid var(--linha);
+        border-radius: 14px; padding: 18px;
+    }
+    .titulo-aside {
+        font-size: 15px; text-transform: uppercase; margin-bottom: 14px;
+        padding-bottom: 6px; border-bottom: 3px solid var(--gold);
+        display: inline-block;
+    }
+    .linha-sugestao {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--linha);
+    }
+    .linha-sugestao:last-of-type { border-bottom: 0; }
+    .linha-sugestao a { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .linha-sugestao b { display: block; font-size: 13.5px; }
+    .linha-sugestao em { display: block; font-style: normal; font-size: 12px; color: var(--fraco); }
+    .linha-sugestao .botao { padding: 6px 13px; font-size: 13px; }
+
+    /* Duplicar sugestões no meio da linha e na coluna seria repetição. */
+    .so-estreito { display: none; }
+}

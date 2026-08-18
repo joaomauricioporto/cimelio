@@ -96,7 +96,8 @@ export function Feed() {
     }
 
     return (
-        <div className="container pagina">
+        <div className="container pagina com-aside">
+            <div className="coluna-principal">
             <div className="topo-linha">
                 <h1 className="titulo-linha">
                     {modo === 'seguindo' ? 'Sua linha' : 'Descobrir'}
@@ -128,8 +129,11 @@ export function Feed() {
                 </div>
             )}
 
+            {/* No celular as sugestões entram no meio da linha; no
+                desktop elas vão para a coluna da direita, que existe
+                justamente para tirar peso da leitura central. */}
             {sugestoes.length > 0 && (modo === 'descobrir' || eventos.length === 0 || eventos.length < 6) && (
-                <section className="secao">
+                <section className="secao so-estreito">
                     <h2 className="rotulo-secao">Quem seguir</h2>
                     <div className="tiras-pessoas">
                         {sugestoes.map(s => (
@@ -219,6 +223,30 @@ export function Feed() {
                     </button>
                 </div>
             )}
+            </div>
+
+            <aside className="coluna-aside">
+                {sugestoes.length > 0 && (
+                    <div className="bloco-aside">
+                        <h2 className="titulo-aside">Quem seguir</h2>
+                        {sugestoes.slice(0, 5).map(s => (
+                            <div key={s.id} className="linha-sugestao">
+                                <Link to={`/perfil/${s.username}`}>
+                                    {s.avatar_path
+                                        ? <img className="avatar-mini claro" src={urlDaFoto(s.avatar_path)} alt="" />
+                                        : <span className="avatar-mini claro vazio-avatar" aria-hidden="true" />}
+                                    <span>
+                                        <b>{s.nome || s.username}</b>
+                                        <em>{s.camisas} camisas</em>
+                                    </span>
+                                </Link>
+                                <SeguirBotao perfilId={s.id} />
+                            </div>
+                        ))}
+                        <Link to="/pessoas" className="link">ver todos</Link>
+                    </div>
+                )}
+            </aside>
         </div>
     );
 }
