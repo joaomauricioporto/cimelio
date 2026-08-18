@@ -11,6 +11,7 @@ interface Perfil {
     nome: string | null;
     bio: string | null;
     avatar_path: string | null;
+    wishlist_publica: boolean;
     is_admin: boolean;
 }
 
@@ -63,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function lerPerfil(id: string) {
         const { data } = await supabase
             .from('perfil')
-            .select('id,username,nome,bio,avatar_path,is_admin')
+            .select('id,username,nome,bio,avatar_path,wishlist_publica,is_admin')
             .eq('id', id)
             .maybeSingle();
         setPerfil((data as Perfil) ?? null);

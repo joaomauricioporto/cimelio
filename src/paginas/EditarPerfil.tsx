@@ -15,6 +15,7 @@ export function EditarPerfil() {
     const [nome, setNome] = useState('');
     const [bio, setBio] = useState('');
     const [avatar, setAvatar] = useState<string | null>(null);
+    const [wishlistPublica, setWishlistPublica] = useState(false);
 
     const [erro, setErro] = useState<string | null>(null);
     const [salvando, setSalvando] = useState(false);
@@ -27,6 +28,7 @@ export function EditarPerfil() {
         setNome(perfil.nome ?? '');
         setBio(perfil.bio ?? '');
         setAvatar(perfil.avatar_path);
+        setWishlistPublica(perfil.wishlist_publica);
     }, [perfil?.id]);
 
     // Verifica disponibilidade enquanto digita. Descobrir que o
@@ -81,6 +83,7 @@ export function EditarPerfil() {
             nome: nome.trim() || null,
             bio: bio.trim() || null,
             avatar_path: avatar,
+            wishlist_publica: wishlistPublica,
         }).eq('id', user!.id);
         setSalvando(false);
 
@@ -161,6 +164,25 @@ export function EditarPerfil() {
                           placeholder="Colecionador desde 2015, foco em camisas do Brasileirão…"
                           onChange={e => setBio(e.target.value)} />
                 <p className="suave" style={{ fontSize: 13 }}>{bio.length}/200</p>
+
+                {/* Privacidade fica junto do resto do perfil, não escondida
+                    em outra tela: quem edita a bio é quem decide isso. O
+                    padrão é fechado — quem não sabe que a opção existe não
+                    é exposto por omissão. */}
+                <fieldset className="opcao">
+                    <label className="opcao-linha">
+                        <input type="checkbox" checked={wishlistPublica}
+                               onChange={e => setWishlistPublica(e.target.checked)} />
+                        <span>
+                            <b>Wishlist pública</b>
+                            <em>
+                                {wishlistPublica
+                                    ? 'Qualquer pessoa vê o que você procura. Facilita troca — e mostra ao vendedor o quanto você quer a peça.'
+                                    : 'Só você vê o que está na sua wishlist.'}
+                            </em>
+                        </span>
+                    </label>
+                </fieldset>
 
                 {erro && <p role="alert" className="erro">{erro}</p>}
 

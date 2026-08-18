@@ -3,154 +3,281 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { Camisa } from '../componentes/Camisa';
+import { Destaques, type PecaDestaque } from '../componentes/Destaques';
+import { SeguirBotao } from '../componentes/SeguirBotao';
 import { urlDaFoto } from '../lib/fotos';
 import { ROTULO_TIPO, type TipoCamisa } from '../lib/tipos';
 import type { Padrao } from '../lib/camisaSvg';
 
-interface PecaNaEstante {
-    id: number;
-    versao: string | null;
-    tamanho: string | null;
-    nome_estampa: string | null;
-    numero: number | null;
-    peca_foto: { path: string }[];
+interface Perf {
+    id: string; username: string; nome: string | null;
+    bio: string | null; avatar_path: string | null;
+    wishlist_publica: boolean;
+}
+
+interface Contagens { camisas: number; seguidores: number; seguindo: number; avaliacoes: number; }
+
+interface ItemWishlist {
+    id: number; is_grail: boolean;
     camisa: {
-        slug: string; tipo: TipoCamisa;
+        slug: string; padrao: Padrao; tipo: TipoCamisa;
+        cor_base: string; cor_secundaria: string | null; cor_detalhe: string | null;
         temporada_ini: number; temporada_fim: number;
-        padrao: Padrao; cor_base: string;
-        cor_secundaria: string | null; cor_detalhe: string | null;
         time: { nome: string } | null;
     } | null;
 }
 
+const CAMPOS_PECA = `id,destaque,versao,tamanho,nome_estampa,numero,
+    peca_foto ( path ),
+    camisa:camisa_id (
+        slug,tipo,temporada_ini,temporada_fim,
+        padrao,cor_base,cor_secundaria,cor_detalhe,
+        time:time_id ( nome )
+    )`;
+
 export function Perfil() {
     const { username } = useParams<{ username: string }>();
     const { perfil: meu } = useAuth();
-    const [nome, setNome] = useState<string | null>(null);
-    const [bio, setBio] = useState<string | null>(null);
-    const [avatar, setAvatar] = useState<string | null>(null);
-    const [pecas, setPecas] = useState<PecaNaEstante[]>([]);
+
+    const [p, setP] = useState<Perf | null>(null);
+    const [cont, setCont] = useState<Contagens | null>(null);
+    const [pecas, setPecas] = useState<PecaDestaque[]>([]);
+    const [desejos, setDesejos] = useState<ItemWishlist[]>([]);
+    const [aba, setAba] = useState<'colecao' | 'wishlist'>('colecao');
     const [estado, setEstado] = useState<'carregando' | 'pronto' | 'nao_achou'>('carregando');
+
+    const souEu = meu?.username === username;
 
     useEffect(() => {
         let cancelado = false;
 
         (async () => {
-            const { data: p } = await supabase
-                .from('perfil').select('id,username,nome,bio,avatar_path')
+            setEstado('carregando');
+            const { data: perf } = await supabase
+                .from('perfil')
+                .select('id,username,nome,bio,avatar_path,wishlist_publica')
                 .eq('username', username).maybeSingle();
 
             if (cancelado) return;
-            if (!p) { setEstado('nao_achou'); return; }
-            setNome(p.nome || p.username);
-            setBio((p as { bio: string | null }).bio);
-            setAvatar((p as { avatar_path: string | null }).avatar_path);
+            if (!perf) { setEstado('nao_achou'); return; }
+            const pf = perf as Perf;
+            setP(pf);
 
-            // Um join só, em vez de N+1: sem isto, uma coleção de 80
-            // camisas dispara 81 requisições e a página trava.
-            const { data: itens } = await supabase
-                .from('peca')
-                .select(`id,versao,tamanho,nome_estampa,numero,
-                         peca_foto ( path ),
-                         camisa:camisa_id (
-                             slug,tipo,temporada_ini,temporada_fim,
-                             padrao,cor_base,cor_secundaria,cor_detalhe,
-                             time:time_id ( nome )
-                         )`)
-                .eq('perfil_id', p.id)
-                .order('id', { ascending: false });
+            // Um join só para a coleção inteira, e uma chamada para as
+            // quatro contagens. Perfil que abre devagar é perfil que
+            // ninguém compartilha.
+            const [pecasRes, contRes, wlRes] = await Promise.all([
+                supabase.from('peca').select(CAMPOS_PECA)
+                    .eq('perfil_id', pf.id)
+                    .order('destaque', { ascending: true, nullsFirst: false })
+                    .order('id', { ascending: false }),
+                supabase.rpc('contagens_perfil', { p_id: pf.id }),
+                supabase.from('wishlist')
+                    .select(`id,is_grail, camisa:camisa_id (
+                        slug,tipo,temporada_ini,temporada_fim,padrao,
+                        cor_base,cor_secundaria,cor_detalhe, time:time_id ( nome ))`)
+                    .eq('perfil_id', pf.id)
+                    .order('is_grail', { ascending: false }),
+            ]);
 
             if (cancelado) return;
-            setPecas((itens as unknown as PecaNaEstante[]) ?? []);
+            setPecas((pecasRes.data as unknown as PecaDestaque[]) ?? []);
+            setCont(((contRes.data as Contagens[]) ?? [])[0] ?? null);
+            setDesejos((wlRes.data as unknown as ItemWishlist[]) ?? []);
             setEstado('pronto');
         })();
 
         return () => { cancelado = true; };
-    }, [username]);
+    }, [username, meu?.id]);
+
+    async function fixar(pecaId: number, posicao: number | null) {
+        // Libera a posição antes de ocupá-la: o índice único no banco
+        // recusaria duas peças na mesma vaga, e trocar sem soltar seria
+        // erro garantido.
+        if (posicao !== null) {
+            const ocupante = pecas.find(x => x.destaque === posicao);
+            if (ocupante && ocupante.id !== pecaId)
+                await supabase.from('peca').update({ destaque: null }).eq('id', ocupante.id);
+        }
+        await supabase.from('peca').update({ destaque: posicao }).eq('id', pecaId);
+
+        setPecas(ps => ps.map(x =>
+            x.id === pecaId ? { ...x, destaque: posicao }
+            : x.destaque === posicao && posicao !== null ? { ...x, destaque: null }
+            : x
+        ));
+    }
 
     if (estado === 'carregando')
-        return <div className="container"><p className="suave">Carregando…</p></div>;
+        return <div className="container pagina"><p className="suave">Carregando…</p></div>;
 
-    if (estado === 'nao_achou')
+    if (estado === 'nao_achou' || !p)
         return (
-            <div className="container">
+            <div className="container pagina">
                 <div className="vazio">
                     <h2>Perfil não encontrado</h2>
-                    <Link to="/" className="botao" style={{ display: 'inline-block' }}>
-                        Voltar ao catálogo
-                    </Link>
+                    <p>O endereço não existe ou o username mudou.</p>
+                    <Link to="/" className="botao">Voltar ao catálogo</Link>
                 </div>
             </div>
         );
 
+    const fixadas = pecas.filter(x => x.destaque).sort((a, b) => a.destaque! - b.destaque!);
+    const podeVerWishlist = souEu || p.wishlist_publica;
+
     return (
-        <div className="container">
-            <div className="cabecalho-perfil">
-                {avatar
-                    ? <img className="avatar" src={urlDaFoto(avatar)} alt="" />
-                    : <div className="avatar vazio-avatar" aria-hidden="true" />}
+        <>
+            <header className="capa">
+                <div className="container capa-conteudo">
+                    {p.avatar_path
+                        ? <img className="capa-avatar" src={urlDaFoto(p.avatar_path)} alt="" />
+                        : <div className="capa-avatar vazio-avatar" aria-hidden="true" />}
 
-                <div className="dados-perfil">
-                    <h1>{nome}</h1>
-                    <p className="suave">
-                        @{username} · {pecas.length} {pecas.length === 1 ? 'camisa' : 'camisas'}
-                    </p>
-                    {bio && <p className="bio">{bio}</p>}
+                    <div className="capa-dados">
+                        <h1>{p.nome || p.username}</h1>
+                        <p className="capa-user">@{p.username}</p>
+                        {p.bio && <p className="capa-bio">{p.bio}</p>}
+
+                        {cont && (
+                            <ul className="placar">
+                                <li><b className="num">{cont.camisas}</b><span>camisas</span></li>
+                                <li><b className="num">{cont.avaliacoes}</b><span>avaliações</span></li>
+                                <li><b className="num">{cont.seguidores}</b><span>seguidores</span></li>
+                                <li><b className="num">{cont.seguindo}</b><span>seguindo</span></li>
+                            </ul>
+                        )}
+                    </div>
+
+                    <div className="capa-acao">
+                        <SeguirBotao perfilId={p.id}
+                            aoMudar={s => setCont(c => c
+                                ? { ...c, seguidores: c.seguidores + (s ? 1 : -1) } : c)} />
+                    </div>
                 </div>
+            </header>
 
-                {meu?.username === username && (
-                    <Link to="/editar-perfil" className="link">editar perfil</Link>
+            <div className="container pagina">
+                {fixadas.length > 0 && (
+                    <section className="secao">
+                        <h2 className="rotulo-secao">Em destaque</h2>
+                        <Destaques pecas={fixadas} />
+                    </section>
+                )}
+
+                {souEu && fixadas.length === 0 && pecas.length > 0 && (
+                    <div className="dica">
+                        Escolha até três camisas para fixar no topo do seu perfil.
+                        O botão está em cada uma, logo abaixo.
+                    </div>
+                )}
+
+                <nav className="abas-perfil" role="tablist">
+                    <button role="tab" aria-selected={aba === 'colecao'}
+                            className={`aba ${aba === 'colecao' ? 'ativa' : ''}`}
+                            onClick={() => setAba('colecao')}>
+                        Coleção <span className="num">{pecas.length}</span>
+                    </button>
+                    {podeVerWishlist && (
+                        <button role="tab" aria-selected={aba === 'wishlist'}
+                                className={`aba ${aba === 'wishlist' ? 'ativa' : ''}`}
+                                onClick={() => setAba('wishlist')}>
+                            Wishlist <span className="num">{desejos.length}</span>
+                        </button>
+                    )}
+                </nav>
+
+                {aba === 'colecao' && (
+                    pecas.length === 0
+                        ? <div className="vazio">
+                              <h2>Estante vazia</h2>
+                              <p>{souEu
+                                  ? 'Dar nota não coloca a camisa aqui. Abra uma camisa e use "Tenho essa".'
+                                  : 'Nenhuma camisa registrada ainda.'}</p>
+                              <Link to="/" className="botao">Explorar catálogo</Link>
+                          </div>
+                        : <div className="grade">
+                              {pecas.map(p2 => (
+                                  <CartaoPeca key={p2.id} p={p2} souEu={souEu}
+                                              fixadas={fixadas.length} aoFixar={fixar} />
+                              ))}
+                          </div>
+                )}
+
+                {aba === 'wishlist' && (
+                    desejos.length === 0
+                        ? <div className="vazio">
+                              <h2>Wishlist vazia</h2>
+                              <p>Camisas que faltam na estante aparecem aqui.</p>
+                          </div>
+                        : <div className="grade">
+                              {desejos.map(d => {
+                                  const c = d.camisa; if (!c) return null;
+                                  const temp = c.temporada_fim === c.temporada_ini
+                                      ? String(c.temporada_ini)
+                                      : `${c.temporada_ini}/${String(c.temporada_fim).slice(2)}`;
+                                  return (
+                                      <Link key={d.id} to={`/camisa/${c.slug}`} className="card"
+                                            style={{ '--filete': c.cor_secundaria ?? c.cor_base } as React.CSSProperties}>
+                                          <div className="vitrine">
+                                              <Camisa padrao={c.padrao} corBase={c.cor_base}
+                                                      corSecundaria={c.cor_secundaria}
+                                                      corDetalhe={c.cor_detalhe} tamanho={150}
+                                                      descricao={`${c.time?.nome ?? ''} ${temp}`} />
+                                          </div>
+                                          <div className="time">{c.time?.nome}</div>
+                                          <div className="meta">{temp} · {ROTULO_TIPO[c.tipo]}</div>
+                                          {d.is_grail && <div className="grail">Grail</div>}
+                                      </Link>
+                                  );
+                              })}
+                          </div>
                 )}
             </div>
+        </>
+    );
+}
 
-            {pecas.length === 0 && (
-                <div className="vazio">
-                    <h2>Estante vazia</h2>
-                    <p>
-                        {meu?.username === username
-                            ? 'Dar nota não coloca a camisa aqui. Abra uma camisa e use "Tenho essa".'
-                            : 'Nenhuma camisa registrada ainda.'}
-                    </p>
-                    <Link to="/" className="botao" style={{ display: 'inline-block' }}>
-                        Explorar catálogo
-                    </Link>
-                </div>
+function CartaoPeca({ p, souEu, fixadas, aoFixar }: {
+    p: PecaDestaque; souEu: boolean; fixadas: number;
+    aoFixar: (id: number, pos: number | null) => void;
+}) {
+    const c = p.camisa;
+    if (!c) return null;
+    const temp = c.temporada_fim === c.temporada_ini
+        ? String(c.temporada_ini)
+        : `${c.temporada_ini}/${String(c.temporada_fim).slice(2)}`;
+    const foto = p.peca_foto?.[0];
+
+    return (
+        <div className="card" style={{ '--filete': c.cor_secundaria ?? c.cor_base } as React.CSSProperties}>
+            <Link to={`/camisa/${c.slug}`} className="vitrine">
+                {foto
+                    ? <img className="foto-card" src={urlDaFoto(foto.path)} alt="" loading="lazy" />
+                    : <Camisa padrao={c.padrao} corBase={c.cor_base}
+                              corSecundaria={c.cor_secundaria} corDetalhe={c.cor_detalhe}
+                              tamanho={150} descricao={`${c.time?.nome ?? ''} ${temp}`} />}
+            </Link>
+
+            <div className="time">{c.time?.nome}</div>
+            <div className="meta">{temp} · {ROTULO_TIPO[c.tipo]}</div>
+            {p.nome_estampa && (
+                <div className="meta estampa">{p.nome_estampa} {p.numero ?? ''}</div>
             )}
 
-            <div className="grade">
-                {pecas.map(p => {
-                    const c = p.camisa;
-                    if (!c) return null;
-                    const temporada = c.temporada_fim === c.temporada_ini
-                        ? String(c.temporada_ini)
-                        : `${c.temporada_ini}/${String(c.temporada_fim).slice(2)}`;
-
-                    return (
-                        <Link key={p.id} to={`/camisa/${c.slug}`} className="card">
-                            {/* A foto da peça vem primeiro. É a estante do
-                                colecionador: ele quer ver o pano dele, não
-                                uma ilustração aproximada. O desenho fica
-                                para quem ainda não fotografou. */}
-                            {p.peca_foto?.[0]
-                                ? <img className="foto-card" loading="lazy"
-                                       src={urlDaFoto(p.peca_foto[0].path)}
-                                       alt={`${c.time?.nome ?? ''} ${temporada}`} />
-                                : <Camisa padrao={c.padrao} corBase={c.cor_base}
-                                          corSecundaria={c.cor_secundaria} corDetalhe={c.cor_detalhe}
-                                          tamanho={130}
-                                          descricao={`${c.time?.nome ?? ''} ${temporada}`} />}
-                            <div className="time">{c.time?.nome}</div>
-                            <div className="meta">{temporada} · {ROTULO_TIPO[c.tipo]}</div>
-                            {p.nome_estampa && (
-                                <div className="meta estampa">
-                                    {p.nome_estampa} {p.numero ?? ''}
-                                </div>
-                            )}
-                            {p.tamanho && <div className="meta">{p.tamanho}</div>}
-                        </Link>
-                    );
-                })}
-            </div>
+            {souEu && (
+                <div className="fixar">
+                    {p.destaque
+                        ? <button className="link" onClick={() => aoFixar(p.id, null)}>
+                              desafixar {p.destaque}º
+                          </button>
+                        : fixadas < 3
+                            ? <button className="link"
+                                      onClick={() => aoFixar(p.id, fixadas + 1)}>
+                                  fixar no topo
+                              </button>
+                            : <span className="meta">3 fixadas</span>}
+                </div>
+            )}
         </div>
     );
 }
