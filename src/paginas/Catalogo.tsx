@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { CamisaCard } from '../componentes/CamisaCard';
+import { Hero } from '../componentes/Hero';
 import type { ResultadoBusca } from '../lib/tipos';
 
 interface Liga { id: number; nome: string; slug: string; pais: string; ordem: number; }
@@ -100,7 +101,14 @@ export function Catalogo() {
         : ligaAtual ? ligaAtual.nome : 'Catálogo';
 
     return (
-        <div className="container">
+        <>
+            {/* O hero só aparece na entrada limpa: com busca ativa ou
+                competição escolhida, a pessoa já sabe o que quer e a
+                abertura vira obstáculo. */}
+            {!ligaSlug && !busca.trim() && <Hero />}
+
+            <div className="container">
+            <div className="painel">
             <input
                 className="busca"
                 value={termo}
@@ -123,8 +131,9 @@ export function Catalogo() {
                     </button>
                 ))}
             </nav>
+            </div>
 
-            <section className="secao">
+            <section className="secao" id="catalogo">
                 <h2 className="rotulo-secao">{titulo}</h2>
 
                 {erro && <p role="alert" className="erro">{erro}</p>}
@@ -159,6 +168,7 @@ export function Catalogo() {
                     </p>
                 )}
             </section>
-        </div>
+            </div>
+        </>
     );
 }

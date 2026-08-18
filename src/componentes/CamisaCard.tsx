@@ -11,13 +11,15 @@ export function CamisaCard({ c }: { c: ResultadoBusca }) {
         // assunto sem precisar de rótulo.
         <Link to={`/camisa/${c.slug}`} className="card"
               style={{ '--filete': c.cor_secundaria ?? c.cor_base } as React.CSSProperties}>
-            <Camisa
-                padrao={c.padrao}
-                corBase={c.cor_base}
-                corSecundaria={c.cor_secundaria}
-                tamanho={130}
-                descricao={descricao}
-            />
+            <div className="vitrine">
+                <Camisa
+                    padrao={c.padrao}
+                    corBase={c.cor_base}
+                    corSecundaria={c.cor_secundaria}
+                    tamanho={150}
+                    descricao={descricao}
+                />
+            </div>
             <div className="time">{c.time_nome}</div>
             <div className="meta">
                 {c.temporada} · {ROTULO_TIPO[c.tipo]}

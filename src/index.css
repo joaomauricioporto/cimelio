@@ -113,7 +113,104 @@ h3 { font-size: 15px; }
     .nav { width: 100%; overflow-x: auto; }
 }
 
-main, .pagina { padding: 26px 0 60px; }
+main { padding: 0 0 70px; }
+.pagina { padding: 26px 0 60px; }
+
+/* ================================================================ HERO
+   A abertura. Faixa escura de ponta a ponta, tipografia em largura
+   expandida no tamanho máximo, e a arara de camisas deslizando embaixo.
+
+   A arara é o elemento assinatura: uma fileira de camisas em movimento
+   é literalmente o que um acervo é. É também a ÚNICA animação do site —
+   concentrar o movimento num lugar só faz ele significar alguma coisa.
+   ================================================================== */
+
+.hero {
+    background: var(--ink);
+    color: #FFFFFF;
+    padding: 56px 0 0;
+    margin-bottom: 30px;
+    overflow: hidden;
+    position: relative;
+}
+/* Halo dourado atrás do texto: dá profundidade sem virar gradiente
+   decorativo, e some nas bordas. */
+.hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(60% 90% at 14% 0%, rgba(255,196,0,.16), transparent 62%);
+    pointer-events: none;
+}
+.hero-texto { position: relative; }
+
+.hero-titulo {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 124;
+    font-weight: 900;
+    font-size: clamp(38px, 7.4vw, 84px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    max-width: 15ch;
+}
+/* A segunda linha em dourado: a quebra é onde o sentido vira, então a
+   cor marca o mesmo ponto que o texto marca. */
+.hero-titulo br + * , .hero-titulo { }
+.hero-titulo::after { content: ''; }
+
+.hero-linha {
+    color: #B4B0A7; font-size: clamp(15px, 1.6vw, 17.5px);
+    line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
+}
+
+.hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+.botao.claro  { background: var(--gold); color: var(--ink); font-weight: 600; }
+.botao.vazado {
+    background: transparent; color: #FFFFFF;
+    border: 1px solid #3B3E45;
+}
+.botao.vazado:hover { border-color: var(--gold); color: var(--gold); opacity: 1; }
+
+.hero-conta {
+    margin: 22px 0 0; color: #7C786F; font-size: 13.5px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
+}
+
+/* -------------------------------------------------------- a arara */
+
+.arara {
+    margin-top: 40px;
+    border-top: 1px solid #2B2E34;
+    padding: 22px 0 26px;
+    /* As pontas somem no escuro: a fileira não começa nem termina, ela
+       continua fora da tela. */
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.arara-trilho {
+    display: flex; gap: 26px; width: max-content;
+    animation: desliza 46s linear infinite;
+}
+.arara-item {
+    display: block; opacity: .92;
+    filter: drop-shadow(0 5px 14px rgba(0,0,0,.45));
+}
+@keyframes desliza {
+    from { transform: translateX(0); }
+    /* -50% porque a fileira está duplicada: ao chegar na metade, a
+       segunda cópia está exatamente onde a primeira começou. */
+    to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .arara-trilho { animation: none; }
+}
+@media (max-width: 640px) {
+    .hero { padding-top: 38px; }
+    .arara { margin-top: 28px; }
+}
+
+
 
 /* -------------------------------------------------------------- busca */
 
@@ -132,7 +229,7 @@ main, .pagina { padding: 26px 0 60px; }
    brasileira sem precisar escrever por extenso. */
 
 .faixa {
-    display: flex; gap: 7px; margin: 16px 0 4px;
+    display: flex; gap: 7px; margin: 14px 0 0;
     overflow-x: auto; padding-bottom: 6px;
     scrollbar-width: thin;
 }
@@ -165,41 +262,62 @@ main, .pagina { padding: 26px 0 60px; }
 
 .secao { margin-top: 30px; }
 .rotulo-secao {
-    display: inline-block; padding-bottom: 5px; margin-bottom: 14px;
-    border-bottom: 3px solid var(--gold);
-    text-transform: uppercase; font-size: 15px;
+    display: inline-block; padding-bottom: 6px; margin-bottom: 4px;
+    border-bottom: 4px solid var(--gold);
+    text-transform: uppercase; font-size: clamp(17px, 2.2vw, 22px);
+    font-variation-settings: 'wdth' 122;
+}
+/* A busca e a faixa de competição ficam num painel próprio, separando
+   a ferramenta do conteúdo em vez de tudo flutuar no mesmo plano. */
+.painel {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px; margin-top: -14px;
+    position: relative; z-index: 2;
+    box-shadow: 0 6px 20px rgba(20,22,26,.06);
 }
 
 /* -------------------------------------------------------------- grade */
 
 .grade {
-    display: grid; gap: 14px; margin-top: 18px;
-    grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+    display: grid; gap: 16px; margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
 }
 
+/* O card é uma peça de acervo, não uma miniatura. A camisa ocupa a
+   maior parte dele; o texto é ficha, e fica embaixo, discreto. */
 .card {
     position: relative; overflow: hidden;
     background: var(--carta); border: 1px solid var(--linha);
-    border-radius: var(--raio); padding: 16px 12px 14px;
+    border-radius: 14px; padding: 0 0 16px;
     display: flex; flex-direction: column; align-items: center;
-    transition: border-color .14s, transform .14s;
+    transition: border-color .16s, transform .16s, box-shadow .16s;
 }
-.card:hover { border-color: var(--ink); transform: translateY(-2px); }
-/* Filete nas cores do clube na borda esquerda: referência de uniforme,
-   quase sem tinta, e amarra cada card ao assunto. */
+.card:hover {
+    border-color: var(--ink); transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(20,22,26,.10);
+}
+/* Faixa superior nas cores da própria camisa: carta de uniforme, e o
+   único ponto onde a cor do clube aparece fora do desenho. */
 .card::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-    background: var(--filete, transparent);
+    content: ''; display: block; width: 100%; height: 6px;
+    background: var(--filete, var(--linha));
+}
+.card .vitrine {
+    width: 100%; padding: 20px 0 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #FBFAF8, var(--carta));
+    min-height: 168px;
 }
 .card .time {
     font-family: var(--titulo);
-    font-variation-settings: 'wdth' 108;
-    font-weight: 700; font-size: 14px; line-height: 1.2;
-    margin-top: 12px; text-align: center;
+    font-variation-settings: 'wdth' 114;
+    font-weight: 800; font-size: 15px; line-height: 1.15;
+    text-transform: uppercase; letter-spacing: -0.005em;
+    margin: 4px 14px 0; text-align: center;
 }
 .card .meta {
-    font-size: 12.5px; color: var(--fraco); margin-top: 3px; text-align: center;
-    font-variant-numeric: tabular-nums;
+    font-size: 12.5px; color: var(--fraco); margin-top: 5px; text-align: center;
+    font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
 }
 .card .estampa {
     font-family: var(--titulo); font-variation-settings: 'wdth' 112;
@@ -207,8 +325,8 @@ main, .pagina { padding: 26px 0 60px; }
     letter-spacing: 0.02em;
 }
 .foto-card, .foto-lancamento {
-    width: 130px; height: 130px; object-fit: cover;
-    border-radius: 6px; background: var(--papel);
+    width: 148px; height: 148px; object-fit: cover;
+    border-radius: 8px; background: var(--papel);
 }
 .nota-card { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
 
