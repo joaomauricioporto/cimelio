@@ -204,11 +204,6 @@ main { padding: 0 0 70px; }
     color: #FFFFFF;
     max-width: 15ch;
 }
-/* A segunda linha em dourado: a quebra é onde o sentido vira, então a
-   cor marca o mesmo ponto que o texto marca. */
-.hero-titulo br + * , .hero-titulo { }
-.hero-titulo::after { content: ''; }
-
 .hero-linha {
     color: #B4B0A7; font-size: clamp(15px, 1.6vw, 17.5px);
     line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
@@ -1194,4 +1189,40 @@ main { padding: 0 0 70px; }
        senão ele vaza para fora da borda. */
     .menu-flutuante { right: 0; left: auto; min-width: 200px; }
     .com-form .botao { padding: 10px 14px; }
+}
+
+/* ------------------------------------------- avaliações no perfil */
+
+.lista-resenhas { display: grid; gap: 12px; margin-top: 18px; max-width: 720px; }
+.resenha-perfil {
+    position: relative; overflow: hidden;
+    display: flex; gap: 16px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px 18px 16px 22px;
+}
+.resenha-perfil::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+    background: var(--filete, var(--linha));
+}
+.rp-camisa { flex-shrink: 0; display: flex; align-items: flex-start; }
+.rp-corpo { min-width: 0; flex: 1; }
+.rp-titulo { display: block; margin-bottom: 8px; }
+.rp-titulo strong {
+    display: block; font-family: var(--titulo);
+    font-variation-settings: 'wdth' 116; font-weight: 800;
+    font-size: 16px; text-transform: uppercase; line-height: 1.15;
+}
+.rp-corpo .estrelas { margin-bottom: 8px; }
+.rp-texto { margin: 0 0 10px; line-height: 1.55; font-size: 14.5px; }
+.rp-numeros {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; color: var(--fraco);
+    padding-top: 8px; border-top: 1px solid var(--linha);
+}
+.rp-numeros .link { font-size: 13px; }
+.rp-corpo .comentarios { padding: 4px 0 0; border-top: 0; }
+
+@media (max-width: 760px) {
+    .resenha-perfil { padding: 14px 14px 14px 18px; gap: 12px; }
+    .rp-titulo strong { font-size: 15px; }
 }

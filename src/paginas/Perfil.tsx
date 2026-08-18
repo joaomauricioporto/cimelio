@@ -5,6 +5,8 @@ import { useAuth } from '../lib/auth';
 import { Camisa } from '../componentes/Camisa';
 import { Destaques, type PecaDestaque } from '../componentes/Destaques';
 import { SeguirBotao } from '../componentes/SeguirBotao';
+import { Estrelas } from '../componentes/Estrelas';
+import { Comentarios } from '../componentes/Comentarios';
 import { urlDaFoto } from '../lib/fotos';
 import { ROTULO_TIPO, type TipoCamisa } from '../lib/tipos';
 import type { Padrao } from '../lib/camisaSvg';
@@ -15,7 +17,18 @@ interface Perf {
     wishlist_publica: boolean;
 }
 
-interface Contagens { camisas: number; seguidores: number; seguindo: number; avaliacoes: number; }
+interface Contagens {
+    camisas: number; seguidores: number; seguindo: number;
+    avaliacoes: number; curtidas: number;
+}
+
+interface ResenhaPerfil {
+    id: number; nota: number | null; texto: string | null; criado_em: string;
+    camisa_slug: string; time_nome: string; temporada: string; tipo_camisa: TipoCamisa;
+    padrao: Padrao; cor_base: string;
+    cor_secundaria: string | null; cor_detalhe: string | null;
+    curtidas: number; comentarios: number;
+}
 
 interface ItemWishlist {
     id: number; is_grail: boolean;
@@ -43,7 +56,9 @@ export function Perfil() {
     const [cont, setCont] = useState<Contagens | null>(null);
     const [pecas, setPecas] = useState<PecaDestaque[]>([]);
     const [desejos, setDesejos] = useState<ItemWishlist[]>([]);
-    const [aba, setAba] = useState<'colecao' | 'wishlist'>('colecao');
+    const [resenhas, setResenhas] = useState<ResenhaPerfil[]>([]);
+    const [aberta, setAberta] = useState<number | null>(null);
+    const [aba, setAba] = useState<'colecao' | 'resenhas' | 'wishlist'>('colecao');
     const [estado, setEstado] = useState<'carregando' | 'pronto' | 'nao_achou'>('carregando');
 
     const souEu = meu?.username === username;
@@ -66,7 +81,7 @@ export function Perfil() {
             // Um join só para a coleção inteira, e uma chamada para as
             // quatro contagens. Perfil que abre devagar é perfil que
             // ninguém compartilha.
-            const [pecasRes, contRes, wlRes] = await Promise.all([
+            const [pecasRes, contRes, wlRes, resRes] = await Promise.all([
                 supabase.from('peca').select(CAMPOS_PECA)
                     .eq('perfil_id', pf.id)
                     .order('destaque', { ascending: true, nullsFirst: false })
@@ -78,12 +93,14 @@ export function Perfil() {
                         cor_base,cor_secundaria,cor_detalhe, time:time_id ( nome ))`)
                     .eq('perfil_id', pf.id)
                     .order('is_grail', { ascending: false }),
+                supabase.rpc('resenhas_do_perfil', { p_id: pf.id, limite: 40 }),
             ]);
 
             if (cancelado) return;
             setPecas((pecasRes.data as unknown as PecaDestaque[]) ?? []);
             setCont(((contRes.data as Contagens[]) ?? [])[0] ?? null);
             setDesejos((wlRes.data as unknown as ItemWishlist[]) ?? []);
+            setResenhas((resRes.data as ResenhaPerfil[]) ?? []);
             setEstado('pronto');
         })();
 
@@ -147,6 +164,7 @@ export function Perfil() {
                             <ul className="placar">
                                 <li><b className="num">{cont.camisas}</b><span>camisas</span></li>
                                 <li><b className="num">{cont.avaliacoes}</b><span>avaliações</span></li>
+                                <li><b className="num">{cont.curtidas}</b><span>curtidas</span></li>
                                 <li><b className="num">{cont.seguidores}</b><span>seguidores</span></li>
                                 <li><b className="num">{cont.seguindo}</b><span>seguindo</span></li>
                             </ul>
@@ -182,6 +200,11 @@ export function Perfil() {
                             onClick={() => setAba('colecao')}>
                         Coleção <span className="num">{pecas.length}</span>
                     </button>
+                    <button role="tab" aria-selected={aba === 'resenhas'}
+                            className={`aba ${aba === 'resenhas' ? 'ativa' : ''}`}
+                            onClick={() => setAba('resenhas')}>
+                        Avaliações <span className="num">{resenhas.length}</span>
+                    </button>
                     {podeVerWishlist && (
                         <button role="tab" aria-selected={aba === 'wishlist'}
                                 className={`aba ${aba === 'wishlist' ? 'ativa' : ''}`}
@@ -204,6 +227,51 @@ export function Perfil() {
                               {pecas.map(p2 => (
                                   <CartaoPeca key={p2.id} p={p2} souEu={souEu}
                                               fixadas={fixadas.length} aoFixar={fixar} />
+                              ))}
+                          </div>
+                )}
+
+                {aba === 'resenhas' && (
+                    resenhas.length === 0
+                        ? <div className="vazio">
+                              <h2>Nenhuma avaliação</h2>
+                              <p>{souEu
+                                  ? 'Abra uma camisa e dê sua nota.'
+                                  : 'Essa pessoa ainda não avaliou nada.'}</p>
+                          </div>
+                        : <div className="lista-resenhas">
+                              {resenhas.map(r => (
+                                  <article key={r.id} className="resenha-perfil"
+                                           style={{ '--filete': r.cor_secundaria ?? r.cor_base } as React.CSSProperties}>
+                                      <Link to={`/camisa/${r.camisa_slug}`} className="rp-camisa">
+                                          <Camisa padrao={r.padrao} corBase={r.cor_base}
+                                                  corSecundaria={r.cor_secundaria}
+                                                  corDetalhe={r.cor_detalhe} tamanho={78}
+                                                  descricao={r.time_nome} />
+                                      </Link>
+
+                                      <div className="rp-corpo">
+                                          <Link to={`/camisa/${r.camisa_slug}`} className="rp-titulo">
+                                              <strong>{r.time_nome}</strong>
+                                              <span className="meta">
+                                                  {r.temporada} · {ROTULO_TIPO[r.tipo_camisa]}
+                                              </span>
+                                          </Link>
+
+                                          {r.nota && <Estrelas valor={r.nota} tamanho={16} />}
+                                          {r.texto && <p className="rp-texto">{r.texto}</p>}
+
+                                          <div className="rp-numeros">
+                                              <span>{r.curtidas} {r.curtidas === 1 ? 'curtida' : 'curtidas'}</span>
+                                              <button className="link"
+                                                      onClick={() => setAberta(a => a === r.id ? null : r.id)}>
+                                                  {r.comentarios} {r.comentarios === 1 ? 'comentário' : 'comentários'}
+                                              </button>
+                                          </div>
+
+                                          {aberta === r.id && <Comentarios resenhaId={r.id} />}
+                                      </div>
+                                  </article>
                               ))}
                           </div>
                 )}
