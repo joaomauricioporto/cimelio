@@ -1,0 +1,241 @@
+:root {
+    --ink:    #14161A;
+    --gold:   #FFC400;
+    --papel:  #F7F6F3;
+    --linha:  #E2E0DA;
+    --texto:  #14161A;
+    --suave:  #6B6A65;
+    --raio:   10px;
+
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--texto);
+    background: var(--papel);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: inherit; text-decoration: none; }
+
+.container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+.topo {
+    background: var(--ink); color: var(--gold);
+    padding: 14px 0; margin-bottom: 28px;
+}
+.topo .marca { font-size: 20px; font-weight: 500; letter-spacing: .02em; }
+.topo .marca span { color: #FFFFFF; font-weight: 400; }
+
+.busca {
+    width: 100%; padding: 13px 16px; font-size: 16px;
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    background: #FFFFFF; color: var(--texto);
+}
+.busca:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+
+.grade {
+    display: grid; gap: 16px; margin-top: 22px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+.card {
+    background: #FFFFFF; border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 14px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: border-color .15s;
+}
+.card:hover { border-color: var(--ink); }
+.card .time { font-weight: 500; margin-top: 10px; text-align: center; }
+.card .meta { font-size: 13px; color: var(--suave); margin-top: 2px; }
+
+.nota { font-size: 13px; color: var(--suave); margin-top: 6px; }
+.nota strong { color: var(--texto); }
+
+.vazio {
+    text-align: center; padding: 48px 20px;
+    border: 1px dashed var(--linha); border-radius: var(--raio);
+    margin-top: 22px;
+}
+.vazio h2 { font-size: 18px; font-weight: 500; margin: 0 0 6px; }
+.vazio p  { color: var(--suave); margin: 0 0 18px; }
+
+.botao {
+    background: var(--ink); color: var(--gold); border: 0;
+    padding: 11px 20px; border-radius: var(--raio);
+    font-size: 15px; cursor: pointer;
+}
+
+.detalhe { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+.detalhe h1 { font-size: 26px; font-weight: 500; margin: 0 0 4px; }
+.detalhe .sub { color: var(--suave); margin: 0 0 18px; }
+.ficha { border-top: 1px solid var(--linha); padding-top: 14px; }
+.ficha div { display: flex; gap: 10px; padding: 5px 0; font-size: 15px; }
+.ficha dt { color: var(--suave); min-width: 130px; }
+.ficha dd { margin: 0; }
+
+/* --- etapa 3: auth, coleção e avaliação --- */
+
+.barra { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.nav { display: flex; align-items: center; gap: 14px; font-size: 15px; }
+.nav a { color: var(--gold); }
+
+.rotulo { display: block; font-size: 14px; color: var(--suave); margin: 14px 0 5px; }
+
+.botao.largo { width: 100%; margin-top: 18px; }
+.botao:disabled { opacity: .55; cursor: default; }
+
+.link {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    color: var(--suave); font-size: 14px; text-decoration: underline;
+    font-family: inherit;
+}
+.link-inline { text-decoration: underline; }
+
+.erro  { color: #A32D2D; font-size: 14px; margin: 10px 0 0; }
+.aviso { color: #3B6D11; font-size: 14px; margin: 10px 0 0; }
+.ok    { color: #3B6D11; font-size: 14px; margin: 8px 0 0; }
+.suave { color: var(--suave); }
+
+.caixa {
+    background: #FFFFFF; border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 16px; margin-top: 18px;
+}
+.titulo-caixa {
+    font-size: 15px; font-weight: 500; margin: 0 0 12px;
+    display: flex; align-items: center; gap: 8px;
+}
+.contador {
+    background: var(--ink); color: var(--gold);
+    border-radius: 999px; padding: 1px 8px; font-size: 13px;
+}
+
+.estrelas { display: flex; gap: 3px; margin-bottom: 12px; }
+.estrela  { position: relative; display: inline-block; }
+.estrela .zona {
+    position: absolute; top: 0; height: 100%; width: 50%;
+    background: none; border: 0; padding: 0; cursor: pointer;
+}
+.estrela .esquerda { left: 0; }
+.estrela .direita  { right: 0; }
+
+.texto {
+    width: 100%; padding: 11px 13px; font-size: 15px; font-family: inherit;
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    resize: vertical; margin-top: 4px;
+}
+.texto:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+
+.linha-peca {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--linha);
+    font-size: 15px;
+}
+.form-peca { margin-top: 14px; }
+.botoes { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.card .estampa { font-weight: 500; color: var(--texto); }
+
+/* --- etapa 4: lançamentos --- */
+
+.cabecalho-secao {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 6px;
+}
+.cabecalho-secao h1 { font-size: 26px; font-weight: 500; margin: 0; }
+
+.abas { display: flex; gap: 6px; }
+.aba {
+    background: none; border: 1px solid var(--linha); border-radius: 999px;
+    padding: 6px 15px; font-size: 14px; font-family: inherit;
+    color: var(--suave); cursor: pointer;
+}
+.aba.ativa { background: var(--ink); border-color: var(--ink); color: var(--gold); }
+
+.secao-liga { margin-top: 26px; }
+.titulo-liga {
+    font-size: 16px; font-weight: 500; margin: 0;
+    padding-bottom: 8px; border-bottom: 1px solid var(--linha);
+}
+
+.foto-lancamento {
+    width: 130px; height: 130px; object-fit: contain;
+    border-radius: 6px; background: #FFFFFF;
+}
+.nota-card { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+
+/* --- cadastro e moderação --- */
+
+.cadastro { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; margin-top: 18px; }
+.previa {
+    position: sticky; top: 20px;
+    background: #FFFFFF; border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 20px; text-align: center;
+}
+.previa .meta { margin-top: 10px; line-height: 1.5; }
+.form-cadastro { flex: 1 1 340px; max-width: 460px; }
+
+.dois { display: flex; gap: 12px; }
+.dois > div { flex: 1; }
+
+.checkbox {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--suave); margin-top: 12px;
+}
+.checkbox input { width: 16px; height: 16px; }
+
+.campo-cor { margin-top: 4px; }
+.linha-cor { display: flex; align-items: center; gap: 8px; }
+.linha-cor input[type="color"] {
+    width: 42px; height: 42px; padding: 2px; cursor: pointer;
+    border: 1px solid var(--linha); border-radius: var(--raio); background: #FFFFFF;
+}
+.hex { width: 120px; font-family: ui-monospace, monospace; font-size: 14px; }
+.amostra {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--linha); cursor: pointer; padding: 0;
+}
+
+.fila-item {
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    background: #FFFFFF; border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 14px; margin-top: 12px;
+}
+.fila-dados { flex: 1 1 220px; display: flex; flex-direction: column; gap: 2px; }
+.fila-acoes { display: flex; align-items: center; gap: 14px; }
+
+/* --- fotos --- */
+
+.galeria { text-align: center; }
+.foto-principal {
+    width: 280px; max-width: 100%; border-radius: var(--raio);
+    background: #FFFFFF; border: 1px solid var(--linha);
+}
+.tiras { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+.tiras img {
+    width: 56px; height: 56px; object-fit: cover;
+    border-radius: 6px; border: 1px solid var(--linha);
+}
+
+.bloco-peca { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
+.fotos-peca { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0 4px; }
+.miniatura { position: relative; }
+.miniatura img {
+    width: 60px; height: 60px; object-fit: cover;
+    border-radius: 6px; border: 1px solid var(--linha); display: block;
+}
+.miniatura .remover {
+    position: absolute; top: -6px; right: -6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--ink); color: #FFFFFF; border: 0;
+    font-size: 13px; line-height: 1; cursor: pointer;
+}
+.add-foto {
+    width: 60px; height: 60px; border-radius: 6px;
+    border: 1px dashed var(--linha); background: none;
+    color: var(--suave); font-size: 13px; cursor: pointer; font-family: inherit;
+}
+.add-foto:disabled { opacity: .5; }
+
+.foto-card {
+    width: 130px; height: 130px; object-fit: cover;
+    border-radius: 6px; border: 1px solid var(--linha);
+    background: #FFFFFF;
+}
