@@ -108,9 +108,60 @@ h3 { font-size: 15px; }
     width: 22px; height: 22px; border-radius: 50%; object-fit: cover;
     border: 1px solid #3A3D44;
 }
-@media (max-width: 560px) {
-    .barra { height: auto; padding: 10px 0; flex-wrap: wrap; }
-    .nav { width: 100%; overflow-x: auto; }
+/* ------------------------------------------------------- celular */
+
+@media (max-width: 760px) {
+    /* Os links do topo migram para a barra de baixo. Manter os dois
+       seria navegação duplicada ocupando duas bordas da tela. */
+    .nav a:not(.eu), .nav .link { display: none; }
+    .barra { height: 54px; }
+    .marca { font-size: 18px; }
+}
+
+/* ================================================== NAVEGAÇÃO INFERIOR */
+
+.nav-baixo { display: none; }
+
+@media (max-width: 760px) {
+    .nav-baixo {
+        display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+        background: var(--ink);
+        border-top: 1px solid #2B2E34;
+        /* padding-bottom acompanha a barra de gestos do iPhone: sem
+           isso, o último item fica embaixo dela e não recebe toque. */
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+        flex: 1; display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 4px;
+        /* 56px: acima dos 44 que a Apple recomenda como alvo mínimo. */
+        min-height: 56px; padding: 8px 2px 9px;
+        color: #7C786F; text-decoration: none;
+    }
+    .nav-item svg { width: 22px; height: 22px; }
+    .nav-item span {
+        font-size: 10.5px; letter-spacing: 0.02em;
+        font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
+    }
+    .nav-item.ativo { color: var(--gold); }
+    .nav-item.ativo span { color: var(--gold); }
+
+    /* O botão de registrar é o único preenchido: é a ação que o app
+       existe para receber, e precisa ser encontrada sem procurar. */
+    .nav-item.destaque svg {
+        background: var(--gold); color: var(--ink);
+        width: 34px; height: 34px; border-radius: 11px; padding: 6px;
+        margin-bottom: -1px;
+    }
+    .nav-item.destaque { color: #B4B0A7; }
+
+    .nav-avatar {
+        width: 24px; height: 24px; border-radius: 50%;
+        object-fit: cover; border: 1.5px solid currentColor;
+    }
+
+    /* Espaço para a barra não cobrir o fim do conteúdo. */
+    main { padding-bottom: 90px !important; }
 }
 
 main { padding: 0 0 70px; }
@@ -153,6 +204,10 @@ main { padding: 0 0 70px; }
     color: #FFFFFF;
     max-width: 15ch;
 }
+/* A segunda linha em dourado: a quebra é onde o sentido vira, então a
+   cor marca o mesmo ponto que o texto marca. */
+.hero-titulo br + * , .hero-titulo { }
+.hero-titulo::after { content: ''; }
 
 .hero-linha {
     color: #B4B0A7; font-size: clamp(15px, 1.6vw, 17.5px);
@@ -853,3 +908,104 @@ main { padding: 0 0 70px; }
     font-family: var(--corpo); font-size: 11.5px; color: var(--fraco);
 }
 .opcao-camisa.ativa { border-color: var(--ink); background: var(--papel); color: var(--ink); }
+
+
+/* ============================================ AJUSTE DE CELULAR
+
+   Três problemas concretos: o seletor Seguindo/Descobrir quebrava
+   linha, a abertura ocupava a tela inteira antes de mostrar conteúdo,
+   e os cards ficavam grandes demais numa coluna só.
+   ============================================================== */
+
+@media (max-width: 760px) {
+
+    /* O seletor vira controle segmentado colado, ocupando a largura
+       toda. Duas pílulas soltas no celular parecem dois botões sem
+       relação; coladas, leem como uma escolha entre dois estados. */
+    .topo-linha {
+        display: block; margin-bottom: 14px;
+        position: sticky; top: 54px; z-index: 10;
+        background: var(--papel); padding: 12px 0 10px;
+    }
+    .titulo-linha { font-size: 27px; margin-bottom: 12px; }
+    .titulo-linha::after { width: 40px; height: 4px; margin-top: 8px; }
+
+    .topo-linha .abas {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+        border: 1px solid var(--linha); border-radius: 10px;
+        overflow: hidden; background: var(--carta);
+    }
+    .topo-linha .aba {
+        border: 0; border-radius: 0; padding: 11px 0; font-size: 14px;
+        font-weight: 600;
+    }
+    .topo-linha .aba.ativa { background: var(--ink); color: var(--gold); }
+
+    /* A abertura encurta: no celular ela empurrava o conteúdo para
+       fora da primeira tela inteira. */
+    .hero { padding-top: 30px; margin-bottom: 22px; }
+    .hero-titulo { font-size: 34px; line-height: 0.98; }
+    .hero-linha { font-size: 14.5px; margin: 14px 0 20px; }
+    .hero-acoes .botao { flex: 1; justify-content: center; }
+    .arara { margin-top: 26px; padding: 16px 0 18px; }
+
+    .painel { margin-top: -10px; padding: 13px; border-radius: 12px; }
+    .faixa { margin-top: 11px; }
+    .competicao { padding: 7px 12px; font-size: 13.5px; }
+
+    /* Duas colunas em vez de uma: camisa é forma reconhecível de
+       relance, não precisa de tela cheia para ser identificada. */
+    .grade { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+    .card .vitrine { min-height: 128px; padding: 14px 0 10px; }
+    .card .vitrine svg, .foto-card { width: 108px; height: 108px; }
+    .card .time { font-size: 13px; }
+    .card .meta { font-size: 11.5px; }
+
+    /* No feed vale o contrário: lá a camisa é o conteúdo, e ocupa tudo. */
+    .linha-tempo { gap: 16px; }
+    .palco { min-height: 250px; padding: 20px 0; }
+    .palco-foto { max-height: 300px; }
+    .evento-info strong { font-size: 17px; }
+    .evento-topo { padding: 12px 14px; }
+    .evento-pe { padding: 13px 14px; }
+    .evento-texto { padding: 0 14px 15px; font-size: 14.5px; }
+
+    /* Perfil */
+    .capa { padding: 22px 0 20px; }
+    .capa-avatar { width: 72px; height: 72px; }
+    .capa-acao { margin-left: 0; width: 100%; }
+    .capa-acao .botao { width: 100%; justify-content: center; }
+    .placar { gap: 18px; margin-top: 16px; }
+    .placar b { font-size: 18px; }
+    .destaques { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+    .destaque-img { min-height: 132px; padding: 14px 0 8px; }
+    .destaque-img img { width: 112px; height: 112px; }
+    .destaque .pos { font-size: 22px; top: 12px; right: 11px; }
+
+    /* Formulários: os pares lado a lado viram um por linha, senão os
+       campos ficam estreitos demais para digitar. */
+    .dois { flex-direction: column; gap: 0; }
+    .cadastro { gap: 18px; }
+    .previa { position: static; width: 100%; padding: 16px; }
+    .form-cadastro { max-width: none; }
+    .lote-item { gap: 12px; }
+    .lote-foto img { width: 96px; height: 96px; }
+
+    /* Página da camisa */
+    .detalhe { gap: 20px; }
+    .galeria { width: 100%; }
+    .foto-principal { width: 100%; max-width: 340px; }
+    .titulo-camisa h1 { font-size: 24px; }
+
+    .container { padding: 0 14px; }
+    .lista-pessoas { gap: 9px; }
+    .tiras-pessoas { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Telas bem estreitas: o placar do perfil quebra em duas linhas em vez
+   de espremer quatro colunas. */
+@media (max-width: 400px) {
+    .placar { gap: 14px 22px; }
+    .hero-titulo { font-size: 30px; }
+    .grade { gap: 9px; }
+}

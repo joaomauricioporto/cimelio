@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/auth';
 import { urlDaFoto } from './lib/fotos';
 import { Logo } from './componentes/Logo';
+import { NavInferior } from './componentes/NavInferior';
 import { Catalogo } from './paginas/Catalogo';
 import { CamisaPagina } from './paginas/CamisaPagina';
 import { Entrar } from './paginas/Entrar';
@@ -92,6 +93,7 @@ export default function App() {
                     <Route path="*"              element={<NaoAchou />} />
                 </Routes>
                 </main>
+                <NavInferior />
             </AuthProvider>
         </BrowserRouter>
     );
