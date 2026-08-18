@@ -676,3 +676,73 @@ main { padding: 0 0 70px; }
     display: block; font-style: normal; color: var(--fraco);
     font-size: 13.5px; line-height: 1.5; margin-top: 4px;
 }
+
+/* ================================================================ FEED
+   A linha do tempo é uma coluna estreita, não uma grade. Grade é para
+   navegar acervo; coluna é para ler o que as pessoas fizeram — e a
+   diferença entre as duas telas precisa ser sentida antes de lida.
+   ================================================================== */
+
+.linha-tempo { max-width: 620px; margin: 22px auto 0; display: grid; gap: 14px; }
+
+.evento {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px 18px 18px;
+}
+.evento::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+    background: var(--filete, var(--linha));
+}
+.evento-autor { display: inline-flex; align-items: center; gap: 9px; }
+.evento-autor b {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 110;
+    font-weight: 700; font-size: 15px;
+}
+.avatar-mini.claro {
+    width: 30px; height: 30px; border: 1px solid var(--linha);
+    display: inline-block;
+}
+.evento-acao { margin: 3px 0 14px 39px; color: var(--fraco); font-size: 13.5px; }
+
+.evento-camisa { display: flex; align-items: center; gap: 16px; }
+.evento-img {
+    flex-shrink: 0; width: 104px; height: 104px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #FBFAF8, var(--carta));
+    border: 1px solid var(--linha); border-radius: 10px;
+}
+.evento-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 9px; }
+.evento-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.evento-info strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 116;
+    font-weight: 800; font-size: 17px; text-transform: uppercase; line-height: 1.15;
+}
+.evento-nota { margin-top: 5px; }
+.evento-nota .estrelas { margin-bottom: 0; }
+.evento-texto {
+    margin: 14px 0 0; padding-left: 14px;
+    border-left: 3px solid var(--gold);
+    line-height: 1.55; font-size: 15px;
+}
+
+/* ------------------------------------------------- sugestões de gente */
+
+.tiras-pessoas {
+    display: grid; gap: 12px; margin-top: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.pessoa-mini {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 18px 12px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    text-align: center;
+}
+.pessoa-mini a { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.pessoa-mini strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 14px; line-height: 1.2;
+}
+.pessoa-mini .botao { padding: 7px 16px; font-size: 13.5px; }
+.botao.vazado.escuro-nao { border-color: var(--linha); color: var(--ink); background: var(--carta); }
+.botao.vazado.escuro-nao:hover { border-color: var(--ink); color: var(--ink); }

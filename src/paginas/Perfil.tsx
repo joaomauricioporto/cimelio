@@ -90,6 +90,11 @@ export function Perfil() {
         return () => { cancelado = true; };
     }, [username, meu?.id]);
 
+    async function tirarDaWishlist(id: number) {
+        await supabase.from('wishlist').delete().eq('id', id);
+        setDesejos(d => d.filter(x => x.id !== id));
+    }
+
     async function fixar(pecaId: number, posicao: number | null) {
         // Libera a posição antes de ocupá-la: o índice único no banco
         // recusaria duas peças na mesma vaga, e trocar sem soltar seria
@@ -207,7 +212,10 @@ export function Perfil() {
                     desejos.length === 0
                         ? <div className="vazio">
                               <h2>Wishlist vazia</h2>
-                              <p>Camisas que faltam na estante aparecem aqui.</p>
+                              <p>{souEu
+                                  ? 'Abra uma camisa que você ainda não tem e use "Quero essa".'
+                                  : 'Nada na lista por enquanto.'}</p>
+                              {souEu && <Link to="/catalogo" className="botao">Explorar catálogo</Link>}
                           </div>
                         : <div className="grade">
                               {desejos.map(d => {
@@ -216,18 +224,26 @@ export function Perfil() {
                                       ? String(c.temporada_ini)
                                       : `${c.temporada_ini}/${String(c.temporada_fim).slice(2)}`;
                                   return (
-                                      <Link key={d.id} to={`/camisa/${c.slug}`} className="card"
-                                            style={{ '--filete': c.cor_secundaria ?? c.cor_base } as React.CSSProperties}>
-                                          <div className="vitrine">
+                                      <div key={d.id} className="card"
+                                           style={{ '--filete': c.cor_secundaria ?? c.cor_base } as React.CSSProperties}>
+                                          <Link to={`/camisa/${c.slug}`} className="vitrine">
                                               <Camisa padrao={c.padrao} corBase={c.cor_base}
                                                       corSecundaria={c.cor_secundaria}
                                                       corDetalhe={c.cor_detalhe} tamanho={150}
                                                       descricao={`${c.time?.nome ?? ''} ${temp}`} />
-                                          </div>
+                                          </Link>
                                           <div className="time">{c.time?.nome}</div>
                                           <div className="meta">{temp} · {ROTULO_TIPO[c.tipo]}</div>
                                           {d.is_grail && <div className="grail">Grail</div>}
-                                      </Link>
+                                          {souEu && (
+                                              <div className="fixar">
+                                                  <button className="link"
+                                                          onClick={() => tirarDaWishlist(d.id)}>
+                                                      tirar da lista
+                                                  </button>
+                                              </div>
+                                          )}
+                                      </div>
                                   );
                               })}
                           </div>

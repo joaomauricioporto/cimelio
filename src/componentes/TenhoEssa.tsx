@@ -20,7 +20,11 @@ interface Peca {
  * tem duas iguais o tempo todo — uma pra usar, uma pra guardar, tamanhos
  * diferentes. Um toggle esconderia isso e perderia dado.
  */
-export function TenhoEssa({ camisaId }: { camisaId: number }) {
+export function TenhoEssa({ camisaId, aoContar }: {
+    camisaId: number;
+    /** Avisa quantas peças existem, para a wishlist saber se ainda cabe. */
+    aoContar?: (n: number) => void;
+}) {
     const { user } = useAuth();
     const [pecas, setPecas] = useState<Peca[]>([]);
     const [aberto, setAberto] = useState(false);
@@ -35,7 +39,9 @@ export function TenhoEssa({ camisaId }: { camisaId: number }) {
             .eq('perfil_id', user.id)
             .eq('camisa_id', camisaId)
             .order('id');
-        setPecas((data as Peca[]) ?? []);
+        const lista = (data as Peca[]) ?? [];
+        setPecas(lista);
+        aoContar?.(lista.length);
     }
 
     useEffect(() => { recarregar(); }, [user?.id, camisaId]);

@@ -5,6 +5,7 @@ import { Camisa } from '../componentes/Camisa';
 import { ROTULO_TIPO, type CamisaDetalhe } from '../lib/tipos';
 import { TenhoEssa } from '../componentes/TenhoEssa';
 import { Avaliar } from '../componentes/Avaliar';
+import { Quero } from '../componentes/Quero';
 import { urlDaFoto } from '../lib/fotos';
 import { useAuth } from '../lib/auth';
 
@@ -13,6 +14,7 @@ export function CamisaPagina() {
     const { perfil } = useAuth();
     const [c, setC] = useState<CamisaDetalhe | null>(null);
     const [fotos, setFotos] = useState<string[]>([]);
+    const [tenho, setTenho] = useState(0);
     const [oficial, setOficial] = useState<{ url: string; credito: string } | null>(null);
     const [estado, setEstado] = useState<'carregando' | 'pronto' | 'nao_achou'>('carregando');
 
@@ -135,7 +137,8 @@ export function CamisaPagina() {
                         <div><dt>Resenhas</dt><dd>{c.total_resenhas ?? 0}</dd></div>
                     </dl>
 
-                    <TenhoEssa camisaId={c.id} />
+                    <TenhoEssa camisaId={c.id} aoContar={setTenho} />
+                    <Quero     camisaId={c.id} tenho={tenho} />
                     <Avaliar   camisaId={c.id} />
                 </div>
             </div>

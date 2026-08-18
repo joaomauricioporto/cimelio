@@ -13,6 +13,7 @@ import { Moderacao } from './paginas/Moderacao';
 import { EditarPerfil } from './paginas/EditarPerfil';
 import { CadastrarTime } from './paginas/CadastrarTime';
 import { Pessoas } from './paginas/Pessoas';
+import { Feed } from './paginas/Feed';
 
 function Cabecalho() {
     const { perfil, carregando, sair } = useAuth();
@@ -26,6 +27,8 @@ function Cabecalho() {
                 </Link>
 
                 <nav className="nav">
+                    {!carregando && perfil && <Link to="/">Linha</Link>}
+                    <Link to="/catalogo">Catálogo</Link>
                     <Link to="/lancamentos">Lançamentos</Link>
                     <Link to="/pessoas">Pessoas</Link>
                     {/* Nada é renderizado enquanto a sessão não resolve:
@@ -50,6 +53,20 @@ function Cabecalho() {
     );
 }
 
+/**
+ * A porta de entrada muda com quem chega.
+ *
+ * Visitante vê a abertura e o catálogo: precisa entender o que é o
+ * lugar antes de qualquer coisa. Quem já tem conta vê a linha do tempo,
+ * porque o motivo de voltar é o que os outros registraram — catálogo
+ * ele acessa quando procura algo específico.
+ */
+function Inicio() {
+    const { user, carregando } = useAuth();
+    if (carregando) return null;
+    return user ? <Feed /> : <Catalogo />;
+}
+
 export default function App() {
     return (
         <BrowserRouter>
@@ -57,7 +74,8 @@ export default function App() {
                 <Cabecalho />
                 <main>
                 <Routes>
-                    <Route path="/"              element={<Catalogo />} />
+                    <Route path="/"              element={<Inicio />} />
+                    <Route path="/catalogo"      element={<Catalogo />} />
                     <Route path="/liga/:ligaSlug" element={<Catalogo />} />
                     <Route path="/camisa/:slug"  element={<CamisaPagina />} />
                     <Route path="/lancamentos"   element={<Lancamentos />} />
