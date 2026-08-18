@@ -5,6 +5,8 @@ import { useAuth } from '../lib/auth';
 import { Camisa } from '../componentes/Camisa';
 import { Estrelas } from '../componentes/Estrelas';
 import { SeguirBotao } from '../componentes/SeguirBotao';
+import { Acoes } from '../componentes/Acoes';
+import { Comentarios } from '../componentes/Comentarios';
 import { urlDaFoto } from '../lib/fotos';
 import { ROTULO_TIPO, type TipoCamisa } from '../lib/tipos';
 import type { Padrao } from '../lib/camisaSvg';
@@ -20,6 +22,7 @@ interface Evento {
     foto_path: string | null;
     nome_estampa: string | null; numero: number | null; tamanho: string | null;
     nota: number | null; texto: string | null;
+    curtidas: number; eu_curti: boolean; comentarios: number;
 }
 
 interface Sugestao { id: string; username: string; nome: string | null; avatar_path: string | null; camisas: number; }
@@ -37,6 +40,10 @@ function quando(iso: string): string {
 
 export function Feed() {
     const { user, carregando: carregandoAuth } = useAuth();
+    // Guarda quais eventos estão com a caixa de comentários aberta.
+    // Manter no pai e não em cada cartão evita que abrir um feche o
+    // outro quando a lista recarrega.
+    const [abertos, setAbertos] = useState<Set<string>>(new Set());
     const [modo, setModo] = useState<'seguindo' | 'descobrir'>('seguindo');
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [sugestoes, setSugestoes] = useState<Sugestao[]>([]);
@@ -211,6 +218,25 @@ export function Feed() {
 
                         {e.tipo === 'resenha' && e.texto && (
                             <p className="evento-texto">{e.texto}</p>
+                        )}
+
+                        <Acoes
+                            resenhaId={e.tipo === 'resenha' ? e.ref_id : undefined}
+                            pecaId={e.tipo === 'peca' ? e.ref_id : undefined}
+                            curtidas={e.curtidas} euCurti={e.eu_curti}
+                            comentarios={e.comentarios}
+                            autorId={e.perfil_id}
+                            aoAbrirComentarios={() => setAbertos(a => {
+                                const n = new Set(a);
+                                const k = `${e.tipo}-${e.ref_id}`;
+                                n.has(k) ? n.delete(k) : n.add(k);
+                                return n;
+                            })} />
+
+                        {abertos.has(`${e.tipo}-${e.ref_id}`) && (
+                            <Comentarios
+                                resenhaId={e.tipo === 'resenha' ? e.ref_id : undefined}
+                                pecaId={e.tipo === 'peca' ? e.ref_id : undefined} />
                         )}
                     </article>
                 ))}

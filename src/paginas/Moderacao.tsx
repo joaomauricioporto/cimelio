@@ -6,6 +6,19 @@ import { Camisa } from '../componentes/Camisa';
 import { ROTULO_TIPO, type TipoCamisa } from '../lib/tipos';
 import type { Padrao } from '../lib/camisaSvg';
 
+interface Denuncia {
+    id: number; motivo: string; detalhe: string | null; criado_em: string;
+    resenha_id: number | null; peca_id: number | null;
+    comentario_id: number | null; perfil_id: string | null;
+    quem: { username: string } | null;
+}
+
+const ROTULO_MOTIVO: Record<string, string> = {
+    spam: 'Spam', ofensivo: 'Ofensivo', conteudo_sexual: 'Conteúdo sexual',
+    assedio: 'Assédio', falsificacao: 'Falsificação',
+    direito_autoral: 'Direito autoral', outro: 'Outro',
+};
+
 interface TimePendente {
     id: number; nome: string; slug: string; tipo: string; pais: string;
     cor_1: string | null; cor_2: string | null;
@@ -28,6 +41,7 @@ export function Moderacao() {
     const { perfil, carregando } = useAuth();
     const [itens, setItens] = useState<Pendente[]>([]);
     const [times, setTimes] = useState<TimePendente[]>([]);
+    const [denuncias, setDenuncias] = useState<Denuncia[]>([]);
     const [lendo, setLendo] = useState(true);
     const [erro, setErro] = useState<string | null>(null);
 
@@ -55,11 +69,34 @@ export function Moderacao() {
             .order('id');
         setTimes((ts as unknown as TimePendente[]) ?? []);
 
+        // Denúncia vem primeiro na tela porque tem prazo social: item
+        // ofensivo esperando aprovação de camisa é fila mal ordenada.
+        const { data: ds } = await supabase
+            .from('denuncia')
+            .select('id,motivo,detalhe,criado_em,resenha_id,peca_id,comentario_id,perfil_id, quem:denunciante_id ( username )')
+            .eq('status', 'aberta')
+            .order('criado_em');
+        setDenuncias((ds as unknown as Denuncia[]) ?? []);
+
         setLendo(false);
     }
 
     useEffect(() => { if (perfil?.is_admin) carregar(); else setLendo(false); },
              [perfil?.is_admin]);
+
+    async function julgarDenuncia(id: number, status: 'resolvida' | 'descartada') {
+        const antes = denuncias;
+        setDenuncias(d => d.filter(x => x.id !== id));
+        const { error } = await supabase.from('denuncia').update({ status }).eq('id', id);
+        if (error) { setErro(error.message); setDenuncias(antes); }
+    }
+
+    async function apagarConteudo(d: Denuncia) {
+        if (d.comentario_id) await supabase.from('comentario').delete().eq('id', d.comentario_id);
+        else if (d.resenha_id) await supabase.from('resenha').delete().eq('id', d.resenha_id);
+        else if (d.peca_id) await supabase.from('peca').delete().eq('id', d.peca_id);
+        await julgarDenuncia(d.id, 'resolvida');
+    }
 
     async function julgarTime(id: number, status: 'aprovada' | 'rejeitada') {
         const antes = times;
@@ -97,11 +134,46 @@ export function Moderacao() {
     return (
         <div className="container">
             <h1 style={{ fontSize: 26, fontWeight: 500 }}>
-                Moderação {(itens.length + times.length) > 0 &&
-                    <span className="contador">{itens.length + times.length}</span>}
+                Moderação {(itens.length + times.length + denuncias.length) > 0 &&
+                    <span className="contador">{itens.length + times.length + denuncias.length}</span>}
             </h1>
 
             {erro && <p role="alert" className="erro">{erro}</p>}
+
+            {denuncias.length > 0 && (
+                <>
+                    <h2 className="titulo-liga" style={{ marginTop: 22 }}>
+                        Denúncias abertas ({denuncias.length})
+                    </h2>
+                    {denuncias.map(d => (
+                        <div key={d.id} className="fila-item">
+                            <div className="fila-dados">
+                                <strong>{ROTULO_MOTIVO[d.motivo] ?? d.motivo}</strong>
+                                <span className="meta">
+                                    {d.comentario_id ? 'comentário'
+                                        : d.resenha_id ? 'resenha'
+                                        : d.peca_id ? 'peça da coleção'
+                                        : 'perfil'}
+                                    {' · '}
+                                    {new Date(d.criado_em).toLocaleDateString('pt-BR')}
+                                </span>
+                                <span className="meta">
+                                    por @{d.quem?.username ?? 'desconhecido'}
+                                </span>
+                                {d.detalhe && <span className="meta">{d.detalhe}</span>}
+                            </div>
+                            <div className="fila-acoes">
+                                <button className="botao" onClick={() => apagarConteudo(d)}>
+                                    Apagar conteúdo
+                                </button>
+                                <button className="link" onClick={() => julgarDenuncia(d.id, 'descartada')}>
+                                    descartar
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </>
+            )}
 
             {times.length > 0 && (
                 <>
@@ -141,7 +213,7 @@ export function Moderacao() {
                 </h2>
             )}
 
-            {itens.length === 0 && times.length === 0 && (
+            {itens.length === 0 && times.length === 0 && denuncias.length === 0 && (
                 <div className="vazio">
                     <h2>Fila vazia</h2>
                     <p>Nada esperando aprovação.</p>

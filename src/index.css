@@ -1124,3 +1124,74 @@ main { padding: 0 0 70px; }
     /* Duplicar sugestões no meio da linha e na coluna seria repetição. */
     .so-estreito { display: none; }
 }
+
+/* ====================================== CURTIR, COMENTAR, DENUNCIAR */
+
+.acoes {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 12px 12px; border-top: 1px solid var(--linha);
+    margin-top: 2px; padding-top: 8px;
+}
+.acao {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: 0; cursor: pointer;
+    /* 40px de altura: alvo confortável no toque sem virar botão grande
+       demais numa barra de três itens. */
+    padding: 9px 11px; min-height: 40px; border-radius: 9px;
+    color: var(--fraco); font-family: var(--corpo); font-size: 13.5px;
+    transition: background .12s, color .12s;
+}
+.acao:hover { background: var(--papel); color: var(--ink); }
+.acao svg { width: 20px; height: 20px; }
+.acao.curtido { color: #D6342B; }
+.acao .num { font-weight: 600; }
+
+.acao-menu { position: relative; margin-left: auto; }
+.menu-flutuante {
+    position: absolute; right: 0; top: calc(100% + 6px); z-index: 40;
+    min-width: 218px; background: var(--carta);
+    border: 1px solid var(--linha); border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(20,22,26,.16); padding: 7px;
+}
+.menu-titulo {
+    margin: 4px 10px 7px; font-size: 12px; color: var(--fraco);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.menu-item {
+    display: block; width: 100%; text-align: left;
+    background: none; border: 0; cursor: pointer;
+    padding: 10px 11px; border-radius: 8px;
+    font-family: var(--corpo); font-size: 14px; color: var(--ink);
+}
+.menu-item:hover { background: var(--papel); }
+.menu-item.perigo { color: var(--alerta); font-weight: 600; }
+.menu-flutuante hr { border: 0; border-top: 1px solid var(--linha); margin: 6px 4px; }
+.menu-ok { margin: 10px; font-size: 14px; color: var(--certo); }
+
+/* -------------------------------------------------------- comentários */
+
+.comentarios { padding: 4px 16px 16px; border-top: 1px solid var(--linha); }
+.comentario { display: flex; gap: 10px; padding: 11px 0; }
+.com-avatar { flex-shrink: 0; }
+.com-avatar img, .com-avatar .vazio-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    object-fit: cover; border: 1px solid var(--linha); display: block;
+}
+.com-corpo { min-width: 0; flex: 1; }
+.com-cabeca { display: flex; align-items: center; gap: 9px; margin: 0 0 3px; font-size: 13.5px; }
+.com-cabeca .link { font-size: 12.5px; }
+.com-texto { margin: 0; font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+
+.com-form { display: flex; gap: 8px; margin-top: 10px; }
+.com-form .busca { flex: 1; padding: 10px 13px; font-size: 14.5px; }
+.com-form .botao { padding: 10px 17px; font-size: 14px; flex-shrink: 0; }
+
+@media (max-width: 760px) {
+    .acoes { padding: 8px 10px 10px; }
+    .acao { padding: 9px 9px; font-size: 13px; }
+    .comentarios { padding: 4px 13px 14px; }
+    /* No celular o menu abre ancorado à direita da tela, não do botão,
+       senão ele vaza para fora da borda. */
+    .menu-flutuante { right: 0; left: auto; min-width: 200px; }
+    .com-form .botao { padding: 10px 14px; }
+}
