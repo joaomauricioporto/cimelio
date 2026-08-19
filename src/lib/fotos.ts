@@ -60,8 +60,16 @@ export async function prepararImagem(arquivo: File): Promise<Blob> {
     return blob;
 }
 
-/** URL pública a partir do caminho guardado no banco. */
+/**
+ * URL pública a partir do caminho guardado no banco.
+ *
+ * Aceita URL completa também: o avatar que vem do Google já é um
+ * endereço, não um arquivo no bucket. Sem esta checagem o app tentaria
+ * montar /storage/.../https://lh3.googleusercontent.com/... e a foto
+ * de todo mundo que entrou por Google quebraria.
+ */
 export function urlDaFoto(path: string): string {
+    if (/^https?:\/\//.test(path)) return path;
     return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
 

@@ -1226,3 +1226,27 @@ main { padding: 0 0 70px; }
     .resenha-perfil { padding: 14px 14px 14px 18px; gap: 12px; }
     .rp-titulo strong { font-size: 15px; }
 }
+
+/* ------------------------------------------------- entrar com Google */
+
+.botao.google {
+    width: 100%; gap: 10px; margin-top: 20px;
+    background: var(--carta); color: var(--ink);
+    border: 1px solid var(--linha); font-weight: 500;
+}
+.botao.google:hover { border-color: var(--ink); opacity: 1; }
+
+/* Separador com a palavra no meio da linha: o filete atravessa e o
+   fundo do texto abre o vão, sem precisar de duas linhas soltas. */
+.ou {
+    position: relative; text-align: center; margin: 20px 0 4px;
+}
+.ou::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%;
+    border-top: 1px solid var(--linha);
+}
+.ou span {
+    position: relative; background: var(--papel); padding: 0 12px;
+    color: var(--fraco); font-size: 13px; text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
