@@ -54,14 +54,14 @@ function Icone({ nivel, tamanho }: { nivel: 0 | 1 | 2; tamanho: number }) {
             {nivel === 1 && (
                 <defs>
                     <linearGradient id={id}>
-                        <stop offset="50%" stopColor="var(--gold)" />
+                        <stop offset="50%" stopColor="var(--acento)" />
                         <stop offset="50%" stopColor="transparent" />
                     </linearGradient>
                 </defs>
             )}
             <path d={d}
-                  fill={nivel === 2 ? 'var(--gold)' : nivel === 1 ? `url(#${id})` : 'transparent'}
-                  stroke="var(--gold)" strokeWidth="1.4" strokeLinejoin="round" />
+                  fill={nivel === 2 ? 'var(--acento)' : nivel === 1 ? `url(#${id})` : 'transparent'}
+                  stroke="var(--acento)" strokeWidth="1.4" strokeLinejoin="round" />
         </svg>
     );
 }

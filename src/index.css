@@ -18,12 +18,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Instrument+Sans:wght@400..600&display=swap');
 
 :root {
-    --ink:    #14161A;
-    --gold:   #FFC400;
-    --papel:  #EFEDE8;
+    /* Paleta tirada do escudo: vinho e azul dos quadrantes, e um azul
+       muito escuro derivado deles para a barra de navegação. Preto puro
+       ficaria descolado de um escudo que não tem preto chapado. */
+    --vinho:  #5F0F1A;
+    --azul:   #1B347C;
+    --ink:    #0E1526;   /* navy quase preto, do mesmo tronco do azul */
+    --ink-2:  #16203A;   /* um degrau acima, para estados de hover */
+
+    /* O destaque é vinho clareado. O vinho puro do escudo tem contraste
+       baixo demais sobre fundo escuro para servir de acento. */
+    --acento:   #C4485A;
+    --realce: #E8798A;
+
+    --papel:  #F2F1EE;
     --carta:  #FFFFFF;
-    --linha:  #DCD8D0;
-    --fraco:  #6B675F;
+    --linha:  #DDDBD5;
+    --fraco:  #6A6862;
     --alerta: #A32D2D;
     --certo:  #3B6D11;
 
@@ -45,7 +56,7 @@ body { margin: 0; }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; }
 
-:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
 }
@@ -74,7 +85,7 @@ h3 { font-size: 15px; }
 .topo {
     background: var(--ink);
     position: sticky; top: 0; z-index: 20;
-    border-bottom: 3px solid var(--gold);
+    border-bottom: 3px solid var(--acento);
 }
 .barra {
     display: flex; align-items: center; justify-content: space-between;
@@ -86,24 +97,24 @@ h3 { font-size: 15px; }
     font-variation-settings: 'wdth' 122;
     font-weight: 800; font-size: 20px;
     letter-spacing: 0.01em; text-transform: uppercase;
-    color: var(--gold);
+    color: var(--acento);
 }
 .marca svg { display: block; }
 .marca span {
     font-family: var(--corpo); font-weight: 400; font-size: 13px;
     text-transform: none; letter-spacing: 0;
-    color: #8C8880;
+    color: #8E93A6;
 }
 @media (max-width: 720px) { .marca span { display: none; } }
 
 .nav { display: flex; align-items: center; gap: 4px; }
 .nav a, .nav .link {
-    color: #C9C5BC; font-size: 14px; font-weight: 500;
+    color: #C2C7D6; font-size: 14px; font-weight: 500;
     padding: 7px 11px; border-radius: 7px; text-decoration: none;
     transition: background .12s, color .12s;
 }
-.nav a:hover, .nav .link:hover { background: #21242A; color: #FFFFFF; }
-.eu { display: inline-flex; align-items: center; gap: 7px; color: var(--gold) !important; }
+.nav a:hover, .nav .link:hover { background: var(--ink-2); color: #FFFFFF; }
+.eu { display: inline-flex; align-items: center; gap: 7px; color: var(--acento) !important; }
 .avatar-mini {
     width: 22px; height: 22px; border-radius: 50%; object-fit: cover;
     border: 1px solid #3A3D44;
@@ -126,7 +137,7 @@ h3 { font-size: 15px; }
     .nav-baixo {
         display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
         background: var(--ink);
-        border-top: 1px solid #2B2E34;
+        border-top: 1px solid #1E2942;
         /* padding-bottom acompanha a barra de gestos do iPhone: sem
            isso, o último item fica embaixo dela e não recebe toque. */
         padding-bottom: env(safe-area-inset-bottom, 0);
@@ -136,24 +147,24 @@ h3 { font-size: 15px; }
         justify-content: center; gap: 4px;
         /* 56px: acima dos 44 que a Apple recomenda como alvo mínimo. */
         min-height: 56px; padding: 8px 2px 9px;
-        color: #7C786F; text-decoration: none;
+        color: #7B8298; text-decoration: none;
     }
     .nav-item svg { width: 22px; height: 22px; }
     .nav-item span {
         font-size: 10.5px; letter-spacing: 0.02em;
         font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
     }
-    .nav-item.ativo { color: var(--gold); }
-    .nav-item.ativo span { color: var(--gold); }
+    .nav-item.ativo { color: var(--acento); }
+    .nav-item.ativo span { color: var(--acento); }
 
     /* O botão de registrar é o único preenchido: é a ação que o app
        existe para receber, e precisa ser encontrada sem procurar. */
     .nav-item.destaque svg {
-        background: var(--gold); color: var(--ink);
+        background: var(--acento); color: var(--ink);
         width: 34px; height: 34px; border-radius: 11px; padding: 6px;
         margin-bottom: -1px;
     }
-    .nav-item.destaque { color: #B4B0A7; }
+    .nav-item.destaque { color: #AEB4C6; }
 
     .nav-avatar {
         width: 24px; height: 24px; border-radius: 50%;
@@ -188,7 +199,11 @@ main { padding: 0 0 70px; }
    decorativo, e some nas bordas. */
 .hero::before {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(60% 90% at 14% 0%, rgba(255,196,0,.16), transparent 62%);
+    /* Dois halos, um de cada cor do escudo: o azul de um lado, o vinho
+       do outro. Repete no fundo a divisão que a marca tem. */
+    background:
+        radial-gradient(52% 80% at 10% 0%,  rgba(27,52,124,.55), transparent 62%),
+        radial-gradient(46% 74% at 88% 18%, rgba(95,15,26,.42), transparent 64%);
     pointer-events: none;
 }
 .hero-texto { position: relative; }
@@ -205,20 +220,20 @@ main { padding: 0 0 70px; }
     max-width: 15ch;
 }
 .hero-linha {
-    color: #B4B0A7; font-size: clamp(15px, 1.6vw, 17.5px);
+    color: #AEB4C6; font-size: clamp(15px, 1.6vw, 17.5px);
     line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
 }
 
 .hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
-.botao.claro  { background: var(--gold); color: var(--ink); font-weight: 600; }
+.botao.claro  { background: var(--acento); color: var(--ink); font-weight: 600; }
 .botao.vazado {
     background: transparent; color: #FFFFFF;
-    border: 1px solid #3B3E45;
+    border: 1px solid #2A365A;
 }
-.botao.vazado:hover { border-color: var(--gold); color: var(--gold); opacity: 1; }
+.botao.vazado:hover { border-color: var(--acento); color: var(--acento); opacity: 1; }
 
 .hero-conta {
-    margin: 22px 0 0; color: #7C786F; font-size: 13.5px;
+    margin: 22px 0 0; color: #7B8298; font-size: 13.5px;
     letter-spacing: 0.04em; text-transform: uppercase;
     font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
 }
@@ -227,7 +242,7 @@ main { padding: 0 0 70px; }
 
 .arara {
     margin-top: 40px;
-    border-top: 1px solid #2B2E34;
+    border-top: 1px solid #1E2942;
     padding: 22px 0 26px;
     /* As pontas somem no escuro: a fileira não começa nem termina, ela
        continua fora da tela. */
@@ -267,7 +282,7 @@ main { padding: 0 0 70px; }
     background: var(--carta); color: var(--ink);
 }
 .busca::placeholder { color: #9A968E; }
-.busca:focus { outline: 2px solid var(--gold); outline-offset: -1px; border-color: transparent; }
+.busca:focus { outline: 2px solid var(--acento); outline-offset: -1px; border-color: transparent; }
 
 /* ------------------------------------------------- faixa de competição
    O elemento assinatura. Cada aba carrega o código do país, que é
@@ -293,7 +308,7 @@ main { padding: 0 0 70px; }
 }
 .competicao:hover { border-color: var(--ink); }
 .competicao[aria-pressed='true'] {
-    background: var(--ink); border-color: var(--ink); color: var(--gold);
+    background: var(--ink); border-color: var(--ink); color: var(--acento);
 }
 .pais {
     font-family: var(--titulo);
@@ -302,14 +317,14 @@ main { padding: 0 0 70px; }
     padding: 2px 5px; border-radius: 3px;
     background: var(--papel); color: var(--fraco);
 }
-.competicao[aria-pressed='true'] .pais { background: #2A2D33; color: #A8A49C; }
+.competicao[aria-pressed='true'] .pais { background: #1E2942; color: #A8A49C; }
 
 /* ------------------------------------------------------------- seções */
 
 .secao { margin-top: 30px; }
 .rotulo-secao {
     display: inline-block; padding-bottom: 6px; margin-bottom: 4px;
-    border-bottom: 4px solid var(--gold);
+    border-bottom: 4px solid var(--acento);
     text-transform: uppercase; font-size: clamp(17px, 2.2vw, 22px);
     font-variation-settings: 'wdth' 122;
 }
@@ -391,7 +406,7 @@ main { padding: 0 0 70px; }
 
 .botao {
     display: inline-flex; align-items: center; justify-content: center;
-    background: var(--ink); color: var(--gold); border: 0;
+    background: var(--ink); color: var(--acento); border: 0;
     padding: 11px 20px; border-radius: var(--raio);
     font-family: var(--corpo); font-size: 15px; font-weight: 500;
     cursor: pointer; transition: opacity .12s;
@@ -438,7 +453,7 @@ main { padding: 0 0 70px; }
 .tira:hover { border-color: var(--fraco); }
 /* A borda dourada diz qual está aberta. Sem marca de estado, clicar
    parece não ter feito nada quando as fotos são parecidas. */
-.tira.ativa { border-color: var(--gold); transform: translateY(-2px); }
+.tira.ativa { border-color: var(--acento); transform: translateY(-2px); }
 .tira img { width: 56px; height: 56px; object-fit: cover; display: block; }
 
 /* Ficha técnica com a métrica de tabela de classificação: rótulo à
@@ -461,7 +476,7 @@ main { padding: 0 0 70px; }
 .contador {
     font-family: var(--titulo); font-variation-settings: 'wdth' 100;
     font-weight: 800; font-size: 12px;
-    background: var(--ink); color: var(--gold);
+    background: var(--ink); color: var(--acento);
     border-radius: 999px; padding: 2px 8px;
 }
 
@@ -481,7 +496,7 @@ main { padding: 0 0 70px; }
     border: 1px solid var(--linha); border-radius: var(--raio);
     resize: vertical; margin-top: 4px; background: var(--carta);
 }
-.texto:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+.texto:focus { outline: 2px solid var(--acento); outline-offset: -1px; }
 
 /* --------------------------------------------------------- coleção */
 
@@ -585,11 +600,11 @@ main { padding: 0 0 70px; }
     padding: 6px 15px; font-size: 14px; font-family: var(--corpo);
     color: var(--fraco); cursor: pointer; font-variant-numeric: tabular-nums;
 }
-.aba.ativa { background: var(--ink); border-color: var(--ink); color: var(--gold); }
+.aba.ativa { background: var(--ink); border-color: var(--ink); color: var(--acento); }
 .secao-liga { margin-top: 26px; }
 .titulo-liga {
     display: inline-block; padding-bottom: 5px; margin: 0 0 4px;
-    border-bottom: 3px solid var(--gold); text-transform: uppercase; font-size: 15px;
+    border-bottom: 3px solid var(--acento); text-transform: uppercase; font-size: 15px;
 }
 
 /* ============================================================== PERFIL
@@ -601,12 +616,14 @@ main { padding: 0 0 70px; }
 .capa {
     background: var(--ink); color: #FFFFFF;
     padding: 34px 0 30px; margin-bottom: 26px;
-    border-bottom: 3px solid var(--gold);
+    border-bottom: 3px solid var(--acento);
     position: relative; overflow: hidden;
 }
 .capa::before {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(52% 100% at 8% 0%, rgba(255,196,0,.14), transparent 60%);
+    background:
+        radial-gradient(48% 100% at 6% 0%,  rgba(27,52,124,.5), transparent 60%),
+        radial-gradient(40% 90% at 92% 20%, rgba(95,15,26,.36), transparent 62%);
     pointer-events: none;
 }
 .capa-conteudo {
@@ -615,14 +632,14 @@ main { padding: 0 0 70px; }
 }
 .capa-avatar {
     width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
-    border: 3px solid var(--gold); background: #21242A; flex-shrink: 0;
+    border: 3px solid var(--acento); background: var(--ink-2); flex-shrink: 0;
 }
 .capa-dados { flex: 1 1 260px; min-width: 0; }
 .capa-dados h1 { color: #FFFFFF; font-size: clamp(24px, 3.6vw, 36px); }
-.capa-user { color: var(--gold); margin: 5px 0 0; font-size: 14.5px; }
-.capa-bio { color: #B4B0A7; margin: 12px 0 0; line-height: 1.55; max-width: 52ch; }
+.capa-user { color: var(--acento); margin: 5px 0 0; font-size: 14.5px; }
+.capa-bio { color: #AEB4C6; margin: 12px 0 0; line-height: 1.55; max-width: 52ch; }
 .capa-acao { margin-left: auto; }
-.botao.vazado.escuro { border-color: #3B3E45; color: #FFFFFF; }
+.botao.vazado.escuro { border-color: #2A365A; color: #FFFFFF; }
 
 /* Placar: a métrica de tabela — número grande em cima, rótulo pequeno
    embaixo, alinhados em coluna por causa do numeral tabular. */
@@ -636,7 +653,7 @@ main { padding: 0 0 70px; }
     font-weight: 800; font-size: 21px; color: #FFFFFF; line-height: 1;
 }
 .placar span {
-    font-size: 11.5px; color: #7C786F; text-transform: uppercase;
+    font-size: 11.5px; color: #7B8298; text-transform: uppercase;
     letter-spacing: 0.06em; margin-top: 5px;
 }
 
@@ -685,7 +702,7 @@ main { padding: 0 0 70px; }
 .destaque-info .meta { display: block; margin-top: 4px; }
 .destaque-info .estampa {
     display: inline-block; margin-top: 8px; padding: 3px 9px;
-    background: var(--ink); color: var(--gold); border-radius: 5px;
+    background: var(--ink); color: var(--acento); border-radius: 5px;
     font-family: var(--titulo); font-variation-settings: 'wdth' 112;
     font-weight: 800; font-size: 11.5px; letter-spacing: 0.04em;
 }
@@ -701,12 +718,12 @@ main { padding: 0 0 70px; }
     background: var(--papel); color: var(--fraco);
     border-radius: 999px; padding: 1px 7px; font-size: 12px;
 }
-.abas-perfil .aba.ativa .num { background: #2A2D33; color: #A8A49C; }
+.abas-perfil .aba.ativa .num { background: #1E2942; color: #A8A49C; }
 
 .fixar { margin-top: 9px; }
 .grail {
     margin-top: 7px; padding: 2px 9px; border-radius: 5px;
-    background: var(--gold); color: var(--ink);
+    background: var(--acento); color: var(--ink);
     font-family: var(--titulo); font-variation-settings: 'wdth' 112;
     font-weight: 800; font-size: 11px; letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -754,7 +771,7 @@ main { padding: 0 0 70px; }
 }
 .titulo-linha::after {
     content: ''; display: block; width: 56px; height: 5px;
-    background: var(--gold); margin-top: 10px;
+    background: var(--acento); margin-top: 10px;
 }
 
 .linha-tempo { max-width: 620px; margin: 24px auto 0; display: grid; gap: 20px; }
@@ -793,7 +810,7 @@ main { padding: 0 0 70px; }
     background: linear-gradient(160deg, #1D2027, #101215 62%);
     min-height: 300px; padding: 26px 0;
     border-top: 1px solid var(--linha);
-    border-bottom: 5px solid var(--filete, var(--gold));
+    border-bottom: 5px solid var(--filete, var(--acento));
 }
 /* Fundo escuro exige contorno claro: sem isso, camisa preta some. */
 .palco { --contorno-camisa: rgba(255,255,255,.5); }
@@ -812,7 +829,7 @@ main { padding: 0 0 70px; }
 /* A estampa das costas em plaqueta, como numa etiqueta de leilão. */
 .palco-estampa {
     position: absolute; left: 16px; bottom: 16px;
-    background: var(--gold); color: var(--ink);
+    background: var(--acento); color: var(--ink);
     padding: 5px 11px; border-radius: 6px;
     font-family: var(--titulo); font-variation-settings: 'wdth' 116;
     font-weight: 800; font-size: 13px; letter-spacing: 0.05em;
@@ -835,7 +852,7 @@ main { padding: 0 0 70px; }
 }
 .evento-texto::before {
     content: ''; display: block; width: 34px; height: 3px;
-    background: var(--gold); margin-bottom: 12px;
+    background: var(--acento); margin-bottom: 12px;
 }
 
 /* ------------------------------------------------- sugestões de gente */
@@ -876,7 +893,7 @@ main { padding: 0 0 70px; }
 }
 .lote-item.pronto { border-color: #9CC27A; opacity: .72; }
 .lote-item.erro { border-color: var(--alerta); }
-.lote-item.enviando { border-color: var(--gold); }
+.lote-item.enviando { border-color: var(--acento); }
 
 .lote-foto { position: relative; flex-shrink: 0; }
 .lote-foto img {
@@ -890,7 +907,7 @@ main { padding: 0 0 70px; }
     font-family: var(--titulo); font-variation-settings: 'wdth' 108;
     font-weight: 700; font-size: 11px; text-transform: uppercase;
 }
-.selo.cinza { background: var(--ink); color: var(--gold); }
+.selo.cinza { background: var(--ink); color: var(--acento); }
 
 .lote-campos { flex: 1 1 300px; min-width: 0; }
 .lote-campos .rotulo { margin-top: 8px; }
@@ -934,7 +951,7 @@ main { padding: 0 0 70px; }
         border: 0; border-radius: 0; padding: 11px 0; font-size: 14px;
         font-weight: 600;
     }
-    .topo-linha .aba.ativa { background: var(--ink); color: var(--gold); }
+    .topo-linha .aba.ativa { background: var(--ink); color: var(--acento); }
 
     /* A abertura encurta: no celular ela empurrava o conteúdo para
        fora da primeira tela inteira. */
@@ -1029,12 +1046,12 @@ main { padding: 0 0 70px; }
         display: flex; flex-direction: column;
         background: var(--ink); color: #FFFFFF;
         padding: 22px 16px 20px;
-        border-right: 1px solid #23262C;
+        border-right: 1px solid #1E2942;
     }
 
     .lateral-marca {
         display: flex; align-items: center; gap: 11px;
-        color: var(--gold); padding: 0 8px 22px;
+        color: var(--acento); padding: 0 8px 22px;
         font-family: var(--titulo); font-variation-settings: 'wdth' 122;
         font-weight: 800; font-size: 21px; text-transform: uppercase;
         letter-spacing: 0.01em;
@@ -1044,36 +1061,36 @@ main { padding: 0 0 70px; }
     .lateral-item {
         display: flex; align-items: center; gap: 13px;
         padding: 11px 12px; border-radius: 10px;
-        color: #A6A29A; font-size: 15px; font-weight: 500;
+        color: #9AA0B4; font-size: 15px; font-weight: 500;
         transition: background .12s, color .12s;
     }
     .lateral-item svg { width: 21px; height: 21px; flex-shrink: 0; }
-    .lateral-item:hover { background: #1E2127; color: #FFFFFF; }
+    .lateral-item:hover { background: var(--ink-2); color: #FFFFFF; }
     /* O item ativo é preenchido, não sublinhado: numa coluna vertical o
        preenchimento é o único marcador que se lê de relance. */
-    .lateral-item.ativo { background: #23262C; color: var(--gold); }
+    .lateral-item.ativo { background: #1E2942; color: var(--acento); }
 
     .lateral-registrar { margin-top: 18px; width: 100%; }
 
     .lateral-pe {
         margin-top: auto; padding-top: 16px;
-        border-top: 1px solid #23262C;
+        border-top: 1px solid #1E2942;
         display: flex; align-items: center; justify-content: space-between; gap: 10px;
     }
     .lateral-eu { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .lateral-eu img, .lateral-eu .vazio-avatar {
         width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
-        border: 1px solid #33363C; flex-shrink: 0;
+        border: 1px solid #2A365A; flex-shrink: 0;
     }
     .lateral-eu b {
         display: block; font-size: 13.5px; color: #FFFFFF;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
     }
     .lateral-eu em {
-        display: block; font-style: normal; font-size: 12px; color: #7C786F;
+        display: block; font-style: normal; font-size: 12px; color: #7B8298;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
     }
-    .lateral-pe .link { color: #7C786F; font-size: 12.5px; flex-shrink: 0; }
+    .lateral-pe .link { color: #7B8298; font-size: 12.5px; flex-shrink: 0; }
 
     main { padding: 30px 0 70px; }
     .container { max-width: 1020px; padding: 0 30px; }
@@ -1103,7 +1120,7 @@ main { padding: 0 0 70px; }
     }
     .titulo-aside {
         font-size: 15px; text-transform: uppercase; margin-bottom: 14px;
-        padding-bottom: 6px; border-bottom: 3px solid var(--gold);
+        padding-bottom: 6px; border-bottom: 3px solid var(--acento);
         display: inline-block;
     }
     .linha-sugestao {
