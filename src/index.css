@@ -1,20 +1,1814 @@
 /* =====================================================================
-   CIMELIO — ponto de entrada do estilo
+   CIMELIO — sistema visual
 
-   O arquivo era um só, com 1.301 linhas, e já tinha sido reescrito uma
-   vez porque as regras brigavam entre si. Dividido por assunto, mexer
-   numa tela deixa de arriscar as outras — e dá para achar uma regra sem
-   rolar o arquivo inteiro.
+   Arquivo único de propósito.
 
-   A ordem importa: base define as variáveis e os elementos crus, e tudo
-   depois depende dela.
+   Cheguei a dividir em oito módulos por assunto, e a divisão gerou dois
+   blocos :root — o segundo com a paleta antiga, que por vir depois
+   vencia em silêncio. A interface ficava preta enquanto o código dizia
+   vinho, e nem typecheck nem build acusavam.
+
+   Um arquivo é mais chato de navegar e impossível de contradizer a si
+   mesmo dessa forma. Enquanto não houver ferramenta que detecte o
+   conflito, a simplicidade vale mais que a organização.
    ===================================================================== */
 
-@import './estilos/base.css';
-@import './estilos/navegacao.css';
-@import './estilos/catalogo.css';
-@import './estilos/camisa.css';
-@import './estilos/formularios.css';
-@import './estilos/perfil.css';
-@import './estilos/hero.css';
-@import './estilos/social.css';
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Instrument+Sans:wght@400..600&display=swap');
+
+:root {
+    /* Terceira tentativa, e a que fecha.
+
+       Primeira: cor do escudo por toda a interface — abafou.
+       Segunda: preto, branco e cinza — apagou.
+
+       O erro foi tratar "neutro" como "sem cor". Neutro é a cor não
+       competir com a camisa; não é ausência dela. O vinho volta a
+       ocupar área, e o fundo ganha temperatura em vez de cinza puro.
+
+       Cinza é ausência de decisão. Um papel levemente quente e um
+       escuro levemente vinho são decisões — e custam o mesmo. */
+
+    --vinho:   #6E1522;   /* área: hero, botões, faixas */
+    --vinho-2: #8C2231;   /* hover e estados ativos */
+    --vinho-3: #4A0E17;   /* fundo profundo */
+    --azul:    #1B347C;   /* só na marca e em detalhes de camisa */
+
+    /* O escuro não é preto: tem vinho dentro. Preto puro ao lado de um
+       escudo vinho e azul fica descolado, e foi o que deixou a tela
+       parecendo morta. */
+    --ink:    #1A1216;
+    --ink-2:  #241A1F;
+
+    --acento: #FFFFFF;
+    --estrela: #E8A33D;
+
+    /* Papel quente. Cinza esverdeado é o padrão de todo painel de
+       administração; areia clara é uma escolha. */
+    --papel:  #F6F2ED;
+    --carta:  #FFFDFB;
+    --linha:  #E4DCD4;
+    --fraco:  #74696A;
+    --alerta: #A32D2D;
+    --certo:  #3B6D11;
+
+    --raio: 10px;
+    --largura: 1080px;
+
+    /* Tamanho da malha. Fino demais vira ruído em tela retina; grosso
+       demais vira estampa. 7px é onde ela some de longe e aparece de
+       perto, que é como tecido se comporta. */
+    --malha: 7px;
+
+    --corpo: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+    --titulo: 'Archivo', system-ui, sans-serif;
+
+    font-family: var(--corpo);
+    color: var(--ink);
+    background: var(--papel);
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; }
+
+:focus-visible { outline: 2px solid var(--vinho); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}
+
+/* Títulos: largura expandida, peso alto, caixa alta, entreletra apertada.
+   É a métrica de número de camisa aplicada a texto. */
+h1, h2, h3, .display {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 118;
+    font-weight: 800;
+    /* Entreletra negativa cresce com o tamanho: título grande precisa
+       de mais aperto que subtítulo para parecer igualmente compacto. */
+    letter-spacing: -0.022em;
+    line-height: 1.02;
+    margin: 0;
+}
+h2 { letter-spacing: -0.015em; }
+h3 { letter-spacing: -0.008em; }
+h1 { font-size: clamp(24px, 3.2vw, 34px); }
+h2 { font-size: 19px; }
+h3 { font-size: 15px; }
+
+/* Temporada, contagem, nota: números alinham em coluna. */
+.num { font-variant-numeric: tabular-nums; }
+
+.container { max-width: var(--largura); margin: 0 auto; padding: 0 20px; }
+
+
+/* =========================================== IDENTIDADE
+
+   O problema depois de neutralizar a paleta: neutro demais lê como
+   genérico. A personalidade volta por textura e tipografia, não por
+   cor — assim a camisa continua sendo a única coisa colorida.
+
+   Duas ideias, ambas tiradas do assunto:
+
+   1. Malha. Camisa de futebol é tecido furado, e o padrão de furos é
+      reconhecível de perto. Aplicado às superfícies escuras em contraste
+      baixíssimo, ele dá matéria ao que era um retângulo chapado.
+
+   2. Numeral. Número nas costas é o artefato tipográfico mais forte do
+      futebol. Usado grande e vazado, marca seção e posição sem precisar
+      de ícone nem cor.
+   ========================================================= */
+
+
+
+.malha {
+    position: relative;
+}
+.malha::after {
+    content: '';
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,.045) 1px, transparent 0);
+    background-size: var(--malha) var(--malha);
+}
+
+/* Numeral vazado. Contorno em vez de preenchimento porque preenchido
+   competiria com o conteúdo; vazado é marca d'água estrutural. */
+.numeral {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 125;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 2px currentColor;
+    opacity: .16;
+}
+
+/* Régua dupla: linha grossa curta sobre linha fina longa. É a métrica
+   de cabeçalho de tabela impressa, e substitui o filete simples que
+   todo site usa. */
+.regua {
+    position: relative;
+    padding-bottom: 12px;
+}
+.regua::before,
+.regua::after {
+    content: ''; position: absolute; left: 0; bottom: 0;
+}
+.regua::before { width: 46px; height: 4px; background: currentColor; }
+.regua::after  { width: 100%; height: 1px; background: currentColor; opacity: .18; }
+
+/* ---------------------------------------------------------------- topo */
+
+.topo {
+    background: var(--ink);
+    position: sticky; top: 0; z-index: 20;
+    /* Filete em vinho: como linha fina ele marca a marca sem pesar,
+       que é o oposto de usar a mesma cor como área. */
+    border-bottom: 3px solid var(--vinho);
+}
+.barra {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; height: 60px;
+}
+.marca {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: #FFFFFF;
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 122;
+    font-weight: 800; font-size: 20px;
+    letter-spacing: 0.01em; text-transform: uppercase;
+}
+.marca svg { display: block; }
+.marca span {
+    font-family: var(--corpo); font-weight: 400; font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+    color: #9C8A8E;
+}
+@media (max-width: 720px) { .marca span { display: none; } }
+
+.nav { display: flex; align-items: center; gap: 4px; }
+.nav a, .nav .link {
+    color: #D6C6C9; font-size: 14px; font-weight: 500;
+    padding: 7px 11px; border-radius: 7px; text-decoration: none;
+    transition: background .12s, color .12s;
+}
+.nav a:hover, .nav .link:hover { background: var(--ink-2); color: #FFFFFF; }
+.eu { display: inline-flex; align-items: center; gap: 7px; color: #FFFFFF !important; }
+.avatar-mini {
+    width: 22px; height: 22px; border-radius: 50%; object-fit: cover;
+    border: 1px solid #3A3D44;
+}
+/* ------------------------------------------------------- celular */
+
+@media (max-width: 760px) {
+    /* Os links do topo migram para a barra de baixo. Manter os dois
+       seria navegação duplicada ocupando duas bordas da tela. */
+    .nav a:not(.eu), .nav .link { display: none; }
+    .barra { height: 54px; }
+    .marca { font-size: 18px; }
+}
+
+/* ================================================== NAVEGAÇÃO INFERIOR */
+
+.nav-baixo { display: none; }
+
+@media (max-width: 760px) {
+    .nav-baixo {
+        display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+        background: var(--ink);
+        border-top: 1px solid #2C2026;
+        /* padding-bottom acompanha a barra de gestos do iPhone: sem
+           isso, o último item fica embaixo dela e não recebe toque. */
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+        flex: 1; display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 4px;
+        /* 56px: acima dos 44 que a Apple recomenda como alvo mínimo. */
+        min-height: 56px; padding: 8px 2px 9px;
+        color: #9C8A8E; text-decoration: none;
+    }
+    .nav-item svg { width: 22px; height: 22px; }
+    .nav-item span {
+        font-size: 10.5px; letter-spacing: 0.02em;
+        font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
+    }
+    .nav-item.ativo { color: #E8798A; }
+    .nav-item.ativo span { color: #E8798A; }
+
+    /* O botão de registrar é o único preenchido: é a ação que o app
+       existe para receber, e precisa ser encontrada sem procurar. */
+    .nav-item.destaque svg {
+        background: var(--vinho-2); color: #FFFFFF;
+        width: 34px; height: 34px; border-radius: 11px; padding: 6px;
+        margin-bottom: -1px;
+    }
+    .nav-item.destaque { color: #AEB4C6; }
+
+    .nav-avatar {
+        width: 24px; height: 24px; border-radius: 50%;
+        object-fit: cover; border: 1.5px solid currentColor;
+    }
+
+    /* Espaço para a barra não cobrir o fim do conteúdo. */
+    main { padding-bottom: 90px !important; }
+}
+
+main { padding: 0 0 70px; }
+.pagina { padding: 26px 0 60px; }
+
+/* ========================================== ESTRUTURA DE DESKTOP
+
+   A navegação sai do topo e vira coluna. O cabeçalho tinha oito itens
+   numa linha e quebrava em duas — o problema não era espaçamento, era
+   usar formato de cabeçalho de site para navegação de aplicativo.
+
+   Na vertical cabe tudo com folga, e a área central sobra para o
+   conteúdo, que numa tela de 1900px estava desperdiçada.
+   ================================================================= */
+
+.lateral { display: none; }
+.casca { display: block; }
+
+@media (min-width: 900px) {
+    .topo { display: none; }
+
+    .casca { display: grid; grid-template-columns: 244px minmax(0, 1fr); }
+
+    .lateral { display: block; }
+    .lateral-fixa {
+        position: sticky; top: 0; height: 100vh;
+        display: flex; flex-direction: column;
+        background: var(--ink); color: #FFFFFF;
+        padding: 22px 16px 20px;
+        border-right: 1px solid #2C2026;
+    }
+
+    .lateral-marca {
+        display: flex; align-items: center; gap: 11px;
+        color: #FFFFFF; padding: 0 8px 22px;
+        font-family: var(--titulo); font-variation-settings: 'wdth' 122;
+        font-weight: 800; font-size: 21px; text-transform: uppercase;
+        letter-spacing: 0.01em;
+    }
+
+    .lateral-nav { display: flex; flex-direction: column; gap: 3px; }
+    .lateral-item {
+        display: flex; align-items: center; gap: 13px;
+        padding: 11px 12px; border-radius: 10px;
+        color: #A79398; font-size: 15px; font-weight: 500;
+        transition: background .12s, color .12s;
+    }
+    .lateral-item svg { width: 21px; height: 21px; flex-shrink: 0; }
+    .lateral-item:hover { background: var(--ink-2); color: #FFFFFF; }
+    /* O item ativo é preenchido, não sublinhado: numa coluna vertical o
+       preenchimento é o único marcador que se lê de relance. */
+    /* Item ativo em vinho, não em cinza. Numa coluna vertical o
+   preenchimento é o único marcador que se lê de relance, e cinza sobre
+   escuro quase não marca. */
+.lateral-item.ativo { background: var(--vinho); color: #FFFFFF; }
+
+    .lateral-registrar { margin-top: 18px; width: 100%; }
+
+    .lateral-pe {
+        margin-top: auto; padding-top: 16px;
+        border-top: 1px solid #2C2026;
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .lateral-eu { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .lateral-eu img, .lateral-eu .vazio-avatar {
+        width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+        border: 1px solid #3A2A30; flex-shrink: 0;
+    }
+    .lateral-eu b {
+        display: block; font-size: 13.5px; color: #FFFFFF;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
+    }
+    .lateral-eu em {
+        display: block; font-style: normal; font-size: 12px; color: #9C8A8E;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
+    }
+    .lateral-pe .link { color: #9C8A8E; font-size: 12.5px; flex-shrink: 0; }
+
+    main { padding: 30px 0 70px; }
+    .container { max-width: 1020px; padding: 0 30px; }
+}
+
+
+/* =====================================================================
+   CIMELIO — sistema visual
+   =====================================================================
+
+   Direção: o vocabulário do futebol é institucional e impresso — número
+   nas costas, tabela de classificação, placar. A personalidade vem da
+   TIPOGRAFIA, não de decoração: Archivo em largura expandida e peso
+   alto para títulos, que é a mesma lógica de numeração de camisa —
+   pesada, geométrica, legível de longe.
+
+   O corpo usa Instrument Sans, mais estreita e neutra, para o contraste
+   de largura ser o que separa hierarquia. Diferenciar por LARGURA e não
+   por família é a decisão tipográfica central deste projeto.
+
+   A camisa é o conteúdo colorido. Todo o resto é discreto de propósito.
+   ===================================================================== */
+
+/* -------------------------------------------------------------- busca */
+
+.busca {
+    width: 100%; padding: 13px 15px;
+    font-family: var(--corpo); font-size: 15.5px;
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    background: var(--carta); color: var(--ink);
+}
+.busca::placeholder { color: #9A968E; }
+.busca:focus { outline: 2px solid var(--vinho); outline-offset: -1px; border-color: transparent; }
+
+/* ------------------------------------------------- faixa de competição
+   O elemento assinatura. Cada aba carrega o código do país, que é
+   informação real e não enfeite: distingue Serie A italiana de Série A
+   brasileira sem precisar escrever por extenso. */
+
+.faixa {
+    display: flex; gap: 7px; margin: 14px 0 0;
+    overflow-x: auto; padding-bottom: 6px;
+    scrollbar-width: thin;
+}
+.faixa::-webkit-scrollbar { height: 4px; }
+.faixa::-webkit-scrollbar-thumb { background: var(--linha); border-radius: 2px; }
+
+.competicao {
+    display: inline-flex; align-items: center; gap: 7px;
+    flex-shrink: 0; white-space: nowrap;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--linha); background: var(--carta);
+    font-family: var(--corpo); font-size: 14px; font-weight: 500;
+    color: var(--ink); cursor: pointer;
+    transition: border-color .12s, background .12s;
+}
+.competicao:hover { border-color: var(--ink); }
+.competicao[aria-pressed='true'] {
+    background: var(--vinho); border-color: var(--vinho); color: #FFFFFF;
+}
+.pais {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 100;
+    font-weight: 700; font-size: 10px; letter-spacing: 0.06em;
+    padding: 2px 5px; border-radius: 3px;
+    background: var(--papel); color: var(--fraco);
+}
+.competicao[aria-pressed='true'] .pais { background: #1E2942; color: #A8A49C; }
+
+/* ------------------------------------------------------------- seções */
+
+.secao { margin-top: 30px; }
+.rotulo-secao {
+    display: block; position: relative;
+    padding-bottom: 12px; margin-bottom: 4px;
+    text-transform: uppercase; font-size: clamp(17px, 2.2vw, 22px);
+    font-variation-settings: 'wdth' 122;
+}
+/* Régua dupla no lugar do filete simples: grossa e curta sobre fina e
+   longa, que é a métrica de cabeçalho de tabela impressa. */
+.rotulo-secao::before,
+.rotulo-secao::after { content: ''; position: absolute; left: 0; bottom: 0; }
+.rotulo-secao::before { width: 46px; height: 4px; background: var(--vinho); }
+.rotulo-secao::after  { width: 100%; height: 1px; background: var(--linha); }
+/* A busca e a faixa de competição ficam num painel próprio, separando
+   a ferramenta do conteúdo em vez de tudo flutuar no mesmo plano. */
+.painel {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px; margin-top: -14px;
+    position: relative; z-index: 2;
+    box-shadow: 0 6px 20px rgba(20,22,26,.06);
+}
+
+/* -------------------------------------------------------------- grade */
+
+.grade {
+    display: grid; gap: 16px; margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+}
+
+/* O card é uma peça de acervo, não uma miniatura. A camisa ocupa a
+   maior parte dele; o texto é ficha, e fica embaixo, discreto. */
+.card {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 0 0 16px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: border-color .16s, transform .16s, box-shadow .16s;
+}
+.card:hover {
+    border-color: var(--ink); transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(20,22,26,.10);
+}
+/* Faixa superior nas cores da própria camisa: carta de uniforme, e o
+   único ponto onde a cor do clube aparece fora do desenho. */
+.card::before {
+    content: ''; display: block; width: 100%; height: 6px;
+    background: var(--filete, var(--linha));
+}
+.card .vitrine {
+    width: 100%; padding: 20px 0 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #FBFAF8, var(--carta));
+    min-height: 168px;
+}
+.card .time {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 114;
+    font-weight: 800; font-size: 15px; line-height: 1.15;
+    text-transform: uppercase; letter-spacing: -0.005em;
+    margin: 4px 14px 0; text-align: center;
+}
+.card .meta {
+    font-size: 12.5px; color: var(--fraco); margin-top: 5px; text-align: center;
+    font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
+}
+.card .estampa {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 12px; color: var(--ink);
+    letter-spacing: 0.02em;
+}
+.foto-card, .foto-lancamento {
+    width: 148px; height: 148px; object-fit: cover;
+    border-radius: 8px; background: var(--papel);
+}
+.nota-card { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+
+/* ------------------------------------------------------------- vazios */
+
+.vazio {
+    text-align: center; padding: 44px 22px; margin-top: 20px;
+    border: 1px dashed var(--linha); border-radius: var(--raio);
+    background: var(--carta);
+}
+.vazio h2 { margin-bottom: 6px; }
+.vazio p { color: var(--fraco); margin: 0 0 18px; }
+.convite { text-align: center; color: var(--fraco); margin: 34px 0 0; font-size: 14.5px; }
+
+/* ------------------------------------------------------------ botões */
+
+.botao {
+    display: inline-flex; align-items: center; justify-content: center;
+    /* Vinho, não preto. O botão é o único elemento da tela que precisa
+       ser achado sem procurar, e preto sobre papel claro se confunde
+       com texto. */
+    background: var(--vinho); color: #FFFFFF; border: 0;
+    padding: 11px 20px; border-radius: var(--raio);
+    font-family: var(--corpo); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: opacity .12s;
+}
+.botao:hover { background: var(--vinho-2); opacity: 1; }
+.botao:disabled { opacity: .5; cursor: default; }
+.botao.largo { width: 100%; margin-top: 18px; }
+
+.link {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    color: var(--fraco); font-family: var(--corpo); font-size: 14px;
+    text-decoration: underline; text-underline-offset: 2px;
+}
+.link:hover { color: var(--ink); }
+.link-inline { text-decoration: underline; text-underline-offset: 2px; }
+
+/* ------------------------------------------------------------- textos */
+
+.erro  { color: var(--alerta); font-size: 14px; margin: 10px 0 0; }
+.aviso { color: var(--certo);  font-size: 14px; margin: 10px 0 0; }
+.ok    { color: var(--certo);  font-size: 14px; margin: 8px 0 0; }
+.suave { color: var(--fraco); }
+.meta  { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+.rotulo { display: block; font-size: 13.5px; color: var(--fraco); margin: 15px 0 5px; font-weight: 500; }
+
+/* -------------------------------------------------------------- busca */
+
+.busca {
+    width: 100%; padding: 13px 15px;
+    font-family: var(--corpo); font-size: 15.5px;
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    background: var(--carta); color: var(--ink);
+}
+.busca::placeholder { color: #9A968E; }
+.busca:focus { outline: 2px solid var(--vinho); outline-offset: -1px; border-color: transparent; }
+
+/* ------------------------------------------------- faixa de competição
+   O elemento assinatura. Cada aba carrega o código do país, que é
+   informação real e não enfeite: distingue Serie A italiana de Série A
+   brasileira sem precisar escrever por extenso. */
+
+.faixa {
+    display: flex; gap: 7px; margin: 14px 0 0;
+    overflow-x: auto; padding-bottom: 6px;
+    scrollbar-width: thin;
+}
+.faixa::-webkit-scrollbar { height: 4px; }
+.faixa::-webkit-scrollbar-thumb { background: var(--linha); border-radius: 2px; }
+
+.competicao {
+    display: inline-flex; align-items: center; gap: 7px;
+    flex-shrink: 0; white-space: nowrap;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--linha); background: var(--carta);
+    font-family: var(--corpo); font-size: 14px; font-weight: 500;
+    color: var(--ink); cursor: pointer;
+    transition: border-color .12s, background .12s;
+}
+.competicao:hover { border-color: var(--ink); }
+.competicao[aria-pressed='true'] {
+    background: var(--vinho); border-color: var(--vinho); color: #FFFFFF;
+}
+.pais {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 100;
+    font-weight: 700; font-size: 10px; letter-spacing: 0.06em;
+    padding: 2px 5px; border-radius: 3px;
+    background: var(--papel); color: var(--fraco);
+}
+.competicao[aria-pressed='true'] .pais { background: #1E2942; color: #A8A49C; }
+
+/* ------------------------------------------------------------- seções */
+
+.secao { margin-top: 30px; }
+.rotulo-secao {
+    display: block; position: relative;
+    padding-bottom: 12px; margin-bottom: 4px;
+    text-transform: uppercase; font-size: clamp(17px, 2.2vw, 22px);
+    font-variation-settings: 'wdth' 122;
+}
+/* Régua dupla no lugar do filete simples: grossa e curta sobre fina e
+   longa, que é a métrica de cabeçalho de tabela impressa. */
+.rotulo-secao::before,
+.rotulo-secao::after { content: ''; position: absolute; left: 0; bottom: 0; }
+.rotulo-secao::before { width: 46px; height: 4px; background: var(--vinho); }
+.rotulo-secao::after  { width: 100%; height: 1px; background: var(--linha); }
+/* A busca e a faixa de competição ficam num painel próprio, separando
+   a ferramenta do conteúdo em vez de tudo flutuar no mesmo plano. */
+.painel {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px; margin-top: -14px;
+    position: relative; z-index: 2;
+    box-shadow: 0 6px 20px rgba(20,22,26,.06);
+}
+
+/* -------------------------------------------------------------- grade */
+
+.grade {
+    display: grid; gap: 16px; margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+}
+
+/* O card é uma peça de acervo, não uma miniatura. A camisa ocupa a
+   maior parte dele; o texto é ficha, e fica embaixo, discreto. */
+.card {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 0 0 16px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: border-color .16s, transform .16s, box-shadow .16s;
+}
+.card:hover {
+    border-color: var(--ink); transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(20,22,26,.10);
+}
+/* Faixa superior nas cores da própria camisa: carta de uniforme, e o
+   único ponto onde a cor do clube aparece fora do desenho. */
+.card::before {
+    content: ''; display: block; width: 100%; height: 6px;
+    background: var(--filete, var(--linha));
+}
+.card .vitrine {
+    width: 100%; padding: 20px 0 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #FBFAF8, var(--carta));
+    min-height: 168px;
+}
+.card .time {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 114;
+    font-weight: 800; font-size: 15px; line-height: 1.15;
+    text-transform: uppercase; letter-spacing: -0.005em;
+    margin: 4px 14px 0; text-align: center;
+}
+.card .meta {
+    font-size: 12.5px; color: var(--fraco); margin-top: 5px; text-align: center;
+    font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
+}
+.card .estampa {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 12px; color: var(--ink);
+    letter-spacing: 0.02em;
+}
+.foto-card, .foto-lancamento {
+    width: 148px; height: 148px; object-fit: cover;
+    border-radius: 8px; background: var(--papel);
+}
+.nota-card { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+
+/* ------------------------------------------------------------- vazios */
+
+.vazio {
+    text-align: center; padding: 44px 22px; margin-top: 20px;
+    border: 1px dashed var(--linha); border-radius: var(--raio);
+    background: var(--carta);
+}
+.vazio h2 { margin-bottom: 6px; }
+.vazio p { color: var(--fraco); margin: 0 0 18px; }
+.convite { text-align: center; color: var(--fraco); margin: 34px 0 0; font-size: 14.5px; }
+
+/* ------------------------------------------------------------ botões */
+
+.botao {
+    display: inline-flex; align-items: center; justify-content: center;
+    /* Vinho, não preto. O botão é o único elemento da tela que precisa
+       ser achado sem procurar, e preto sobre papel claro se confunde
+       com texto. */
+    background: var(--vinho); color: #FFFFFF; border: 0;
+    padding: 11px 20px; border-radius: var(--raio);
+    font-family: var(--corpo); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: opacity .12s;
+}
+.botao:hover { background: var(--vinho-2); opacity: 1; }
+.botao:disabled { opacity: .5; cursor: default; }
+.botao.largo { width: 100%; margin-top: 18px; }
+
+.link {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    color: var(--fraco); font-family: var(--corpo); font-size: 14px;
+    text-decoration: underline; text-underline-offset: 2px;
+}
+.link:hover { color: var(--ink); }
+.link-inline { text-decoration: underline; text-underline-offset: 2px; }
+
+/* ------------------------------------------------------------- textos */
+
+.erro  { color: var(--alerta); font-size: 14px; margin: 10px 0 0; }
+.aviso { color: var(--certo);  font-size: 14px; margin: 10px 0 0; }
+.ok    { color: var(--certo);  font-size: 14px; margin: 8px 0 0; }
+.suave { color: var(--fraco); }
+.meta  { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+.rotulo { display: block; font-size: 13.5px; color: var(--fraco); margin: 15px 0 5px; font-weight: 500; }
+
+
+/* -------------------------------------------------- página da camisa */
+
+.detalhe { display: flex; gap: 34px; flex-wrap: wrap; align-items: flex-start; }
+.detalhe > div { flex: 1 1 320px; }
+.titulo-camisa { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.sub { color: var(--fraco); margin: 6px 0 18px; font-variant-numeric: tabular-nums; }
+
+.galeria { text-align: center; flex: 0 0 auto !important; }
+.foto-principal {
+    width: 300px; max-width: 100%; border-radius: var(--raio);
+    background: var(--carta); border: 1px solid var(--linha);
+}
+.tiras { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+.tira {
+    padding: 0; border: 2px solid var(--linha); border-radius: 8px;
+    background: none; cursor: pointer; line-height: 0; overflow: hidden;
+    transition: border-color .14s, transform .14s;
+}
+.tira:hover { border-color: var(--fraco); }
+/* A borda dourada diz qual está aberta. Sem marca de estado, clicar
+   parece não ter feito nada quando as fotos são parecidas. */
+.tira.ativa { border-color: var(--vinho); transform: translateY(-2px); }
+.tira img { width: 56px; height: 56px; object-fit: cover; display: block; }
+
+/* Ficha técnica com a métrica de tabela de classificação: rótulo à
+   esquerda, valor à direita, filete separando cada linha. */
+.ficha { border-top: 1px solid var(--linha); margin-top: 4px; }
+.ficha div {
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 9px 0; border-bottom: 1px solid var(--linha); font-size: 14.5px;
+}
+.ficha dt { color: var(--fraco); }
+.ficha dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------- caixas */
+
+.caixa {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 16px; margin-top: 16px;
+}
+.titulo-caixa { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.contador {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100;
+    font-weight: 800; font-size: 12px;
+    background: var(--vinho); color: #FFFFFF;
+    border-radius: 999px; padding: 2px 8px;
+}
+
+/* ---------------------------------------------------------- estrelas */
+
+.estrelas { display: flex; gap: 3px; margin-bottom: 12px; }
+.estrela { position: relative; display: inline-block; }
+.estrela .zona {
+    position: absolute; top: 0; height: 100%; width: 50%;
+    background: none; border: 0; padding: 0; cursor: pointer;
+}
+.estrela .esquerda { left: 0; }
+.estrela .direita  { right: 0; }
+
+.texto {
+    width: 100%; padding: 11px 13px; font-size: 15px; font-family: var(--corpo);
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    resize: vertical; margin-top: 4px; background: var(--carta);
+}
+.texto:focus { outline: 2px solid var(--vinho); outline-offset: -1px; }
+
+/* --------------------------------------------------------- coleção */
+
+.bloco-peca { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
+.bloco-peca:last-of-type { border-bottom: 0; }
+.linha-peca {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; padding: 9px 0; font-size: 14.5px;
+}
+.form-peca { margin-top: 14px; }
+.botoes { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+
+.fotos-peca { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0 4px; }
+.miniatura { position: relative; }
+.miniatura img {
+    width: 58px; height: 58px; object-fit: cover;
+    border-radius: 6px; border: 1px solid var(--linha); display: block;
+}
+.miniatura .remover {
+    position: absolute; top: -6px; right: -6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--ink); color: #FFFFFF; border: 0;
+    font-size: 13px; line-height: 1; cursor: pointer;
+}
+.add-foto {
+    width: 58px; height: 58px; border-radius: 6px;
+    border: 1px dashed var(--linha); background: none;
+    color: var(--fraco); font-size: 12.5px; cursor: pointer; font-family: var(--corpo);
+}
+.add-foto:disabled { opacity: .5; }
+
+/* -------------------------------------------------- página da camisa */
+
+.detalhe { display: flex; gap: 34px; flex-wrap: wrap; align-items: flex-start; }
+.detalhe > div { flex: 1 1 320px; }
+.titulo-camisa { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.sub { color: var(--fraco); margin: 6px 0 18px; font-variant-numeric: tabular-nums; }
+
+.galeria { text-align: center; flex: 0 0 auto !important; }
+.foto-principal {
+    width: 300px; max-width: 100%; border-radius: var(--raio);
+    background: var(--carta); border: 1px solid var(--linha);
+}
+.tiras { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+.tira {
+    padding: 0; border: 2px solid var(--linha); border-radius: 8px;
+    background: none; cursor: pointer; line-height: 0; overflow: hidden;
+    transition: border-color .14s, transform .14s;
+}
+.tira:hover { border-color: var(--fraco); }
+/* A borda dourada diz qual está aberta. Sem marca de estado, clicar
+   parece não ter feito nada quando as fotos são parecidas. */
+.tira.ativa { border-color: var(--vinho); transform: translateY(-2px); }
+.tira img { width: 56px; height: 56px; object-fit: cover; display: block; }
+
+/* Ficha técnica com a métrica de tabela de classificação: rótulo à
+   esquerda, valor à direita, filete separando cada linha. */
+.ficha { border-top: 1px solid var(--linha); margin-top: 4px; }
+.ficha div {
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 9px 0; border-bottom: 1px solid var(--linha); font-size: 14.5px;
+}
+.ficha dt { color: var(--fraco); }
+.ficha dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------- caixas */
+
+.caixa {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 16px; margin-top: 16px;
+}
+.titulo-caixa { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.contador {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100;
+    font-weight: 800; font-size: 12px;
+    background: var(--vinho); color: #FFFFFF;
+    border-radius: 999px; padding: 2px 8px;
+}
+
+/* ---------------------------------------------------------- estrelas */
+
+.estrelas { display: flex; gap: 3px; margin-bottom: 12px; }
+.estrela { position: relative; display: inline-block; }
+.estrela .zona {
+    position: absolute; top: 0; height: 100%; width: 50%;
+    background: none; border: 0; padding: 0; cursor: pointer;
+}
+.estrela .esquerda { left: 0; }
+.estrela .direita  { right: 0; }
+
+.texto {
+    width: 100%; padding: 11px 13px; font-size: 15px; font-family: var(--corpo);
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    resize: vertical; margin-top: 4px; background: var(--carta);
+}
+.texto:focus { outline: 2px solid var(--vinho); outline-offset: -1px; }
+
+/* --------------------------------------------------------- coleção */
+
+.bloco-peca { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
+.bloco-peca:last-of-type { border-bottom: 0; }
+.linha-peca {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; padding: 9px 0; font-size: 14.5px;
+}
+.form-peca { margin-top: 14px; }
+.botoes { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+
+.fotos-peca { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0 4px; }
+.miniatura { position: relative; }
+.miniatura img {
+    width: 58px; height: 58px; object-fit: cover;
+    border-radius: 6px; border: 1px solid var(--linha); display: block;
+}
+.miniatura .remover {
+    position: absolute; top: -6px; right: -6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--ink); color: #FFFFFF; border: 0;
+    font-size: 13px; line-height: 1; cursor: pointer;
+}
+.add-foto {
+    width: 58px; height: 58px; border-radius: 6px;
+    border: 1px dashed var(--linha); background: none;
+    color: var(--fraco); font-size: 12.5px; cursor: pointer; font-family: var(--corpo);
+}
+.add-foto:disabled { opacity: .5; }
+
+
+/* ------------------------------------------------------- formulários */
+
+.cadastro { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; margin-top: 18px; }
+.previa {
+    position: sticky; top: 80px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 22px; text-align: center;
+}
+.form-cadastro { flex: 1 1 330px; max-width: 460px; }
+.dois { display: flex; gap: 12px; }
+.dois > div { flex: 1; }
+.checkbox { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--fraco); margin-top: 12px; }
+.checkbox input { width: 16px; height: 16px; }
+
+.campo-cor { margin-top: 4px; }
+.linha-cor { display: flex; align-items: center; gap: 8px; }
+.linha-cor input[type='color'] {
+    width: 42px; height: 42px; padding: 2px; cursor: pointer;
+    border: 1px solid var(--linha); border-radius: var(--raio); background: var(--carta);
+}
+.hex { width: 118px; font-family: ui-monospace, monospace; font-size: 13.5px; }
+.amostra { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--linha); cursor: pointer; padding: 0; }
+
+.linha-avatar { display: flex; align-items: center; gap: 16px; margin: 18px 0 6px; flex-wrap: wrap; }
+.linha-user { display: flex; align-items: center; gap: 6px; }
+.arroba { color: var(--fraco); font-size: 17px; }
+
+/* --------------------------------------------------------- moderação */
+
+.fila-item {
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 14px; margin-top: 12px;
+}
+.fila-dados { flex: 1 1 220px; display: flex; flex-direction: column; gap: 2px; }
+.fila-acoes { display: flex; align-items: center; gap: 14px; }
+
+/* ------------------------------------------------------- formulários */
+
+.cadastro { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; margin-top: 18px; }
+.previa {
+    position: sticky; top: 80px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 22px; text-align: center;
+}
+.form-cadastro { flex: 1 1 330px; max-width: 460px; }
+.dois { display: flex; gap: 12px; }
+.dois > div { flex: 1; }
+.checkbox { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--fraco); margin-top: 12px; }
+.checkbox input { width: 16px; height: 16px; }
+
+.campo-cor { margin-top: 4px; }
+.linha-cor { display: flex; align-items: center; gap: 8px; }
+.linha-cor input[type='color'] {
+    width: 42px; height: 42px; padding: 2px; cursor: pointer;
+    border: 1px solid var(--linha); border-radius: var(--raio); background: var(--carta);
+}
+.hex { width: 118px; font-family: ui-monospace, monospace; font-size: 13.5px; }
+.amostra { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--linha); cursor: pointer; padding: 0; }
+
+.linha-avatar { display: flex; align-items: center; gap: 16px; margin: 18px 0 6px; flex-wrap: wrap; }
+.linha-user { display: flex; align-items: center; gap: 6px; }
+.arroba { color: var(--fraco); font-size: 17px; }
+
+/* --------------------------------------------------------- moderação */
+
+.fila-item {
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 14px; margin-top: 12px;
+}
+.fila-dados { flex: 1 1 220px; display: flex; flex-direction: column; gap: 2px; }
+.fila-acoes { display: flex; align-items: center; gap: 14px; }
+
+/* ======================================================= LOTE
+   Uma linha por foto: miniatura à esquerda, campos à direita. A foto
+   fica visível o tempo todo porque é ela que diz qual camisa é — quem
+   subiu vinte de uma vez não lembra a ordem.
+   ========================================================= */
+
+.lote-acoes { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 20px 0 8px; }
+.lote { display: grid; gap: 14px; margin-top: 18px; }
+
+.lote-item {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 14px;
+    transition: border-color .16s, opacity .16s;
+}
+.lote-item.pronto { border-color: #9CC27A; opacity: .72; }
+.lote-item.erro { border-color: var(--alerta); }
+.lote-item.enviando { border-color: var(--vinho); }
+
+.lote-foto { position: relative; flex-shrink: 0; }
+.lote-foto img {
+    width: 132px; height: 132px; object-fit: cover;
+    border-radius: 10px; background: var(--papel); display: block;
+}
+.selo {
+    position: absolute; left: 8px; bottom: 8px;
+    background: var(--certo); color: #FFFFFF;
+    padding: 3px 9px; border-radius: 5px;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 11px; text-transform: uppercase;
+}
+.selo.cinza { background: var(--ink); color: #FFFFFF; }
+
+.lote-campos { flex: 1 1 300px; min-width: 0; }
+.lote-campos .rotulo { margin-top: 8px; }
+
+.opcoes-camisa { display: flex; gap: 8px; flex-wrap: wrap; }
+.opcao-camisa {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 10px; padding: 8px 10px; cursor: pointer;
+    font-family: var(--corpo); font-size: 11.5px; color: var(--fraco);
+}
+.opcao-camisa.ativa { border-color: var(--ink); background: var(--papel); color: var(--ink); }
+
+
+/* ------------------------------------------------- entrar com Google */
+
+.botao.google {
+    width: 100%; gap: 10px; margin-top: 20px;
+    background: var(--carta); color: var(--ink);
+    border: 1px solid var(--linha); font-weight: 500;
+}
+.botao.google:hover { border-color: var(--ink); opacity: 1; }
+
+/* Separador com a palavra no meio da linha: o filete atravessa e o
+   fundo do texto abre o vão, sem precisar de duas linhas soltas. */
+.ou {
+    position: relative; text-align: center; margin: 20px 0 4px;
+}
+.ou::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%;
+    border-top: 1px solid var(--linha);
+}
+.ou span {
+    position: relative; background: var(--papel); padding: 0 12px;
+    color: var(--fraco); font-size: 13px; text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* ------------------------------------------------- formas de entrar */
+
+.opcao legend { padding: 0 4px; }
+.conexao {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--linha);
+}
+.conexao:last-of-type { border-bottom: 0; }
+.conexao b { display: block; font-size: 14.5px; font-weight: 600; }
+.conexao em {
+    display: block; font-style: normal; color: var(--fraco);
+    font-size: 13px; margin-top: 2px;
+}
+.conexao .botao { padding: 8px 16px; font-size: 14px; flex-shrink: 0; }
+
+/* ----------------------------------------------------------- perfil */
+
+.cabecalho-perfil { display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap; margin-bottom: 4px; }
+.dados-perfil { flex: 1 1 200px; }
+.dados-perfil p { margin: 4px 0 0; }
+.bio { margin-top: 9px !important; line-height: 1.55; max-width: 48ch; }
+
+.avatar, .avatar-grande { border-radius: 50%; object-fit: cover; border: 1px solid var(--linha); background: var(--carta); }
+.avatar { width: 70px; height: 70px; }
+.avatar-grande { width: 96px; height: 96px; }
+.vazio-avatar { display: flex; align-items: center; justify-content: center; color: var(--fraco); font-size: 12px; background: #E3E0D9; }
+
+.lista-pessoas { display: grid; gap: 11px; margin-top: 20px; }
+.cartao-pessoa {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 14px; transition: border-color .14s;
+}
+.cartao-pessoa:hover { border-color: var(--vinho); }
+.dados-pessoa { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.dados-pessoa strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 15px;
+}
+.bio-curta { color: var(--fraco); font-size: 14px; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52ch; }
+
+/* ------------------------------------------------------- lançamentos */
+
+.cabecalho-secao { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+.abas { display: flex; gap: 6px; }
+.aba {
+    background: var(--carta); border: 1px solid var(--linha); border-radius: 999px;
+    padding: 6px 15px; font-size: 14px; font-family: var(--corpo);
+    color: var(--fraco); cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.aba.ativa { background: var(--vinho); border-color: var(--vinho); color: #FFFFFF; }
+.secao-liga { margin-top: 26px; }
+.titulo-liga {
+    display: inline-block; padding-bottom: 5px; margin: 0 0 4px;
+    border-bottom: 3px solid var(--vinho); text-transform: uppercase; font-size: 15px;
+}
+
+/* ============================================================== PERFIL
+   A capa escura repete a lógica do hero: a página tem uma abertura com
+   presença, e o conteúdo claro começa depois dela. Perfil é a tela que
+   a pessoa manda para os amigos — precisa de cara própria.
+   ================================================================== */
+
+.capa {
+    /* Mesma família do hero, mais contida: perfil se abre muitas vezes
+       por sessão, e o que grita toda vez cansa. */
+    background: linear-gradient(150deg, var(--vinho-3) 0%, var(--ink) 62%);
+    color: #FFFFFF;
+    padding: 34px 0 30px; margin-bottom: 26px;
+    border-bottom: 3px solid var(--vinho);
+    position: relative; overflow: hidden;
+}
+.capa::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(52% 100% at 8% 0%, rgba(255,255,255,.09), transparent 62%);
+    pointer-events: none;
+}
+.capa-conteudo {
+    position: relative; display: flex; align-items: flex-start;
+    gap: 22px; flex-wrap: wrap;
+}
+.capa-avatar {
+    width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+    border: 3px solid var(--vinho); background: var(--ink-2); flex-shrink: 0;
+}
+.capa-dados { flex: 1 1 260px; min-width: 0; }
+.capa-dados h1 { color: #FFFFFF; font-size: clamp(24px, 3.6vw, 36px); }
+.capa-user { color: #D9A9B2; margin: 5px 0 0; font-size: 14.5px; }
+.capa-bio { color: #DCC6CA; margin: 12px 0 0; line-height: 1.55; max-width: 52ch; }
+.capa-acao { margin-left: auto; }
+.botao.vazado.escuro { border-color: #2A365A; color: #FFFFFF; }
+
+/* Placar: a métrica de tabela — número grande em cima, rótulo pequeno
+   embaixo, alinhados em coluna por causa do numeral tabular. */
+.placar {
+    display: flex; gap: 26px; list-style: none;
+    margin: 20px 0 0; padding: 0; flex-wrap: wrap;
+}
+.placar li { display: flex; flex-direction: column; }
+.placar b {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 118;
+    font-weight: 800; font-size: 21px; color: #FFFFFF; line-height: 1;
+}
+.placar span {
+    font-size: 11.5px; color: #7B8298; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-top: 5px;
+}
+
+/* ------------------------------------------------------- destaques */
+
+.destaques {
+    display: grid; gap: 16px; margin-top: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+.destaque {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 0 0 16px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: transform .16s, box-shadow .16s, border-color .16s;
+}
+.destaque:hover {
+    transform: translateY(-3px); border-color: var(--vinho);
+    box-shadow: 0 12px 28px rgba(20,22,26,.12);
+}
+.destaque::before {
+    content: ''; display: block; width: 100%; height: 7px;
+    background: var(--filete, var(--linha));
+}
+/* A posição é numeral de camisa: expandido, pesado, canto superior. */
+/* A posição usa o numeral vazado: contorno em vez de preenchimento,
+   porque preenchido competiria com a camisa logo abaixo. */
+.destaque .pos {
+    position: absolute; top: 14px; right: 13px;
+    font-size: 40px;
+    color: var(--vinho);
+}
+.destaque-img {
+    padding: 20px 0 12px; display: flex; align-items: center; justify-content: center;
+    min-height: 176px;
+}
+.destaque-img img {
+    width: 158px; height: 158px; object-fit: cover;
+    border-radius: 10px; background: var(--papel);
+}
+.destaque-info { text-align: center; padding: 0 14px; }
+.destaque-info strong {
+    display: block; font-family: var(--titulo);
+    font-variation-settings: 'wdth' 116; font-weight: 800;
+    font-size: 16px; text-transform: uppercase; line-height: 1.15;
+}
+.destaque-info .meta { display: block; margin-top: 4px; }
+.destaque-info .estampa {
+    display: inline-block; margin-top: 8px; padding: 3px 9px;
+    background: var(--vinho); color: #FFFFFF; border-radius: 5px;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 11.5px; letter-spacing: 0.04em;
+}
+
+/* ------------------------------------------------------------ abas */
+
+.abas-perfil {
+    display: flex; gap: 8px; margin: 28px 0 4px;
+    border-bottom: 1px solid var(--linha); padding-bottom: 12px;
+}
+.abas-perfil .aba { display: inline-flex; align-items: center; gap: 7px; }
+.abas-perfil .aba .num {
+    background: var(--papel); color: var(--fraco);
+    border-radius: 999px; padding: 1px 7px; font-size: 12px;
+}
+.abas-perfil .aba.ativa .num { background: #1E2942; color: #A8A49C; }
+
+.fixar { margin-top: 9px; }
+.grail {
+    margin-top: 7px; padding: 2px 9px; border-radius: 5px;
+    background: var(--vinho); color: #FFFFFF;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.dica {
+    background: var(--carta); border: 1px dashed var(--linha);
+    border-radius: var(--raio); padding: 14px 16px; margin-top: 18px;
+    color: var(--fraco); font-size: 14.5px;
+}
+
+/* Bloco de opção: caixa com rótulo forte e explicação embaixo, que muda
+   conforme o estado. Explicar o efeito no momento da escolha vale mais
+   que um texto de ajuda em outro lugar. */
+.opcao {
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    background: var(--carta); padding: 14px 16px; margin: 22px 0 0;
+}
+.opcao-linha { display: flex; align-items: flex-start; gap: 11px; cursor: pointer; }
+.opcao-linha input { width: 17px; height: 17px; margin-top: 2px; flex-shrink: 0; }
+.opcao-linha b { display: block; font-size: 14.5px; font-weight: 600; }
+.opcao-linha em {
+    display: block; font-style: normal; color: var(--fraco);
+    font-size: 13.5px; line-height: 1.5; margin-top: 4px;
+}
+
+/* ------------------------------------------------- sugestões de gente */
+
+.tiras-pessoas {
+    display: grid; gap: 12px; margin-top: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.pessoa-mini {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 18px 12px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    text-align: center;
+}
+.pessoa-mini a { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.pessoa-mini strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 14px; line-height: 1.2;
+}
+.pessoa-mini .botao { padding: 7px 16px; font-size: 13.5px; }
+.botao.vazado.escuro-nao { border-color: var(--linha); color: var(--ink); background: var(--carta); }
+.botao.vazado.escuro-nao:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ------------------------------------------- avaliações no perfil */
+
+.lista-resenhas { display: grid; gap: 12px; margin-top: 18px; max-width: 720px; }
+.resenha-perfil {
+    position: relative; overflow: hidden;
+    display: flex; gap: 16px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px 18px 16px 22px;
+}
+.resenha-perfil::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+    background: var(--filete, var(--linha));
+}
+.rp-camisa { flex-shrink: 0; display: flex; align-items: flex-start; }
+.rp-corpo { min-width: 0; flex: 1; }
+.rp-titulo { display: block; margin-bottom: 8px; }
+.rp-titulo strong {
+    display: block; font-family: var(--titulo);
+    font-variation-settings: 'wdth' 116; font-weight: 800;
+    font-size: 16px; text-transform: uppercase; line-height: 1.15;
+}
+.rp-corpo .estrelas { margin-bottom: 8px; }
+.rp-texto { margin: 0 0 10px; line-height: 1.55; font-size: 14.5px; }
+.rp-numeros {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; color: var(--fraco);
+    padding-top: 8px; border-top: 1px solid var(--linha);
+}
+.rp-numeros .link { font-size: 13px; }
+.rp-corpo .comentarios { padding: 4px 0 0; border-top: 0; }
+
+@media (max-width: 760px) {
+    .resenha-perfil { padding: 14px 14px 14px 18px; gap: 12px; }
+    .rp-titulo strong { font-size: 15px; }
+}
+
+
+/* ================================================================ HERO
+   A abertura. Faixa escura de ponta a ponta, tipografia em largura
+   expandida no tamanho máximo, e a arara de camisas deslizando embaixo.
+
+   A arara é o elemento assinatura: uma fileira de camisas em movimento
+   é literalmente o que um acervo é. É também a ÚNICA animação do site —
+   concentrar o movimento num lugar só faz ele significar alguma coisa.
+   ================================================================== */
+
+.hero {
+    /* O vinho ocupando área, e não linha. É o único lugar do app onde
+       ele domina — a abertura pode gritar porque acontece uma vez. */
+    background: linear-gradient(150deg, var(--vinho) 0%, var(--vinho-3) 58%, var(--ink) 100%);
+    color: #FFFFFF;
+    padding: 56px 0 0;
+    margin-bottom: 30px;
+    overflow: hidden;
+    position: relative;
+}
+/* Halo dourado atrás do texto: dá profundidade sem virar gradiente
+   decorativo, e some nas bordas. */
+.hero::before {
+    content: ''; position: absolute; inset: 0;
+    /* Dois halos, um de cada cor do escudo: o azul de um lado, o vinho
+       do outro. Repete no fundo a divisão que a marca tem. */
+    /* Halo neutro, quase imperceptível: dá profundidade sem colorir a
+       tela. Os dois halos coloridos da tentativa anterior competiam
+       com as camisas da arara logo abaixo. */
+    background: radial-gradient(58% 88% at 18% 0%, rgba(255,255,255,.10), transparent 66%);
+    pointer-events: none;
+}
+.hero-texto { position: relative; }
+
+.hero-titulo {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 124;
+    font-weight: 900;
+    font-size: clamp(38px, 7.4vw, 84px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    max-width: 15ch;
+}
+.hero-linha {
+    color: #E3C9CE; font-size: clamp(15px, 1.6vw, 17.5px);
+    line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
+}
+
+.hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+/* O botão de ação principal sobre fundo escuro. Branco puro é o que
+   mais salta contra o quase-preto, e não briga com a camisa. */
+/* Sobre o hero vinho, branco é o que mais salta. */
+.botao.claro  { background: #FFFFFF; color: var(--vinho); font-weight: 700; }
+.botao.vazado {
+    background: transparent; color: #FFFFFF;
+    border: 1px solid rgba(255,255,255,.34);
+}
+.botao.vazado:hover { border-color: #FFFFFF; color: #FFFFFF; opacity: 1; }
+
+.hero-conta {
+    margin: 22px 0 0; color: #C09AA2; font-size: 13.5px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
+}
+
+/* -------------------------------------------------------- a arara */
+
+.arara {
+    margin-top: 40px;
+    border-top: 1px solid rgba(255,255,255,.14);
+    padding: 22px 0 26px;
+    /* As pontas somem no escuro: a fileira não começa nem termina, ela
+       continua fora da tela. */
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.arara-trilho {
+    display: flex; gap: 26px; width: max-content;
+    animation: desliza 46s linear infinite;
+}
+.arara-item {
+    display: block; opacity: .92;
+    filter: drop-shadow(0 5px 14px rgba(0,0,0,.45));
+}
+@keyframes desliza {
+    from { transform: translateX(0); }
+    /* -50% porque a fileira está duplicada: ao chegar na metade, a
+       segunda cópia está exatamente onde a primeira começou. */
+    to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .arara-trilho { animation: none; }
+}
+@media (max-width: 640px) {
+    .hero { padding-top: 38px; }
+    .arara { margin-top: 28px; }
+}
+
+
+
+/* ================================================================ HERO
+   A abertura. Faixa escura de ponta a ponta, tipografia em largura
+   expandida no tamanho máximo, e a arara de camisas deslizando embaixo.
+
+   A arara é o elemento assinatura: uma fileira de camisas em movimento
+   é literalmente o que um acervo é. É também a ÚNICA animação do site —
+   concentrar o movimento num lugar só faz ele significar alguma coisa.
+   ================================================================== */
+
+.hero {
+    /* O vinho ocupando área, e não linha. É o único lugar do app onde
+       ele domina — a abertura pode gritar porque acontece uma vez. */
+    color: #FFFFFF;
+    padding: 56px 0 0;
+    margin-bottom: 30px;
+    overflow: hidden;
+    position: relative;
+}
+/* Halo dourado atrás do texto: dá profundidade sem virar gradiente
+   decorativo, e some nas bordas. */
+.hero::before {
+    content: ''; position: absolute; inset: 0;
+    /* Dois halos, um de cada cor do escudo: o azul de um lado, o vinho
+       do outro. Repete no fundo a divisão que a marca tem. */
+    /* Halo neutro, quase imperceptível: dá profundidade sem colorir a
+       tela. Os dois halos coloridos da tentativa anterior competiam
+       com as camisas da arara logo abaixo. */
+    background: radial-gradient(58% 88% at 18% 0%, rgba(255,255,255,.10), transparent 66%);
+    pointer-events: none;
+}
+.hero-texto { position: relative; }
+
+.hero-titulo {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 124;
+    font-weight: 900;
+    font-size: clamp(38px, 7.4vw, 84px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    max-width: 15ch;
+}
+.hero-linha {
+    color: #E3C9CE; font-size: clamp(15px, 1.6vw, 17.5px);
+    line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
+}
+
+.hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+/* O botão de ação principal sobre fundo escuro. Branco puro é o que
+   mais salta contra o quase-preto, e não briga com a camisa. */
+/* Sobre o hero vinho, branco é o que mais salta. */
+.botao.claro  { background: #FFFFFF; color: var(--vinho); font-weight: 700; }
+.botao.vazado {
+    background: transparent; color: #FFFFFF;
+    border: 1px solid rgba(255,255,255,.34);
+}
+.botao.vazado:hover { border-color: #FFFFFF; color: #FFFFFF; opacity: 1; }
+
+.hero-conta {
+    margin: 22px 0 0; color: #C09AA2; font-size: 13.5px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
+}
+
+/* -------------------------------------------------------- a arara */
+
+.arara {
+    margin-top: 40px;
+    border-top: 1px solid rgba(255,255,255,.14);
+    padding: 22px 0 26px;
+    /* As pontas somem no escuro: a fileira não começa nem termina, ela
+       continua fora da tela. */
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.arara-trilho {
+    display: flex; gap: 26px; width: max-content;
+    animation: desliza 46s linear infinite;
+}
+.arara-item {
+    display: block; opacity: .92;
+    filter: drop-shadow(0 5px 14px rgba(0,0,0,.45));
+}
+@keyframes desliza {
+    from { transform: translateX(0); }
+    /* -50% porque a fileira está duplicada: ao chegar na metade, a
+       segunda cópia está exatamente onde a primeira começou. */
+    to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .arara-trilho { animation: none; }
+}
+@media (max-width: 640px) {
+    .hero { padding-top: 38px; }
+    .arara { margin-top: 28px; }
+}
+
+
+
+/* ============================================ AJUSTE DE CELULAR
+
+   Três problemas concretos: o seletor Seguindo/Descobrir quebrava
+   linha, a abertura ocupava a tela inteira antes de mostrar conteúdo,
+   e os cards ficavam grandes demais numa coluna só.
+   ============================================================== */
+
+@media (max-width: 760px) {
+
+    /* O seletor vira controle segmentado colado, ocupando a largura
+       toda. Duas pílulas soltas no celular parecem dois botões sem
+       relação; coladas, leem como uma escolha entre dois estados. */
+    .topo-linha {
+        display: block; margin-bottom: 14px;
+        position: sticky; top: 54px; z-index: 10;
+        background: var(--papel); padding: 12px 0 10px;
+    }
+    .titulo-linha { font-size: 27px; margin-bottom: 12px; }
+    .titulo-linha::after { width: 40px; height: 4px; margin-top: 8px; }
+
+    .topo-linha .abas {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+        border: 1px solid var(--linha); border-radius: 10px;
+        overflow: hidden; background: var(--carta);
+    }
+    .topo-linha .aba {
+        border: 0; border-radius: 0; padding: 11px 0; font-size: 14px;
+        font-weight: 600;
+    }
+    .topo-linha .aba.ativa { background: var(--vinho); color: #FFFFFF; }
+
+    /* A abertura encurta: no celular ela empurrava o conteúdo para
+       fora da primeira tela inteira. */
+    .hero { padding-top: 30px; margin-bottom: 22px; }
+    .hero-titulo { font-size: 34px; line-height: 0.98; }
+    .hero-linha { font-size: 14.5px; margin: 14px 0 20px; }
+    .hero-acoes .botao { flex: 1; justify-content: center; }
+    .arara { margin-top: 26px; padding: 16px 0 18px; }
+
+    .painel { margin-top: -10px; padding: 13px; border-radius: 12px; }
+    .faixa { margin-top: 11px; }
+    .competicao { padding: 7px 12px; font-size: 13.5px; }
+
+    /* Duas colunas em vez de uma: camisa é forma reconhecível de
+       relance, não precisa de tela cheia para ser identificada. */
+    .grade { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+    .card .vitrine { min-height: 128px; padding: 14px 0 10px; }
+    .card .vitrine svg, .foto-card { width: 108px; height: 108px; }
+    .card .time { font-size: 13px; }
+    .card .meta { font-size: 11.5px; }
+
+    /* No feed vale o contrário: lá a camisa é o conteúdo, e ocupa tudo. */
+    .linha-tempo { gap: 16px; }
+    .palco { min-height: 250px; padding: 20px 0; }
+    .palco-foto { max-height: 300px; }
+    .evento-info strong { font-size: 17px; }
+    .evento-topo { padding: 12px 14px; }
+    .evento-pe { padding: 13px 14px; }
+    .evento-texto { padding: 0 14px 15px; font-size: 14.5px; }
+
+    /* Perfil */
+    .capa { padding: 22px 0 20px; }
+    .capa-avatar { width: 72px; height: 72px; }
+    .capa-acao { margin-left: 0; width: 100%; }
+    .capa-acao .botao { width: 100%; justify-content: center; }
+    .placar { gap: 18px; margin-top: 16px; }
+    .placar b { font-size: 18px; }
+    .destaques { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+    .destaque-img { min-height: 132px; padding: 14px 0 8px; }
+    .destaque-img img { width: 112px; height: 112px; }
+    .destaque .pos { font-size: 22px; top: 12px; right: 11px; }
+
+    /* Formulários: os pares lado a lado viram um por linha, senão os
+       campos ficam estreitos demais para digitar. */
+    .dois { flex-direction: column; gap: 0; }
+    .cadastro { gap: 18px; }
+    .previa { position: static; width: 100%; padding: 16px; }
+    .form-cadastro { max-width: none; }
+    .lote-item { gap: 12px; }
+    .lote-foto img { width: 96px; height: 96px; }
+
+    /* Página da camisa */
+    .detalhe { gap: 20px; }
+    .galeria { width: 100%; }
+    .foto-principal { width: 100%; max-width: 340px; }
+    .titulo-camisa h1 { font-size: 24px; }
+
+    .container { padding: 0 14px; }
+    .lista-pessoas { gap: 9px; }
+    .tiras-pessoas { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Telas bem estreitas: o placar do perfil quebra em duas linhas em vez
+   de espremer quatro colunas. */
+@media (max-width: 400px) {
+    .placar { gap: 14px 22px; }
+    .hero-titulo { font-size: 30px; }
+    .grade { gap: 9px; }
+}
+
+
+/* ================================================================ FEED
+   A linha é coluna estreita, e cada evento é um pôster: a camisa ocupa
+   a largura toda sobre fundo escuro, com o texto reduzido a legenda.
+
+   O erro da primeira versão foi tratar o feed como lista de recados —
+   avatar, frase, miniatura. Num app cujo conteúdo é camisa, a camisa
+   não pode ser o menor elemento da tela.
+   ================================================================== */
+
+.topo-linha {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+    max-width: 620px; margin: 0 auto 4px;
+}
+.titulo-linha {
+    font-size: clamp(30px, 5vw, 44px);
+    font-variation-settings: 'wdth' 124;
+    text-transform: uppercase; font-weight: 900;
+    letter-spacing: -0.02em;
+}
+.titulo-linha::after {
+    content: ''; display: block; width: 56px; height: 5px;
+    background: var(--vinho); margin-top: 10px;
+}
+
+.linha-tempo { max-width: 620px; margin: 24px auto 0; display: grid; gap: 20px; }
+
+.evento {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 16px;
+    transition: box-shadow .18s, transform .18s;
+}
+.evento:hover { box-shadow: 0 14px 32px rgba(20,22,26,.10); transform: translateY(-2px); }
+
+.evento-topo {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 14px 18px;
+}
+.evento-autor { display: inline-flex; align-items: center; gap: 10px; }
+.evento-autor b {
+    display: block; font-family: var(--titulo);
+    font-variation-settings: 'wdth' 110; font-weight: 700; font-size: 15px;
+}
+.evento-autor em {
+    display: block; font-style: normal; color: var(--fraco);
+    font-size: 12.5px; margin-top: 1px;
+}
+.avatar-mini.claro {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    border: 1px solid var(--linha); display: inline-block; flex-shrink: 0;
+}
+
+/* O palco. Fundo escuro para a camisa recortar, e o filete de cor do
+   uniforme atravessando embaixo. */
+.palco {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    /* O palco puxa para o vinho escuro em vez de cinza-azulado: a
+       camisa continua sendo o colorido, mas o fundo deixa de ser morto. */
+    background: linear-gradient(160deg, #2A1D22, #171013 64%);
+    min-height: 300px; padding: 26px 0;
+    border-top: 1px solid var(--linha);
+    border-bottom: 5px solid var(--filete, var(--linha));
+}
+/* Fundo escuro exige contorno claro: sem isso, camisa preta some. */
+.palco { --contorno-camisa: rgba(255,255,255,.5); }
+.hero { --contorno-camisa: rgba(255,255,255,.42); }
+.palco::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(60% 70% at 50% 30%, rgba(255,255,255,.08), transparent 70%);
+    pointer-events: none;
+}
+.palco-foto {
+    max-width: 100%; max-height: 380px; width: auto;
+    border-radius: 8px; position: relative;
+}
+.palco svg { filter: drop-shadow(0 10px 26px rgba(0,0,0,.5)); position: relative; }
+
+/* A estampa das costas em plaqueta, como numa etiqueta de leilão. */
+.palco-estampa {
+    position: absolute; left: 16px; bottom: 16px;
+    background: var(--vinho); color: #FFFFFF;
+    padding: 5px 11px; border-radius: 6px;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 116;
+    font-weight: 800; font-size: 13px; letter-spacing: 0.05em;
+}
+
+.evento-pe {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; padding: 15px 18px;
+}
+.evento-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.evento-info strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 118;
+    font-weight: 800; font-size: 19px; text-transform: uppercase; line-height: 1.1;
+}
+.evento-pe .estrelas { margin-bottom: 0; flex-shrink: 0; }
+
+.evento-texto {
+    margin: 0; padding: 0 18px 18px;
+    line-height: 1.6; font-size: 15.5px;
+}
+.evento-texto::before {
+    content: ''; display: block; width: 34px; height: 3px;
+    background: var(--vinho); margin-bottom: 12px;
+}
+
+/* ---------------------------------------- coluna de apoio no feed */
+
+.coluna-aside { display: none; }
+.coluna-principal { min-width: 0; }
+
+@media (min-width: 1180px) {
+    .com-aside {
+        display: grid; gap: 34px;
+        grid-template-columns: minmax(0, 1fr) 288px;
+        max-width: 1080px;
+    }
+    /* Sem o auto na coluna principal, a linha do tempo continuaria
+       centrada e a coluna de apoio ficaria flutuando longe dela. */
+    .com-aside .linha-tempo { margin-left: 0; margin-right: 0; max-width: none; }
+    .com-aside .topo-linha { margin-left: 0; margin-right: 0; }
+
+    .coluna-aside { display: block; }
+    .bloco-aside {
+        position: sticky; top: 26px;
+        background: var(--carta); border: 1px solid var(--linha);
+        border-radius: 14px; padding: 18px;
+    }
+    .titulo-aside {
+        font-size: 15px; text-transform: uppercase; margin-bottom: 14px;
+        padding-bottom: 6px; border-bottom: 3px solid var(--vinho);
+        display: inline-block;
+    }
+    .linha-sugestao {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--linha);
+    }
+    .linha-sugestao:last-of-type { border-bottom: 0; }
+    .linha-sugestao a { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .linha-sugestao b { display: block; font-size: 13.5px; }
+    .linha-sugestao em { display: block; font-style: normal; font-size: 12px; color: var(--fraco); }
+    .linha-sugestao .botao { padding: 6px 13px; font-size: 13px; }
+
+    /* Duplicar sugestões no meio da linha e na coluna seria repetição. */
+    .so-estreito { display: none; }
+}
+
+/* ====================================== CURTIR, COMENTAR, DENUNCIAR */
+
+.acoes {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 12px 12px; border-top: 1px solid var(--linha);
+    margin-top: 2px; padding-top: 8px;
+}
+.acao {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: 0; cursor: pointer;
+    /* 40px de altura: alvo confortável no toque sem virar botão grande
+       demais numa barra de três itens. */
+    padding: 9px 11px; min-height: 40px; border-radius: 9px;
+    color: var(--fraco); font-family: var(--corpo); font-size: 13.5px;
+    transition: background .12s, color .12s;
+}
+.acao:hover { background: var(--papel); color: var(--ink); }
+.acao svg { width: 20px; height: 20px; }
+.acao.curtido { color: var(--vinho-2); }
+.acao .num { font-weight: 600; }
+
+.acao-menu { position: relative; margin-left: auto; }
+.menu-flutuante {
+    position: absolute; right: 0; top: calc(100% + 6px); z-index: 40;
+    min-width: 218px; background: var(--carta);
+    border: 1px solid var(--linha); border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(20,22,26,.16); padding: 7px;
+}
+.menu-titulo {
+    margin: 4px 10px 7px; font-size: 12px; color: var(--fraco);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.menu-item {
+    display: block; width: 100%; text-align: left;
+    background: none; border: 0; cursor: pointer;
+    padding: 10px 11px; border-radius: 8px;
+    font-family: var(--corpo); font-size: 14px; color: var(--ink);
+}
+.menu-item:hover { background: var(--papel); }
+.menu-item.perigo { color: var(--alerta); font-weight: 600; }
+.menu-flutuante hr { border: 0; border-top: 1px solid var(--linha); margin: 6px 4px; }
+.menu-ok { margin: 10px; font-size: 14px; color: var(--certo); }
+
+/* -------------------------------------------------------- comentários */
+
+.comentarios { padding: 4px 16px 16px; border-top: 1px solid var(--linha); }
+.comentario { display: flex; gap: 10px; padding: 11px 0; }
+.com-avatar { flex-shrink: 0; }
+.com-avatar img, .com-avatar .vazio-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    object-fit: cover; border: 1px solid var(--linha); display: block;
+}
+.com-corpo { min-width: 0; flex: 1; }
+.com-cabeca { display: flex; align-items: center; gap: 9px; margin: 0 0 3px; font-size: 13.5px; }
+.com-cabeca .link { font-size: 12.5px; }
+.com-texto { margin: 0; font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+
+.com-form { display: flex; gap: 8px; margin-top: 10px; }
+.com-form .busca { flex: 1; padding: 10px 13px; font-size: 14.5px; }
+.com-form .botao { padding: 10px 17px; font-size: 14px; flex-shrink: 0; }
+
+@media (max-width: 760px) {
+    .acoes { padding: 8px 10px 10px; }
+    .acao { padding: 9px 9px; font-size: 13px; }
+    .comentarios { padding: 4px 13px 14px; }
+    /* No celular o menu abre ancorado à direita da tela, não do botão,
+       senão ele vaza para fora da borda. */
+    .menu-flutuante { right: 0; left: auto; min-width: 200px; }
+    .com-form .botao { padding: 10px 14px; }
+}
+
