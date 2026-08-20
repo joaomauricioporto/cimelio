@@ -18,23 +18,35 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Instrument+Sans:wght@400..600&display=swap');
 
 :root {
-    /* Paleta tirada do escudo: vinho e azul dos quadrantes, e um azul
-       muito escuro derivado deles para a barra de navegação. Preto puro
-       ficaria descolado de um escudo que não tem preto chapado. */
-    --vinho:  #5F0F1A;
+    /* Correção de rumo: as cores do escudo ficam NO escudo.
+       
+       A primeira tentativa espalhou vinho e azul pela interface inteira
+       — navegação, botões, filetes, halos. As duas são escuras e
+       pesadas, e o resultado foi uma tela abafada, sem nenhum ponto de
+       respiro. O dourado antigo funcionava não por ser dourado, mas por
+       ser claro e quente contra o escuro.
+       
+       Agora a interface é neutra e o escudo é o único colorido. Ele
+       ganha força justamente por ser a exceção. */
+    --vinho:  #5F0F1A;   /* só na marca e em filetes de camisa */
     --azul:   #1B347C;
-    --ink:    #0E1526;   /* navy quase preto, do mesmo tronco do azul */
-    --ink-2:  #16203A;   /* um degrau acima, para estados de hover */
 
-    /* O destaque é vinho clareado. O vinho puro do escudo tem contraste
-       baixo demais sobre fundo escuro para servir de acento. */
-    --acento:   #C4485A;
-    --realce: #E8798A;
+    --ink:    #14161C;   /* quase preto, levemente frio */
+    --ink-2:  #1E212A;
 
-    --papel:  #F2F1EE;
+    /* Branco como destaque em fundo escuro, e tinta em fundo claro.
+       Neutro não compete com a camisa, que é o conteúdo colorido. */
+    /* Sobrou pouco uso direto: quase tudo virou branco literal em fundo
+       escuro ou tinta em fundo claro, porque a regra depende do fundo e
+       não de uma cor única. */
+    --acento: #FFFFFF;
+    --realce: #C4485A;   /* vinho clareado, para o que precisa gritar */
+    --estrela: #E8A33D;  /* nota: âmbar. Estrela vinho lê como aviso. */
+
+    --papel:  #F4F3F0;
     --carta:  #FFFFFF;
-    --linha:  #DDDBD5;
-    --fraco:  #6A6862;
+    --linha:  #E1E0DB;
+    --fraco:  #6E6C66;
     --alerta: #A32D2D;
     --certo:  #3B6D11;
 
@@ -56,7 +68,7 @@ body { margin: 0; }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; }
 
-:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--vinho); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
 }
@@ -85,7 +97,9 @@ h3 { font-size: 15px; }
 .topo {
     background: var(--ink);
     position: sticky; top: 0; z-index: 20;
-    border-bottom: 3px solid var(--acento);
+    /* Filete em vinho: como linha fina ele marca a marca sem pesar,
+       que é o oposto de usar a mesma cor como área. */
+    border-bottom: 3px solid var(--vinho);
 }
 .barra {
     display: flex; align-items: center; justify-content: space-between;
@@ -93,11 +107,11 @@ h3 { font-size: 15px; }
 }
 .marca {
     display: inline-flex; align-items: center; gap: 10px;
+    color: #FFFFFF;
     font-family: var(--titulo);
     font-variation-settings: 'wdth' 122;
     font-weight: 800; font-size: 20px;
     letter-spacing: 0.01em; text-transform: uppercase;
-    color: var(--acento);
 }
 .marca svg { display: block; }
 .marca span {
@@ -114,7 +128,7 @@ h3 { font-size: 15px; }
     transition: background .12s, color .12s;
 }
 .nav a:hover, .nav .link:hover { background: var(--ink-2); color: #FFFFFF; }
-.eu { display: inline-flex; align-items: center; gap: 7px; color: var(--acento) !important; }
+.eu { display: inline-flex; align-items: center; gap: 7px; color: #FFFFFF !important; }
 .avatar-mini {
     width: 22px; height: 22px; border-radius: 50%; object-fit: cover;
     border: 1px solid #3A3D44;
@@ -154,13 +168,13 @@ h3 { font-size: 15px; }
         font-size: 10.5px; letter-spacing: 0.02em;
         font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
     }
-    .nav-item.ativo { color: var(--acento); }
-    .nav-item.ativo span { color: var(--acento); }
+    .nav-item.ativo { color: #FFFFFF; }
+    .nav-item.ativo span { color: #FFFFFF; }
 
     /* O botão de registrar é o único preenchido: é a ação que o app
        existe para receber, e precisa ser encontrada sem procurar. */
     .nav-item.destaque svg {
-        background: var(--acento); color: var(--ink);
+        background: #FFFFFF; color: var(--ink);
         width: 34px; height: 34px; border-radius: 11px; padding: 6px;
         margin-bottom: -1px;
     }
@@ -201,9 +215,10 @@ main { padding: 0 0 70px; }
     content: ''; position: absolute; inset: 0;
     /* Dois halos, um de cada cor do escudo: o azul de um lado, o vinho
        do outro. Repete no fundo a divisão que a marca tem. */
-    background:
-        radial-gradient(52% 80% at 10% 0%,  rgba(27,52,124,.55), transparent 62%),
-        radial-gradient(46% 74% at 88% 18%, rgba(95,15,26,.42), transparent 64%);
+    /* Halo neutro, quase imperceptível: dá profundidade sem colorir a
+       tela. Os dois halos coloridos da tentativa anterior competiam
+       com as camisas da arara logo abaixo. */
+    background: radial-gradient(62% 92% at 14% 0%, rgba(255,255,255,.07), transparent 64%);
     pointer-events: none;
 }
 .hero-texto { position: relative; }
@@ -225,12 +240,14 @@ main { padding: 0 0 70px; }
 }
 
 .hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
-.botao.claro  { background: var(--acento); color: var(--ink); font-weight: 600; }
+/* O botão de ação principal sobre fundo escuro. Branco puro é o que
+   mais salta contra o quase-preto, e não briga com a camisa. */
+.botao.claro  { background: #FFFFFF; color: var(--ink); font-weight: 600; }
 .botao.vazado {
     background: transparent; color: #FFFFFF;
     border: 1px solid #2A365A;
 }
-.botao.vazado:hover { border-color: var(--acento); color: var(--acento); opacity: 1; }
+.botao.vazado:hover { border-color: #FFFFFF; color: #FFFFFF; opacity: 1; }
 
 .hero-conta {
     margin: 22px 0 0; color: #7B8298; font-size: 13.5px;
@@ -282,7 +299,7 @@ main { padding: 0 0 70px; }
     background: var(--carta); color: var(--ink);
 }
 .busca::placeholder { color: #9A968E; }
-.busca:focus { outline: 2px solid var(--acento); outline-offset: -1px; border-color: transparent; }
+.busca:focus { outline: 2px solid var(--vinho); outline-offset: -1px; border-color: transparent; }
 
 /* ------------------------------------------------- faixa de competição
    O elemento assinatura. Cada aba carrega o código do país, que é
@@ -308,7 +325,7 @@ main { padding: 0 0 70px; }
 }
 .competicao:hover { border-color: var(--ink); }
 .competicao[aria-pressed='true'] {
-    background: var(--ink); border-color: var(--ink); color: var(--acento);
+    background: var(--ink); border-color: var(--ink); color: #FFFFFF;
 }
 .pais {
     font-family: var(--titulo);
@@ -324,7 +341,7 @@ main { padding: 0 0 70px; }
 .secao { margin-top: 30px; }
 .rotulo-secao {
     display: inline-block; padding-bottom: 6px; margin-bottom: 4px;
-    border-bottom: 4px solid var(--acento);
+    border-bottom: 4px solid var(--ink);
     text-transform: uppercase; font-size: clamp(17px, 2.2vw, 22px);
     font-variation-settings: 'wdth' 122;
 }
@@ -406,7 +423,9 @@ main { padding: 0 0 70px; }
 
 .botao {
     display: inline-flex; align-items: center; justify-content: center;
-    background: var(--ink); color: var(--acento); border: 0;
+    /* Botão escuro com texto branco em qualquer fundo. Simples de
+       prever e nunca some. */
+    background: var(--ink); color: #FFFFFF; border: 0;
     padding: 11px 20px; border-radius: var(--raio);
     font-family: var(--corpo); font-size: 15px; font-weight: 500;
     cursor: pointer; transition: opacity .12s;
@@ -453,7 +472,7 @@ main { padding: 0 0 70px; }
 .tira:hover { border-color: var(--fraco); }
 /* A borda dourada diz qual está aberta. Sem marca de estado, clicar
    parece não ter feito nada quando as fotos são parecidas. */
-.tira.ativa { border-color: var(--acento); transform: translateY(-2px); }
+.tira.ativa { border-color: var(--vinho); transform: translateY(-2px); }
 .tira img { width: 56px; height: 56px; object-fit: cover; display: block; }
 
 /* Ficha técnica com a métrica de tabela de classificação: rótulo à
@@ -476,7 +495,7 @@ main { padding: 0 0 70px; }
 .contador {
     font-family: var(--titulo); font-variation-settings: 'wdth' 100;
     font-weight: 800; font-size: 12px;
-    background: var(--ink); color: var(--acento);
+    background: var(--ink); color: #FFFFFF;
     border-radius: 999px; padding: 2px 8px;
 }
 
@@ -496,7 +515,7 @@ main { padding: 0 0 70px; }
     border: 1px solid var(--linha); border-radius: var(--raio);
     resize: vertical; margin-top: 4px; background: var(--carta);
 }
-.texto:focus { outline: 2px solid var(--acento); outline-offset: -1px; }
+.texto:focus { outline: 2px solid var(--vinho); outline-offset: -1px; }
 
 /* --------------------------------------------------------- coleção */
 
@@ -600,11 +619,11 @@ main { padding: 0 0 70px; }
     padding: 6px 15px; font-size: 14px; font-family: var(--corpo);
     color: var(--fraco); cursor: pointer; font-variant-numeric: tabular-nums;
 }
-.aba.ativa { background: var(--ink); border-color: var(--ink); color: var(--acento); }
+.aba.ativa { background: var(--ink); border-color: var(--ink); color: #FFFFFF; }
 .secao-liga { margin-top: 26px; }
 .titulo-liga {
     display: inline-block; padding-bottom: 5px; margin: 0 0 4px;
-    border-bottom: 3px solid var(--acento); text-transform: uppercase; font-size: 15px;
+    border-bottom: 3px solid var(--ink); text-transform: uppercase; font-size: 15px;
 }
 
 /* ============================================================== PERFIL
@@ -616,14 +635,12 @@ main { padding: 0 0 70px; }
 .capa {
     background: var(--ink); color: #FFFFFF;
     padding: 34px 0 30px; margin-bottom: 26px;
-    border-bottom: 3px solid var(--acento);
+    border-bottom: 3px solid var(--vinho);
     position: relative; overflow: hidden;
 }
 .capa::before {
     content: ''; position: absolute; inset: 0;
-    background:
-        radial-gradient(48% 100% at 6% 0%,  rgba(27,52,124,.5), transparent 60%),
-        radial-gradient(40% 90% at 92% 20%, rgba(95,15,26,.36), transparent 62%);
+    background: radial-gradient(56% 100% at 8% 0%, rgba(255,255,255,.06), transparent 62%);
     pointer-events: none;
 }
 .capa-conteudo {
@@ -632,11 +649,11 @@ main { padding: 0 0 70px; }
 }
 .capa-avatar {
     width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
-    border: 3px solid var(--acento); background: var(--ink-2); flex-shrink: 0;
+    border: 3px solid var(--vinho); background: var(--ink-2); flex-shrink: 0;
 }
 .capa-dados { flex: 1 1 260px; min-width: 0; }
 .capa-dados h1 { color: #FFFFFF; font-size: clamp(24px, 3.6vw, 36px); }
-.capa-user { color: var(--acento); margin: 5px 0 0; font-size: 14.5px; }
+.capa-user { color: #C9CBD2; margin: 5px 0 0; font-size: 14.5px; }
 .capa-bio { color: #AEB4C6; margin: 12px 0 0; line-height: 1.55; max-width: 52ch; }
 .capa-acao { margin-left: auto; }
 .botao.vazado.escuro { border-color: #2A365A; color: #FFFFFF; }
@@ -702,7 +719,7 @@ main { padding: 0 0 70px; }
 .destaque-info .meta { display: block; margin-top: 4px; }
 .destaque-info .estampa {
     display: inline-block; margin-top: 8px; padding: 3px 9px;
-    background: var(--ink); color: var(--acento); border-radius: 5px;
+    background: var(--ink); color: #FFFFFF; border-radius: 5px;
     font-family: var(--titulo); font-variation-settings: 'wdth' 112;
     font-weight: 800; font-size: 11.5px; letter-spacing: 0.04em;
 }
@@ -723,7 +740,7 @@ main { padding: 0 0 70px; }
 .fixar { margin-top: 9px; }
 .grail {
     margin-top: 7px; padding: 2px 9px; border-radius: 5px;
-    background: var(--acento); color: var(--ink);
+    background: var(--vinho); color: #FFFFFF;
     font-family: var(--titulo); font-variation-settings: 'wdth' 112;
     font-weight: 800; font-size: 11px; letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -771,7 +788,7 @@ main { padding: 0 0 70px; }
 }
 .titulo-linha::after {
     content: ''; display: block; width: 56px; height: 5px;
-    background: var(--acento); margin-top: 10px;
+    background: var(--ink); margin-top: 10px;
 }
 
 .linha-tempo { max-width: 620px; margin: 24px auto 0; display: grid; gap: 20px; }
@@ -810,7 +827,7 @@ main { padding: 0 0 70px; }
     background: linear-gradient(160deg, #1D2027, #101215 62%);
     min-height: 300px; padding: 26px 0;
     border-top: 1px solid var(--linha);
-    border-bottom: 5px solid var(--filete, var(--acento));
+    border-bottom: 5px solid var(--filete, var(--linha));
 }
 /* Fundo escuro exige contorno claro: sem isso, camisa preta some. */
 .palco { --contorno-camisa: rgba(255,255,255,.5); }
@@ -829,7 +846,7 @@ main { padding: 0 0 70px; }
 /* A estampa das costas em plaqueta, como numa etiqueta de leilão. */
 .palco-estampa {
     position: absolute; left: 16px; bottom: 16px;
-    background: var(--acento); color: var(--ink);
+    background: #FFFFFF; color: var(--ink);
     padding: 5px 11px; border-radius: 6px;
     font-family: var(--titulo); font-variation-settings: 'wdth' 116;
     font-weight: 800; font-size: 13px; letter-spacing: 0.05em;
@@ -852,7 +869,7 @@ main { padding: 0 0 70px; }
 }
 .evento-texto::before {
     content: ''; display: block; width: 34px; height: 3px;
-    background: var(--acento); margin-bottom: 12px;
+    background: var(--ink); margin-bottom: 12px;
 }
 
 /* ------------------------------------------------- sugestões de gente */
@@ -893,7 +910,7 @@ main { padding: 0 0 70px; }
 }
 .lote-item.pronto { border-color: #9CC27A; opacity: .72; }
 .lote-item.erro { border-color: var(--alerta); }
-.lote-item.enviando { border-color: var(--acento); }
+.lote-item.enviando { border-color: var(--vinho); }
 
 .lote-foto { position: relative; flex-shrink: 0; }
 .lote-foto img {
@@ -907,7 +924,7 @@ main { padding: 0 0 70px; }
     font-family: var(--titulo); font-variation-settings: 'wdth' 108;
     font-weight: 700; font-size: 11px; text-transform: uppercase;
 }
-.selo.cinza { background: var(--ink); color: var(--acento); }
+.selo.cinza { background: var(--ink); color: #FFFFFF; }
 
 .lote-campos { flex: 1 1 300px; min-width: 0; }
 .lote-campos .rotulo { margin-top: 8px; }
@@ -951,7 +968,7 @@ main { padding: 0 0 70px; }
         border: 0; border-radius: 0; padding: 11px 0; font-size: 14px;
         font-weight: 600;
     }
-    .topo-linha .aba.ativa { background: var(--ink); color: var(--acento); }
+    .topo-linha .aba.ativa { background: var(--ink); color: #FFFFFF; }
 
     /* A abertura encurta: no celular ela empurrava o conteúdo para
        fora da primeira tela inteira. */
@@ -1051,7 +1068,7 @@ main { padding: 0 0 70px; }
 
     .lateral-marca {
         display: flex; align-items: center; gap: 11px;
-        color: var(--acento); padding: 0 8px 22px;
+        color: #FFFFFF; padding: 0 8px 22px;
         font-family: var(--titulo); font-variation-settings: 'wdth' 122;
         font-weight: 800; font-size: 21px; text-transform: uppercase;
         letter-spacing: 0.01em;
@@ -1068,7 +1085,7 @@ main { padding: 0 0 70px; }
     .lateral-item:hover { background: var(--ink-2); color: #FFFFFF; }
     /* O item ativo é preenchido, não sublinhado: numa coluna vertical o
        preenchimento é o único marcador que se lê de relance. */
-    .lateral-item.ativo { background: #1E2942; color: var(--acento); }
+    .lateral-item.ativo { background: var(--ink-2); color: #FFFFFF; }
 
     .lateral-registrar { margin-top: 18px; width: 100%; }
 
@@ -1120,7 +1137,7 @@ main { padding: 0 0 70px; }
     }
     .titulo-aside {
         font-size: 15px; text-transform: uppercase; margin-bottom: 14px;
-        padding-bottom: 6px; border-bottom: 3px solid var(--acento);
+        padding-bottom: 6px; border-bottom: 3px solid var(--ink);
         display: inline-block;
     }
     .linha-sugestao {
