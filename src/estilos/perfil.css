@@ -16,7 +16,7 @@
     background: var(--carta); border: 1px solid var(--linha);
     border-radius: var(--raio); padding: 14px; transition: border-color .14s;
 }
-.cartao-pessoa:hover { border-color: var(--ink); }
+.cartao-pessoa:hover { border-color: var(--vinho); }
 .dados-pessoa { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .dados-pessoa strong {
     font-family: var(--titulo); font-variation-settings: 'wdth' 108;
@@ -33,11 +33,11 @@
     padding: 6px 15px; font-size: 14px; font-family: var(--corpo);
     color: var(--fraco); cursor: pointer; font-variant-numeric: tabular-nums;
 }
-.aba.ativa { background: var(--ink); border-color: var(--ink); color: #FFFFFF; }
+.aba.ativa { background: var(--vinho); border-color: var(--vinho); color: #FFFFFF; }
 .secao-liga { margin-top: 26px; }
 .titulo-liga {
     display: inline-block; padding-bottom: 5px; margin: 0 0 4px;
-    border-bottom: 3px solid var(--ink); text-transform: uppercase; font-size: 15px;
+    border-bottom: 3px solid var(--vinho); text-transform: uppercase; font-size: 15px;
 }
 
 /* ============================================================== PERFIL
@@ -47,14 +47,17 @@
    ================================================================== */
 
 .capa {
-    background: var(--ink); color: #FFFFFF;
+    /* Mesma família do hero, mais contida: perfil se abre muitas vezes
+       por sessão, e o que grita toda vez cansa. */
+    background: linear-gradient(150deg, var(--vinho-3) 0%, var(--ink) 62%);
+    color: #FFFFFF;
     padding: 34px 0 30px; margin-bottom: 26px;
     border-bottom: 3px solid var(--vinho);
     position: relative; overflow: hidden;
 }
 .capa::before {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(56% 100% at 8% 0%, rgba(255,255,255,.06), transparent 62%);
+    background: radial-gradient(52% 100% at 8% 0%, rgba(255,255,255,.09), transparent 62%);
     pointer-events: none;
 }
 .capa-conteudo {
@@ -67,8 +70,8 @@
 }
 .capa-dados { flex: 1 1 260px; min-width: 0; }
 .capa-dados h1 { color: #FFFFFF; font-size: clamp(24px, 3.6vw, 36px); }
-.capa-user { color: #C9CBD2; margin: 5px 0 0; font-size: 14.5px; }
-.capa-bio { color: #AEB4C6; margin: 12px 0 0; line-height: 1.55; max-width: 52ch; }
+.capa-user { color: #D9A9B2; margin: 5px 0 0; font-size: 14.5px; }
+.capa-bio { color: #DCC6CA; margin: 12px 0 0; line-height: 1.55; max-width: 52ch; }
 .capa-acao { margin-left: auto; }
 .botao.vazado.escuro { border-color: #2A365A; color: #FFFFFF; }
 
@@ -102,7 +105,7 @@
     transition: transform .16s, box-shadow .16s, border-color .16s;
 }
 .destaque:hover {
-    transform: translateY(-3px); border-color: var(--ink);
+    transform: translateY(-3px); border-color: var(--vinho);
     box-shadow: 0 12px 28px rgba(20,22,26,.12);
 }
 .destaque::before {
@@ -115,7 +118,7 @@
 .destaque .pos {
     position: absolute; top: 14px; right: 13px;
     font-size: 40px;
-    color: var(--ink);
+    color: var(--vinho);
 }
 .destaque-img {
     padding: 20px 0 12px; display: flex; align-items: center; justify-content: center;
@@ -134,7 +137,7 @@
 .destaque-info .meta { display: block; margin-top: 4px; }
 .destaque-info .estampa {
     display: inline-block; margin-top: 8px; padding: 3px 9px;
-    background: var(--ink); color: #FFFFFF; border-radius: 5px;
+    background: var(--vinho); color: #FFFFFF; border-radius: 5px;
     font-family: var(--titulo); font-variation-settings: 'wdth' 112;
     font-weight: 800; font-size: 11.5px; letter-spacing: 0.04em;
 }

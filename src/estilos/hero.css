@@ -8,8 +8,9 @@
    ================================================================== */
 
 .hero {
-    background: var(--ink);
-    /* A malha dá matéria ao retângulo escuro do hero. */
+    /* O vinho ocupando área, e não linha. É o único lugar do app onde
+       ele domina — a abertura pode gritar porque acontece uma vez. */
+    background: linear-gradient(150deg, var(--vinho) 0%, var(--vinho-3) 58%, var(--ink) 100%);
     color: #FFFFFF;
     padding: 56px 0 0;
     margin-bottom: 30px;
@@ -25,7 +26,7 @@
     /* Halo neutro, quase imperceptível: dá profundidade sem colorir a
        tela. Os dois halos coloridos da tentativa anterior competiam
        com as camisas da arara logo abaixo. */
-    background: radial-gradient(62% 92% at 14% 0%, rgba(255,255,255,.07), transparent 64%);
+    background: radial-gradient(58% 88% at 18% 0%, rgba(255,255,255,.10), transparent 66%);
     pointer-events: none;
 }
 .hero-texto { position: relative; }
@@ -42,22 +43,23 @@
     max-width: 15ch;
 }
 .hero-linha {
-    color: #AEB4C6; font-size: clamp(15px, 1.6vw, 17.5px);
+    color: #E3C9CE; font-size: clamp(15px, 1.6vw, 17.5px);
     line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
 }
 
 .hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
 /* O botão de ação principal sobre fundo escuro. Branco puro é o que
    mais salta contra o quase-preto, e não briga com a camisa. */
-.botao.claro  { background: #FFFFFF; color: var(--ink); font-weight: 600; }
+/* Sobre o hero vinho, branco é o que mais salta. */
+.botao.claro  { background: #FFFFFF; color: var(--vinho); font-weight: 700; }
 .botao.vazado {
     background: transparent; color: #FFFFFF;
-    border: 1px solid #2A365A;
+    border: 1px solid rgba(255,255,255,.34);
 }
 .botao.vazado:hover { border-color: #FFFFFF; color: #FFFFFF; opacity: 1; }
 
 .hero-conta {
-    margin: 22px 0 0; color: #7B8298; font-size: 13.5px;
+    margin: 22px 0 0; color: #C09AA2; font-size: 13.5px;
     letter-spacing: 0.04em; text-transform: uppercase;
     font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
 }
@@ -66,7 +68,7 @@
 
 .arara {
     margin-top: 40px;
-    border-top: 1px solid #1E2942;
+    border-top: 1px solid rgba(255,255,255,.14);
     padding: 22px 0 26px;
     /* As pontas somem no escuro: a fileira não começa nem termina, ela
        continua fora da tela. */
@@ -107,8 +109,8 @@
    ================================================================== */
 
 .hero {
-    background: var(--ink);
-    /* A malha dá matéria ao retângulo escuro do hero. */
+    /* O vinho ocupando área, e não linha. É o único lugar do app onde
+       ele domina — a abertura pode gritar porque acontece uma vez. */
     color: #FFFFFF;
     padding: 56px 0 0;
     margin-bottom: 30px;
@@ -124,7 +126,7 @@
     /* Halo neutro, quase imperceptível: dá profundidade sem colorir a
        tela. Os dois halos coloridos da tentativa anterior competiam
        com as camisas da arara logo abaixo. */
-    background: radial-gradient(62% 92% at 14% 0%, rgba(255,255,255,.07), transparent 64%);
+    background: radial-gradient(58% 88% at 18% 0%, rgba(255,255,255,.10), transparent 66%);
     pointer-events: none;
 }
 .hero-texto { position: relative; }
@@ -141,22 +143,23 @@
     max-width: 15ch;
 }
 .hero-linha {
-    color: #AEB4C6; font-size: clamp(15px, 1.6vw, 17.5px);
+    color: #E3C9CE; font-size: clamp(15px, 1.6vw, 17.5px);
     line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
 }
 
 .hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
 /* O botão de ação principal sobre fundo escuro. Branco puro é o que
    mais salta contra o quase-preto, e não briga com a camisa. */
-.botao.claro  { background: #FFFFFF; color: var(--ink); font-weight: 600; }
+/* Sobre o hero vinho, branco é o que mais salta. */
+.botao.claro  { background: #FFFFFF; color: var(--vinho); font-weight: 700; }
 .botao.vazado {
     background: transparent; color: #FFFFFF;
-    border: 1px solid #2A365A;
+    border: 1px solid rgba(255,255,255,.34);
 }
 .botao.vazado:hover { border-color: #FFFFFF; color: #FFFFFF; opacity: 1; }
 
 .hero-conta {
-    margin: 22px 0 0; color: #7B8298; font-size: 13.5px;
+    margin: 22px 0 0; color: #C09AA2; font-size: 13.5px;
     letter-spacing: 0.04em; text-transform: uppercase;
     font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
 }
@@ -165,7 +168,7 @@
 
 .arara {
     margin-top: 40px;
-    border-top: 1px solid #1E2942;
+    border-top: 1px solid rgba(255,255,255,.14);
     padding: 22px 0 26px;
     /* As pontas somem no escuro: a fileira não começa nem termina, ela
        continua fora da tela. */
@@ -225,7 +228,7 @@
         border: 0; border-radius: 0; padding: 11px 0; font-size: 14px;
         font-weight: 600;
     }
-    .topo-linha .aba.ativa { background: var(--ink); color: #FFFFFF; }
+    .topo-linha .aba.ativa { background: var(--vinho); color: #FFFFFF; }
 
     /* A abertura encurta: no celular ela empurrava o conteúdo para
        fora da primeira tela inteira. */

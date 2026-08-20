@@ -50,7 +50,7 @@
 }
 .competicao:hover { border-color: var(--ink); }
 .competicao[aria-pressed='true'] {
-    background: var(--ink); border-color: var(--ink); color: #FFFFFF;
+    background: var(--vinho); border-color: var(--vinho); color: #FFFFFF;
 }
 .pais {
     font-family: var(--titulo);
@@ -74,7 +74,7 @@
    longa, que é a métrica de cabeçalho de tabela impressa. */
 .rotulo-secao::before,
 .rotulo-secao::after { content: ''; position: absolute; left: 0; bottom: 0; }
-.rotulo-secao::before { width: 46px; height: 4px; background: var(--ink); }
+.rotulo-secao::before { width: 46px; height: 4px; background: var(--vinho); }
 .rotulo-secao::after  { width: 100%; height: 1px; background: var(--linha); }
 /* A busca e a faixa de competição ficam num painel próprio, separando
    a ferramenta do conteúdo em vez de tudo flutuar no mesmo plano. */
@@ -154,14 +154,15 @@
 
 .botao {
     display: inline-flex; align-items: center; justify-content: center;
-    /* Botão escuro com texto branco em qualquer fundo. Simples de
-       prever e nunca some. */
-    background: var(--ink); color: #FFFFFF; border: 0;
+    /* Vinho, não preto. O botão é o único elemento da tela que precisa
+       ser achado sem procurar, e preto sobre papel claro se confunde
+       com texto. */
+    background: var(--vinho); color: #FFFFFF; border: 0;
     padding: 11px 20px; border-radius: var(--raio);
     font-family: var(--corpo); font-size: 15px; font-weight: 500;
     cursor: pointer; transition: opacity .12s;
 }
-.botao:hover { opacity: .88; }
+.botao:hover { background: var(--vinho-2); opacity: 1; }
 .botao:disabled { opacity: .5; cursor: default; }
 .botao.largo { width: 100%; margin-top: 18px; }
 
@@ -217,7 +218,7 @@
 }
 .competicao:hover { border-color: var(--ink); }
 .competicao[aria-pressed='true'] {
-    background: var(--ink); border-color: var(--ink); color: #FFFFFF;
+    background: var(--vinho); border-color: var(--vinho); color: #FFFFFF;
 }
 .pais {
     font-family: var(--titulo);
@@ -241,7 +242,7 @@
    longa, que é a métrica de cabeçalho de tabela impressa. */
 .rotulo-secao::before,
 .rotulo-secao::after { content: ''; position: absolute; left: 0; bottom: 0; }
-.rotulo-secao::before { width: 46px; height: 4px; background: var(--ink); }
+.rotulo-secao::before { width: 46px; height: 4px; background: var(--vinho); }
 .rotulo-secao::after  { width: 100%; height: 1px; background: var(--linha); }
 /* A busca e a faixa de competição ficam num painel próprio, separando
    a ferramenta do conteúdo em vez de tudo flutuar no mesmo plano. */
@@ -321,14 +322,15 @@
 
 .botao {
     display: inline-flex; align-items: center; justify-content: center;
-    /* Botão escuro com texto branco em qualquer fundo. Simples de
-       prever e nunca some. */
-    background: var(--ink); color: #FFFFFF; border: 0;
+    /* Vinho, não preto. O botão é o único elemento da tela que precisa
+       ser achado sem procurar, e preto sobre papel claro se confunde
+       com texto. */
+    background: var(--vinho); color: #FFFFFF; border: 0;
     padding: 11px 20px; border-radius: var(--raio);
     font-family: var(--corpo); font-size: 15px; font-weight: 500;
     cursor: pointer; transition: opacity .12s;
 }
-.botao:hover { opacity: .88; }
+.botao:hover { background: var(--vinho-2); opacity: 1; }
 .botao:disabled { opacity: .5; cursor: default; }
 .botao.largo { width: 100%; margin-top: 18px; }
 

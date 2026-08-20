@@ -23,13 +23,13 @@
 .marca span {
     font-family: var(--corpo); font-weight: 400; font-size: 13px;
     text-transform: none; letter-spacing: 0;
-    color: #8E93A6;
+    color: #9C8A8E;
 }
 @media (max-width: 720px) { .marca span { display: none; } }
 
 .nav { display: flex; align-items: center; gap: 4px; }
 .nav a, .nav .link {
-    color: #C2C7D6; font-size: 14px; font-weight: 500;
+    color: #D6C6C9; font-size: 14px; font-weight: 500;
     padding: 7px 11px; border-radius: 7px; text-decoration: none;
     transition: background .12s, color .12s;
 }
@@ -57,7 +57,7 @@
     .nav-baixo {
         display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
         background: var(--ink);
-        border-top: 1px solid #1E2942;
+        border-top: 1px solid #2C2026;
         /* padding-bottom acompanha a barra de gestos do iPhone: sem
            isso, o último item fica embaixo dela e não recebe toque. */
         padding-bottom: env(safe-area-inset-bottom, 0);
@@ -67,20 +67,20 @@
         justify-content: center; gap: 4px;
         /* 56px: acima dos 44 que a Apple recomenda como alvo mínimo. */
         min-height: 56px; padding: 8px 2px 9px;
-        color: #7B8298; text-decoration: none;
+        color: #9C8A8E; text-decoration: none;
     }
     .nav-item svg { width: 22px; height: 22px; }
     .nav-item span {
         font-size: 10.5px; letter-spacing: 0.02em;
         font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
     }
-    .nav-item.ativo { color: #FFFFFF; }
-    .nav-item.ativo span { color: #FFFFFF; }
+    .nav-item.ativo { color: #E8798A; }
+    .nav-item.ativo span { color: #E8798A; }
 
     /* O botão de registrar é o único preenchido: é a ação que o app
        existe para receber, e precisa ser encontrada sem procurar. */
     .nav-item.destaque svg {
-        background: #FFFFFF; color: var(--ink);
+        background: var(--vinho-2); color: #FFFFFF;
         width: 34px; height: 34px; border-radius: 11px; padding: 6px;
         margin-bottom: -1px;
     }
@@ -122,7 +122,7 @@ main { padding: 0 0 70px; }
         display: flex; flex-direction: column;
         background: var(--ink); color: #FFFFFF;
         padding: 22px 16px 20px;
-        border-right: 1px solid #1E2942;
+        border-right: 1px solid #2C2026;
     }
 
     .lateral-marca {
@@ -137,36 +137,39 @@ main { padding: 0 0 70px; }
     .lateral-item {
         display: flex; align-items: center; gap: 13px;
         padding: 11px 12px; border-radius: 10px;
-        color: #9AA0B4; font-size: 15px; font-weight: 500;
+        color: #A79398; font-size: 15px; font-weight: 500;
         transition: background .12s, color .12s;
     }
     .lateral-item svg { width: 21px; height: 21px; flex-shrink: 0; }
     .lateral-item:hover { background: var(--ink-2); color: #FFFFFF; }
     /* O item ativo é preenchido, não sublinhado: numa coluna vertical o
        preenchimento é o único marcador que se lê de relance. */
-    .lateral-item.ativo { background: var(--ink-2); color: #FFFFFF; }
+    /* Item ativo em vinho, não em cinza. Numa coluna vertical o
+   preenchimento é o único marcador que se lê de relance, e cinza sobre
+   escuro quase não marca. */
+.lateral-item.ativo { background: var(--vinho); color: #FFFFFF; }
 
     .lateral-registrar { margin-top: 18px; width: 100%; }
 
     .lateral-pe {
         margin-top: auto; padding-top: 16px;
-        border-top: 1px solid #1E2942;
+        border-top: 1px solid #2C2026;
         display: flex; align-items: center; justify-content: space-between; gap: 10px;
     }
     .lateral-eu { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .lateral-eu img, .lateral-eu .vazio-avatar {
         width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
-        border: 1px solid #2A365A; flex-shrink: 0;
+        border: 1px solid #3A2A30; flex-shrink: 0;
     }
     .lateral-eu b {
         display: block; font-size: 13.5px; color: #FFFFFF;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
     }
     .lateral-eu em {
-        display: block; font-style: normal; font-size: 12px; color: #7B8298;
+        display: block; font-style: normal; font-size: 12px; color: #9C8A8E;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
     }
-    .lateral-pe .link { color: #7B8298; font-size: 12.5px; flex-shrink: 0; }
+    .lateral-pe .link { color: #9C8A8E; font-size: 12.5px; flex-shrink: 0; }
 
     main { padding: 30px 0 70px; }
     .container { max-width: 1020px; padding: 0 30px; }

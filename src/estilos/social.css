@@ -20,7 +20,7 @@
 }
 .titulo-linha::after {
     content: ''; display: block; width: 56px; height: 5px;
-    background: var(--ink); margin-top: 10px;
+    background: var(--vinho); margin-top: 10px;
 }
 
 .linha-tempo { max-width: 620px; margin: 24px auto 0; display: grid; gap: 20px; }
@@ -56,7 +56,9 @@
 .palco {
     display: flex; align-items: center; justify-content: center;
     position: relative;
-    background: linear-gradient(160deg, #1D2027, #101215 62%);
+    /* O palco puxa para o vinho escuro em vez de cinza-azulado: a
+       camisa continua sendo o colorido, mas o fundo deixa de ser morto. */
+    background: linear-gradient(160deg, #2A1D22, #171013 64%);
     min-height: 300px; padding: 26px 0;
     border-top: 1px solid var(--linha);
     border-bottom: 5px solid var(--filete, var(--linha));
@@ -78,7 +80,7 @@
 /* A estampa das costas em plaqueta, como numa etiqueta de leilão. */
 .palco-estampa {
     position: absolute; left: 16px; bottom: 16px;
-    background: #FFFFFF; color: var(--ink);
+    background: var(--vinho); color: #FFFFFF;
     padding: 5px 11px; border-radius: 6px;
     font-family: var(--titulo); font-variation-settings: 'wdth' 116;
     font-weight: 800; font-size: 13px; letter-spacing: 0.05em;
@@ -101,7 +103,7 @@
 }
 .evento-texto::before {
     content: ''; display: block; width: 34px; height: 3px;
-    background: var(--ink); margin-bottom: 12px;
+    background: var(--vinho); margin-bottom: 12px;
 }
 
 /* ---------------------------------------- coluna de apoio no feed */
@@ -128,7 +130,7 @@
     }
     .titulo-aside {
         font-size: 15px; text-transform: uppercase; margin-bottom: 14px;
-        padding-bottom: 6px; border-bottom: 3px solid var(--ink);
+        padding-bottom: 6px; border-bottom: 3px solid var(--vinho);
         display: inline-block;
     }
     .linha-sugestao {
@@ -163,7 +165,7 @@
 }
 .acao:hover { background: var(--papel); color: var(--ink); }
 .acao svg { width: 20px; height: 20px; }
-.acao.curtido { color: #D6342B; }
+.acao.curtido { color: var(--vinho-2); }
 .acao .num { font-weight: 600; }
 
 .acao-menu { position: relative; margin-left: auto; }

@@ -42,7 +42,7 @@
 .contador {
     font-family: var(--titulo); font-variation-settings: 'wdth' 100;
     font-weight: 800; font-size: 12px;
-    background: var(--ink); color: #FFFFFF;
+    background: var(--vinho); color: #FFFFFF;
     border-radius: 999px; padding: 2px 8px;
 }
 
@@ -138,7 +138,7 @@
 .contador {
     font-family: var(--titulo); font-variation-settings: 'wdth' 100;
     font-weight: 800; font-size: 12px;
-    background: var(--ink); color: #FFFFFF;
+    background: var(--vinho); color: #FFFFFF;
     border-radius: 999px; padding: 2px 8px;
 }
 

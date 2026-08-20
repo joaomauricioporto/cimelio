@@ -1,35 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Instrument+Sans:wght@400..600&display=swap');
 
 :root {
-    /* Correção de rumo: as cores do escudo ficam NO escudo.
-       
-       A primeira tentativa espalhou vinho e azul pela interface inteira
-       — navegação, botões, filetes, halos. As duas são escuras e
-       pesadas, e o resultado foi uma tela abafada, sem nenhum ponto de
-       respiro. O dourado antigo funcionava não por ser dourado, mas por
-       ser claro e quente contra o escuro.
-       
-       Agora a interface é neutra e o escudo é o único colorido. Ele
-       ganha força justamente por ser a exceção. */
-    --vinho:  #5F0F1A;   /* só na marca e em filetes de camisa */
-    --azul:   #1B347C;
+    /* Terceira tentativa, e a que fecha.
 
-    --ink:    #14161C;   /* quase preto, levemente frio */
-    --ink-2:  #1E212A;
+       Primeira: cor do escudo por toda a interface — abafou.
+       Segunda: preto, branco e cinza — apagou.
 
-    /* Branco como destaque em fundo escuro, e tinta em fundo claro.
-       Neutro não compete com a camisa, que é o conteúdo colorido. */
-    /* Sobrou pouco uso direto: quase tudo virou branco literal em fundo
-       escuro ou tinta em fundo claro, porque a regra depende do fundo e
-       não de uma cor única. */
+       O erro foi tratar "neutro" como "sem cor". Neutro é a cor não
+       competir com a camisa; não é ausência dela. O vinho volta a
+       ocupar área, e o fundo ganha temperatura em vez de cinza puro.
+
+       Cinza é ausência de decisão. Um papel levemente quente e um
+       escuro levemente vinho são decisões — e custam o mesmo. */
+
+    --vinho:   #6E1522;   /* área: hero, botões, faixas */
+    --vinho-2: #8C2231;   /* hover e estados ativos */
+    --vinho-3: #4A0E17;   /* fundo profundo */
+    --azul:    #1B347C;   /* só na marca e em detalhes de camisa */
+
+    /* O escuro não é preto: tem vinho dentro. Preto puro ao lado de um
+       escudo vinho e azul fica descolado, e foi o que deixou a tela
+       parecendo morta. */
+    --ink:    #1A1216;
+    --ink-2:  #241A1F;
+
     --acento: #FFFFFF;
-    --realce: #C4485A;   /* vinho clareado, para o que precisa gritar */
-    --estrela: #E8A33D;  /* nota: âmbar. Estrela vinho lê como aviso. */
+    --estrela: #E8A33D;
 
-    --papel:  #F4F3F0;
-    --carta:  #FFFFFF;
-    --linha:  #E1E0DB;
-    --fraco:  #6E6C66;
+    /* Papel quente. Cinza esverdeado é o padrão de todo painel de
+       administração; areia clara é uma escolha. */
+    --papel:  #F6F2ED;
+    --carta:  #FFFDFB;
+    --linha:  #E4DCD4;
+    --fraco:  #74696A;
     --alerta: #A32D2D;
     --certo:  #3B6D11;
 
