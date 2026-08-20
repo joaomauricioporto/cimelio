@@ -1,0 +1,192 @@
+/* -------------------------------------------------- página da camisa */
+
+.detalhe { display: flex; gap: 34px; flex-wrap: wrap; align-items: flex-start; }
+.detalhe > div { flex: 1 1 320px; }
+.titulo-camisa { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.sub { color: var(--fraco); margin: 6px 0 18px; font-variant-numeric: tabular-nums; }
+
+.galeria { text-align: center; flex: 0 0 auto !important; }
+.foto-principal {
+    width: 300px; max-width: 100%; border-radius: var(--raio);
+    background: var(--carta); border: 1px solid var(--linha);
+}
+.tiras { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+.tira {
+    padding: 0; border: 2px solid var(--linha); border-radius: 8px;
+    background: none; cursor: pointer; line-height: 0; overflow: hidden;
+    transition: border-color .14s, transform .14s;
+}
+.tira:hover { border-color: var(--fraco); }
+/* A borda dourada diz qual está aberta. Sem marca de estado, clicar
+   parece não ter feito nada quando as fotos são parecidas. */
+.tira.ativa { border-color: var(--vinho); transform: translateY(-2px); }
+.tira img { width: 56px; height: 56px; object-fit: cover; display: block; }
+
+/* Ficha técnica com a métrica de tabela de classificação: rótulo à
+   esquerda, valor à direita, filete separando cada linha. */
+.ficha { border-top: 1px solid var(--linha); margin-top: 4px; }
+.ficha div {
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 9px 0; border-bottom: 1px solid var(--linha); font-size: 14.5px;
+}
+.ficha dt { color: var(--fraco); }
+.ficha dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------- caixas */
+
+.caixa {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 16px; margin-top: 16px;
+}
+.titulo-caixa { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.contador {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100;
+    font-weight: 800; font-size: 12px;
+    background: var(--ink); color: #FFFFFF;
+    border-radius: 999px; padding: 2px 8px;
+}
+
+/* ---------------------------------------------------------- estrelas */
+
+.estrelas { display: flex; gap: 3px; margin-bottom: 12px; }
+.estrela { position: relative; display: inline-block; }
+.estrela .zona {
+    position: absolute; top: 0; height: 100%; width: 50%;
+    background: none; border: 0; padding: 0; cursor: pointer;
+}
+.estrela .esquerda { left: 0; }
+.estrela .direita  { right: 0; }
+
+.texto {
+    width: 100%; padding: 11px 13px; font-size: 15px; font-family: var(--corpo);
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    resize: vertical; margin-top: 4px; background: var(--carta);
+}
+.texto:focus { outline: 2px solid var(--vinho); outline-offset: -1px; }
+
+/* --------------------------------------------------------- coleção */
+
+.bloco-peca { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
+.bloco-peca:last-of-type { border-bottom: 0; }
+.linha-peca {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; padding: 9px 0; font-size: 14.5px;
+}
+.form-peca { margin-top: 14px; }
+.botoes { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+
+.fotos-peca { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0 4px; }
+.miniatura { position: relative; }
+.miniatura img {
+    width: 58px; height: 58px; object-fit: cover;
+    border-radius: 6px; border: 1px solid var(--linha); display: block;
+}
+.miniatura .remover {
+    position: absolute; top: -6px; right: -6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--ink); color: #FFFFFF; border: 0;
+    font-size: 13px; line-height: 1; cursor: pointer;
+}
+.add-foto {
+    width: 58px; height: 58px; border-radius: 6px;
+    border: 1px dashed var(--linha); background: none;
+    color: var(--fraco); font-size: 12.5px; cursor: pointer; font-family: var(--corpo);
+}
+.add-foto:disabled { opacity: .5; }
+
+/* -------------------------------------------------- página da camisa */
+
+.detalhe { display: flex; gap: 34px; flex-wrap: wrap; align-items: flex-start; }
+.detalhe > div { flex: 1 1 320px; }
+.titulo-camisa { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.sub { color: var(--fraco); margin: 6px 0 18px; font-variant-numeric: tabular-nums; }
+
+.galeria { text-align: center; flex: 0 0 auto !important; }
+.foto-principal {
+    width: 300px; max-width: 100%; border-radius: var(--raio);
+    background: var(--carta); border: 1px solid var(--linha);
+}
+.tiras { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+.tira {
+    padding: 0; border: 2px solid var(--linha); border-radius: 8px;
+    background: none; cursor: pointer; line-height: 0; overflow: hidden;
+    transition: border-color .14s, transform .14s;
+}
+.tira:hover { border-color: var(--fraco); }
+/* A borda dourada diz qual está aberta. Sem marca de estado, clicar
+   parece não ter feito nada quando as fotos são parecidas. */
+.tira.ativa { border-color: var(--vinho); transform: translateY(-2px); }
+.tira img { width: 56px; height: 56px; object-fit: cover; display: block; }
+
+/* Ficha técnica com a métrica de tabela de classificação: rótulo à
+   esquerda, valor à direita, filete separando cada linha. */
+.ficha { border-top: 1px solid var(--linha); margin-top: 4px; }
+.ficha div {
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 9px 0; border-bottom: 1px solid var(--linha); font-size: 14.5px;
+}
+.ficha dt { color: var(--fraco); }
+.ficha dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------- caixas */
+
+.caixa {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 16px; margin-top: 16px;
+}
+.titulo-caixa { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.contador {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100;
+    font-weight: 800; font-size: 12px;
+    background: var(--ink); color: #FFFFFF;
+    border-radius: 999px; padding: 2px 8px;
+}
+
+/* ---------------------------------------------------------- estrelas */
+
+.estrelas { display: flex; gap: 3px; margin-bottom: 12px; }
+.estrela { position: relative; display: inline-block; }
+.estrela .zona {
+    position: absolute; top: 0; height: 100%; width: 50%;
+    background: none; border: 0; padding: 0; cursor: pointer;
+}
+.estrela .esquerda { left: 0; }
+.estrela .direita  { right: 0; }
+
+.texto {
+    width: 100%; padding: 11px 13px; font-size: 15px; font-family: var(--corpo);
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    resize: vertical; margin-top: 4px; background: var(--carta);
+}
+.texto:focus { outline: 2px solid var(--vinho); outline-offset: -1px; }
+
+/* --------------------------------------------------------- coleção */
+
+.bloco-peca { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
+.bloco-peca:last-of-type { border-bottom: 0; }
+.linha-peca {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; padding: 9px 0; font-size: 14.5px;
+}
+.form-peca { margin-top: 14px; }
+.botoes { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+
+.fotos-peca { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0 4px; }
+.miniatura { position: relative; }
+.miniatura img {
+    width: 58px; height: 58px; object-fit: cover;
+    border-radius: 6px; border: 1px solid var(--linha); display: block;
+}
+.miniatura .remover {
+    position: absolute; top: -6px; right: -6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--ink); color: #FFFFFF; border: 0;
+    font-size: 13px; line-height: 1; cursor: pointer;
+}
+.add-foto {
+    width: 58px; height: 58px; border-radius: 6px;
+    border: 1px dashed var(--linha); background: none;
+    color: var(--fraco); font-size: 12.5px; cursor: pointer; font-family: var(--corpo);
+}
+.add-foto:disabled { opacity: .5; }
+

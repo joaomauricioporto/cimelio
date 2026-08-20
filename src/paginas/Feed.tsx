@@ -186,7 +186,7 @@ export function Feed() {
                         {/* O palco: a camisa ocupa a largura toda, sobre fundo
                             escuro. Num app de camisa, a camisa não pode ser o
                             menor elemento da tela. */}
-                        <Link to={`/camisa/${e.camisa_slug}`} className="palco">
+                        <Link to={`/camisa/${e.camisa_slug}`} className="palco malha">
                             {e.foto_path
                                 ? <img className="palco-foto" src={urlDaFoto(e.foto_path)}
                                        alt={`${e.time_nome} ${e.temporada}`} loading="lazy" />

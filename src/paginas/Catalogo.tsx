@@ -1,100 +1,36 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { CamisaCard } from '../componentes/CamisaCard';
 import { Hero } from '../componentes/Hero';
-import type { ResultadoBusca } from '../lib/tipos';
-
-interface Liga { id: number; nome: string; slug: string; pais: string; ordem: number; }
-
-/** Espera o usuário parar de digitar antes de bater no banco. */
-function useAtraso<T>(valor: T, ms = 300): T {
-    const [lento, setLento] = useState(valor);
-    useEffect(() => {
-        const t = setTimeout(() => setLento(valor), ms);
-        return () => clearTimeout(t);
-    }, [valor, ms]);
-    return lento;
-}
+import { useConsulta, useAtraso } from '../dados/useConsulta';
+import { buscarCamisas, camisasDaLiga, catalogoRecente, listarLigas } from '../dados/consultas';
 
 export function Catalogo() {
     const { ligaSlug } = useParams<{ ligaSlug: string }>();
     const navegar = useNavigate();
 
     const [termo, setTermo] = useState('');
-    const [ligas, setLigas] = useState<Liga[]>([]);
-    const [itens, setItens] = useState<ResultadoBusca[]>([]);
-    const [carregando, setCarregando] = useState(true);
-    const [erro, setErro] = useState<string | null>(null);
     const busca = useAtraso(termo);
 
-    useEffect(() => {
-        supabase.from('liga').select('id,nome,slug,pais,ordem').order('ordem')
-            .then(({ data }) => setLigas((data as Liga[]) ?? []));
-    }, []);
+    const { dados: ligas } = useConsulta(listarLigas, [], { inicial: [] });
 
     const ligaAtual = useMemo(
-        () => ligas.find(l => l.slug === ligaSlug),
+        () => (ligas ?? []).find(l => l.slug === ligaSlug),
         [ligas, ligaSlug]
     );
 
-    useEffect(() => {
-        let cancelado = false;
-
-        (async () => {
-            setCarregando(true); setErro(null);
-
-            // Buscar por texto ignora o filtro de liga de propósito: quem
-            // digita "milan" quer a camisa do Milan, não ser barrado por
-            // estar com o Brasileirão selecionado.
-            if (busca.trim()) {
-                const { data, error } = await supabase
-                    .rpc('buscar_camisas', { termo: busca.trim(), limite: 40 });
-                if (cancelado) return;
-                if (error) setErro(error.message);
-                else setItens((data ?? []) as ResultadoBusca[]);
-                setCarregando(false);
-                return;
-            }
-
-            // camisa_por_liga e não `lancamento`: aquela exige data de
-            // apresentação preenchida, o que é certo para a aba de
-            // novidades e erraria aqui — camisa cadastrada por usuário
-            // não tem data e sumiria da navegação por competição.
-            const consulta = ligaSlug
-                ? supabase.from('camisa_por_liga')
-                      .select('id,slug,time_nome,marca_nome,tipo,patrocinador,padrao,' +
-                              'cor_base,cor_secundaria,temporada')
-                      .eq('liga_slug', ligaSlug)
-                      .order('time_nome')
-                      .limit(60)
-                : supabase.from('camisa_detalhe')
-                      .select('id,slug,time_nome,marca_nome,temporada,tipo,' +
-                              'patrocinador,padrao,cor_base,cor_secundaria')
-                      .eq('status', 'aprovada')
-                      .order('id', { ascending: false })
-                      .limit(60);
-
-            const { data, error } = await consulta;
-            if (cancelado) return;
-
-            if (error) setErro(error.message);
-            else {
-                // As duas consultas devolvem formatos diferentes: a view de
-                // catálogo já traz `temporada` pronta, a de lançamento traz
-                // `temporada_ini`. Normalizar aqui evita espalhar o `if`
-                // por dentro do componente do card.
-                const linhas = (data ?? []) as unknown as Record<string, unknown>[];
-                setItens(linhas.map(c => ({
-                    ...c,
-                    temporada: c.temporada ?? String(c.temporada_ini ?? ''),
-                })) as unknown as ResultadoBusca[]);
-            }
-            setCarregando(false);
-        })();
-
-        return () => { cancelado = true; };
-    }, [busca, ligaSlug]);
+    // Buscar por texto ignora o filtro de liga de propósito: quem digita
+    // "milan" quer a camisa do Milan, não ser barrado por estar com o
+    // Brasileirão selecionado.
+    const { dados: itens, carregando, erro } = useConsulta(
+        async () => {
+            const t = busca.trim();
+            if (t) return buscarCamisas(t);
+            return ligaSlug ? camisasDaLiga(ligaSlug) : catalogoRecente();
+        },
+        [busca, ligaSlug],
+        { inicial: [] }
+    );
 
     const titulo = busca.trim()
         ? `Resultados para “${busca.trim()}”`
@@ -122,7 +58,7 @@ export function Catalogo() {
                         onClick={() => navegar('/')}>
                     Todas
                 </button>
-                {ligas.map(l => (
+                {(ligas ?? []).map(l => (
                     <button key={l.id} className="competicao"
                             aria-pressed={l.slug === ligaSlug}
                             onClick={() => navegar(`/liga/${l.slug}`)}>
@@ -139,7 +75,7 @@ export function Catalogo() {
                 {erro && <p role="alert" className="erro">{erro}</p>}
                 {carregando && <p className="suave">Carregando…</p>}
 
-                {!carregando && itens.length === 0 && (
+                {!carregando && (itens ?? []).length === 0 && (
                     // Busca sem resultado é o pico de intenção: a pessoa
                     // tem a camisa na mão. Tratar como erro joga fora a
                     // principal via de crescimento do catálogo.
@@ -158,10 +94,10 @@ export function Catalogo() {
                 )}
 
                 <div className="grade">
-                    {itens.map(c => <CamisaCard key={c.id} c={c} />)}
+                    {(itens ?? []).map(c => <CamisaCard key={c.id} c={c} />)}
                 </div>
 
-                {!carregando && itens.length > 0 && (
+                {!carregando && (itens ?? []).length > 0 && (
                     <p className="convite">
                         Falta alguma camisa aqui?{' '}
                         <Link to="/cadastrar" className="link-inline">Cadastre você mesmo</Link>

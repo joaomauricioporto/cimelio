@@ -1,0 +1,218 @@
+/* ================================================================ FEED
+   A linha é coluna estreita, e cada evento é um pôster: a camisa ocupa
+   a largura toda sobre fundo escuro, com o texto reduzido a legenda.
+
+   O erro da primeira versão foi tratar o feed como lista de recados —
+   avatar, frase, miniatura. Num app cujo conteúdo é camisa, a camisa
+   não pode ser o menor elemento da tela.
+   ================================================================== */
+
+.topo-linha {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+    max-width: 620px; margin: 0 auto 4px;
+}
+.titulo-linha {
+    font-size: clamp(30px, 5vw, 44px);
+    font-variation-settings: 'wdth' 124;
+    text-transform: uppercase; font-weight: 900;
+    letter-spacing: -0.02em;
+}
+.titulo-linha::after {
+    content: ''; display: block; width: 56px; height: 5px;
+    background: var(--ink); margin-top: 10px;
+}
+
+.linha-tempo { max-width: 620px; margin: 24px auto 0; display: grid; gap: 20px; }
+
+.evento {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 16px;
+    transition: box-shadow .18s, transform .18s;
+}
+.evento:hover { box-shadow: 0 14px 32px rgba(20,22,26,.10); transform: translateY(-2px); }
+
+.evento-topo {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 14px 18px;
+}
+.evento-autor { display: inline-flex; align-items: center; gap: 10px; }
+.evento-autor b {
+    display: block; font-family: var(--titulo);
+    font-variation-settings: 'wdth' 110; font-weight: 700; font-size: 15px;
+}
+.evento-autor em {
+    display: block; font-style: normal; color: var(--fraco);
+    font-size: 12.5px; margin-top: 1px;
+}
+.avatar-mini.claro {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    border: 1px solid var(--linha); display: inline-block; flex-shrink: 0;
+}
+
+/* O palco. Fundo escuro para a camisa recortar, e o filete de cor do
+   uniforme atravessando embaixo. */
+.palco {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    background: linear-gradient(160deg, #1D2027, #101215 62%);
+    min-height: 300px; padding: 26px 0;
+    border-top: 1px solid var(--linha);
+    border-bottom: 5px solid var(--filete, var(--linha));
+}
+/* Fundo escuro exige contorno claro: sem isso, camisa preta some. */
+.palco { --contorno-camisa: rgba(255,255,255,.5); }
+.hero { --contorno-camisa: rgba(255,255,255,.42); }
+.palco::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(60% 70% at 50% 30%, rgba(255,255,255,.08), transparent 70%);
+    pointer-events: none;
+}
+.palco-foto {
+    max-width: 100%; max-height: 380px; width: auto;
+    border-radius: 8px; position: relative;
+}
+.palco svg { filter: drop-shadow(0 10px 26px rgba(0,0,0,.5)); position: relative; }
+
+/* A estampa das costas em plaqueta, como numa etiqueta de leilão. */
+.palco-estampa {
+    position: absolute; left: 16px; bottom: 16px;
+    background: #FFFFFF; color: var(--ink);
+    padding: 5px 11px; border-radius: 6px;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 116;
+    font-weight: 800; font-size: 13px; letter-spacing: 0.05em;
+}
+
+.evento-pe {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; padding: 15px 18px;
+}
+.evento-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.evento-info strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 118;
+    font-weight: 800; font-size: 19px; text-transform: uppercase; line-height: 1.1;
+}
+.evento-pe .estrelas { margin-bottom: 0; flex-shrink: 0; }
+
+.evento-texto {
+    margin: 0; padding: 0 18px 18px;
+    line-height: 1.6; font-size: 15.5px;
+}
+.evento-texto::before {
+    content: ''; display: block; width: 34px; height: 3px;
+    background: var(--ink); margin-bottom: 12px;
+}
+
+/* ---------------------------------------- coluna de apoio no feed */
+
+.coluna-aside { display: none; }
+.coluna-principal { min-width: 0; }
+
+@media (min-width: 1180px) {
+    .com-aside {
+        display: grid; gap: 34px;
+        grid-template-columns: minmax(0, 1fr) 288px;
+        max-width: 1080px;
+    }
+    /* Sem o auto na coluna principal, a linha do tempo continuaria
+       centrada e a coluna de apoio ficaria flutuando longe dela. */
+    .com-aside .linha-tempo { margin-left: 0; margin-right: 0; max-width: none; }
+    .com-aside .topo-linha { margin-left: 0; margin-right: 0; }
+
+    .coluna-aside { display: block; }
+    .bloco-aside {
+        position: sticky; top: 26px;
+        background: var(--carta); border: 1px solid var(--linha);
+        border-radius: 14px; padding: 18px;
+    }
+    .titulo-aside {
+        font-size: 15px; text-transform: uppercase; margin-bottom: 14px;
+        padding-bottom: 6px; border-bottom: 3px solid var(--ink);
+        display: inline-block;
+    }
+    .linha-sugestao {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--linha);
+    }
+    .linha-sugestao:last-of-type { border-bottom: 0; }
+    .linha-sugestao a { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .linha-sugestao b { display: block; font-size: 13.5px; }
+    .linha-sugestao em { display: block; font-style: normal; font-size: 12px; color: var(--fraco); }
+    .linha-sugestao .botao { padding: 6px 13px; font-size: 13px; }
+
+    /* Duplicar sugestões no meio da linha e na coluna seria repetição. */
+    .so-estreito { display: none; }
+}
+
+/* ====================================== CURTIR, COMENTAR, DENUNCIAR */
+
+.acoes {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 12px 12px; border-top: 1px solid var(--linha);
+    margin-top: 2px; padding-top: 8px;
+}
+.acao {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: 0; cursor: pointer;
+    /* 40px de altura: alvo confortável no toque sem virar botão grande
+       demais numa barra de três itens. */
+    padding: 9px 11px; min-height: 40px; border-radius: 9px;
+    color: var(--fraco); font-family: var(--corpo); font-size: 13.5px;
+    transition: background .12s, color .12s;
+}
+.acao:hover { background: var(--papel); color: var(--ink); }
+.acao svg { width: 20px; height: 20px; }
+.acao.curtido { color: #D6342B; }
+.acao .num { font-weight: 600; }
+
+.acao-menu { position: relative; margin-left: auto; }
+.menu-flutuante {
+    position: absolute; right: 0; top: calc(100% + 6px); z-index: 40;
+    min-width: 218px; background: var(--carta);
+    border: 1px solid var(--linha); border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(20,22,26,.16); padding: 7px;
+}
+.menu-titulo {
+    margin: 4px 10px 7px; font-size: 12px; color: var(--fraco);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.menu-item {
+    display: block; width: 100%; text-align: left;
+    background: none; border: 0; cursor: pointer;
+    padding: 10px 11px; border-radius: 8px;
+    font-family: var(--corpo); font-size: 14px; color: var(--ink);
+}
+.menu-item:hover { background: var(--papel); }
+.menu-item.perigo { color: var(--alerta); font-weight: 600; }
+.menu-flutuante hr { border: 0; border-top: 1px solid var(--linha); margin: 6px 4px; }
+.menu-ok { margin: 10px; font-size: 14px; color: var(--certo); }
+
+/* -------------------------------------------------------- comentários */
+
+.comentarios { padding: 4px 16px 16px; border-top: 1px solid var(--linha); }
+.comentario { display: flex; gap: 10px; padding: 11px 0; }
+.com-avatar { flex-shrink: 0; }
+.com-avatar img, .com-avatar .vazio-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    object-fit: cover; border: 1px solid var(--linha); display: block;
+}
+.com-corpo { min-width: 0; flex: 1; }
+.com-cabeca { display: flex; align-items: center; gap: 9px; margin: 0 0 3px; font-size: 13.5px; }
+.com-cabeca .link { font-size: 12.5px; }
+.com-texto { margin: 0; font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+
+.com-form { display: flex; gap: 8px; margin-top: 10px; }
+.com-form .busca { flex: 1; padding: 10px 13px; font-size: 14.5px; }
+.com-form .botao { padding: 10px 17px; font-size: 14px; flex-shrink: 0; }
+
+@media (max-width: 760px) {
+    .acoes { padding: 8px 10px 10px; }
+    .acao { padding: 9px 9px; font-size: 13px; }
+    .comentarios { padding: 4px 13px 14px; }
+    /* No celular o menu abre ancorado à direita da tela, não do botão,
+       senão ele vaza para fora da borda. */
+    .menu-flutuante { right: 0; left: auto; min-width: 200px; }
+    .com-form .botao { padding: 10px 14px; }
+}
+

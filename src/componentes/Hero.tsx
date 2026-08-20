@@ -56,7 +56,7 @@ export function Hero() {
     const fileira = pecas.length ? [...pecas, ...pecas] : [];
 
     return (
-        <section className="hero">
+        <section className="hero malha">
             <div className="container hero-texto">
                 <h1 className="hero-titulo">
                     Toda camisa<br />tem uma história

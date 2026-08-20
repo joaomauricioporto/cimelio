@@ -149,7 +149,7 @@ export function Perfil() {
 
     return (
         <>
-            <header className="capa">
+            <header className="capa malha">
                 <div className="container capa-conteudo">
                     {p.avatar_path
                         ? <img className="capa-avatar" src={urlDaFoto(p.avatar_path)} alt="" />

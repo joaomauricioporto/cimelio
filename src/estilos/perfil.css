@@ -1,0 +1,240 @@
+/* ----------------------------------------------------------- perfil */
+
+.cabecalho-perfil { display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap; margin-bottom: 4px; }
+.dados-perfil { flex: 1 1 200px; }
+.dados-perfil p { margin: 4px 0 0; }
+.bio { margin-top: 9px !important; line-height: 1.55; max-width: 48ch; }
+
+.avatar, .avatar-grande { border-radius: 50%; object-fit: cover; border: 1px solid var(--linha); background: var(--carta); }
+.avatar { width: 70px; height: 70px; }
+.avatar-grande { width: 96px; height: 96px; }
+.vazio-avatar { display: flex; align-items: center; justify-content: center; color: var(--fraco); font-size: 12px; background: #E3E0D9; }
+
+.lista-pessoas { display: grid; gap: 11px; margin-top: 20px; }
+.cartao-pessoa {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: var(--raio); padding: 14px; transition: border-color .14s;
+}
+.cartao-pessoa:hover { border-color: var(--ink); }
+.dados-pessoa { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.dados-pessoa strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 15px;
+}
+.bio-curta { color: var(--fraco); font-size: 14px; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52ch; }
+
+/* ------------------------------------------------------- lançamentos */
+
+.cabecalho-secao { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+.abas { display: flex; gap: 6px; }
+.aba {
+    background: var(--carta); border: 1px solid var(--linha); border-radius: 999px;
+    padding: 6px 15px; font-size: 14px; font-family: var(--corpo);
+    color: var(--fraco); cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.aba.ativa { background: var(--ink); border-color: var(--ink); color: #FFFFFF; }
+.secao-liga { margin-top: 26px; }
+.titulo-liga {
+    display: inline-block; padding-bottom: 5px; margin: 0 0 4px;
+    border-bottom: 3px solid var(--ink); text-transform: uppercase; font-size: 15px;
+}
+
+/* ============================================================== PERFIL
+   A capa escura repete a lógica do hero: a página tem uma abertura com
+   presença, e o conteúdo claro começa depois dela. Perfil é a tela que
+   a pessoa manda para os amigos — precisa de cara própria.
+   ================================================================== */
+
+.capa {
+    background: var(--ink); color: #FFFFFF;
+    padding: 34px 0 30px; margin-bottom: 26px;
+    border-bottom: 3px solid var(--vinho);
+    position: relative; overflow: hidden;
+}
+.capa::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(56% 100% at 8% 0%, rgba(255,255,255,.06), transparent 62%);
+    pointer-events: none;
+}
+.capa-conteudo {
+    position: relative; display: flex; align-items: flex-start;
+    gap: 22px; flex-wrap: wrap;
+}
+.capa-avatar {
+    width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+    border: 3px solid var(--vinho); background: var(--ink-2); flex-shrink: 0;
+}
+.capa-dados { flex: 1 1 260px; min-width: 0; }
+.capa-dados h1 { color: #FFFFFF; font-size: clamp(24px, 3.6vw, 36px); }
+.capa-user { color: #C9CBD2; margin: 5px 0 0; font-size: 14.5px; }
+.capa-bio { color: #AEB4C6; margin: 12px 0 0; line-height: 1.55; max-width: 52ch; }
+.capa-acao { margin-left: auto; }
+.botao.vazado.escuro { border-color: #2A365A; color: #FFFFFF; }
+
+/* Placar: a métrica de tabela — número grande em cima, rótulo pequeno
+   embaixo, alinhados em coluna por causa do numeral tabular. */
+.placar {
+    display: flex; gap: 26px; list-style: none;
+    margin: 20px 0 0; padding: 0; flex-wrap: wrap;
+}
+.placar li { display: flex; flex-direction: column; }
+.placar b {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 118;
+    font-weight: 800; font-size: 21px; color: #FFFFFF; line-height: 1;
+}
+.placar span {
+    font-size: 11.5px; color: #7B8298; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-top: 5px;
+}
+
+/* ------------------------------------------------------- destaques */
+
+.destaques {
+    display: grid; gap: 16px; margin-top: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+.destaque {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 0 0 16px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: transform .16s, box-shadow .16s, border-color .16s;
+}
+.destaque:hover {
+    transform: translateY(-3px); border-color: var(--ink);
+    box-shadow: 0 12px 28px rgba(20,22,26,.12);
+}
+.destaque::before {
+    content: ''; display: block; width: 100%; height: 7px;
+    background: var(--filete, var(--linha));
+}
+/* A posição é numeral de camisa: expandido, pesado, canto superior. */
+/* A posição usa o numeral vazado: contorno em vez de preenchimento,
+   porque preenchido competiria com a camisa logo abaixo. */
+.destaque .pos {
+    position: absolute; top: 14px; right: 13px;
+    font-size: 40px;
+    color: var(--ink);
+}
+.destaque-img {
+    padding: 20px 0 12px; display: flex; align-items: center; justify-content: center;
+    min-height: 176px;
+}
+.destaque-img img {
+    width: 158px; height: 158px; object-fit: cover;
+    border-radius: 10px; background: var(--papel);
+}
+.destaque-info { text-align: center; padding: 0 14px; }
+.destaque-info strong {
+    display: block; font-family: var(--titulo);
+    font-variation-settings: 'wdth' 116; font-weight: 800;
+    font-size: 16px; text-transform: uppercase; line-height: 1.15;
+}
+.destaque-info .meta { display: block; margin-top: 4px; }
+.destaque-info .estampa {
+    display: inline-block; margin-top: 8px; padding: 3px 9px;
+    background: var(--ink); color: #FFFFFF; border-radius: 5px;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 11.5px; letter-spacing: 0.04em;
+}
+
+/* ------------------------------------------------------------ abas */
+
+.abas-perfil {
+    display: flex; gap: 8px; margin: 28px 0 4px;
+    border-bottom: 1px solid var(--linha); padding-bottom: 12px;
+}
+.abas-perfil .aba { display: inline-flex; align-items: center; gap: 7px; }
+.abas-perfil .aba .num {
+    background: var(--papel); color: var(--fraco);
+    border-radius: 999px; padding: 1px 7px; font-size: 12px;
+}
+.abas-perfil .aba.ativa .num { background: #1E2942; color: #A8A49C; }
+
+.fixar { margin-top: 9px; }
+.grail {
+    margin-top: 7px; padding: 2px 9px; border-radius: 5px;
+    background: var(--vinho); color: #FFFFFF;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.dica {
+    background: var(--carta); border: 1px dashed var(--linha);
+    border-radius: var(--raio); padding: 14px 16px; margin-top: 18px;
+    color: var(--fraco); font-size: 14.5px;
+}
+
+/* Bloco de opção: caixa com rótulo forte e explicação embaixo, que muda
+   conforme o estado. Explicar o efeito no momento da escolha vale mais
+   que um texto de ajuda em outro lugar. */
+.opcao {
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    background: var(--carta); padding: 14px 16px; margin: 22px 0 0;
+}
+.opcao-linha { display: flex; align-items: flex-start; gap: 11px; cursor: pointer; }
+.opcao-linha input { width: 17px; height: 17px; margin-top: 2px; flex-shrink: 0; }
+.opcao-linha b { display: block; font-size: 14.5px; font-weight: 600; }
+.opcao-linha em {
+    display: block; font-style: normal; color: var(--fraco);
+    font-size: 13.5px; line-height: 1.5; margin-top: 4px;
+}
+
+/* ------------------------------------------------- sugestões de gente */
+
+.tiras-pessoas {
+    display: grid; gap: 12px; margin-top: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.pessoa-mini {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 18px 12px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    text-align: center;
+}
+.pessoa-mini a { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.pessoa-mini strong {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 108;
+    font-weight: 700; font-size: 14px; line-height: 1.2;
+}
+.pessoa-mini .botao { padding: 7px 16px; font-size: 13.5px; }
+.botao.vazado.escuro-nao { border-color: var(--linha); color: var(--ink); background: var(--carta); }
+.botao.vazado.escuro-nao:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ------------------------------------------- avaliações no perfil */
+
+.lista-resenhas { display: grid; gap: 12px; margin-top: 18px; max-width: 720px; }
+.resenha-perfil {
+    position: relative; overflow: hidden;
+    display: flex; gap: 16px;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px 18px 16px 22px;
+}
+.resenha-perfil::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+    background: var(--filete, var(--linha));
+}
+.rp-camisa { flex-shrink: 0; display: flex; align-items: flex-start; }
+.rp-corpo { min-width: 0; flex: 1; }
+.rp-titulo { display: block; margin-bottom: 8px; }
+.rp-titulo strong {
+    display: block; font-family: var(--titulo);
+    font-variation-settings: 'wdth' 116; font-weight: 800;
+    font-size: 16px; text-transform: uppercase; line-height: 1.15;
+}
+.rp-corpo .estrelas { margin-bottom: 8px; }
+.rp-texto { margin: 0 0 10px; line-height: 1.55; font-size: 14.5px; }
+.rp-numeros {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; color: var(--fraco);
+    padding-top: 8px; border-top: 1px solid var(--linha);
+}
+.rp-numeros .link { font-size: 13px; }
+.rp-corpo .comentarios { padding: 4px 0 0; border-top: 0; }
+
+@media (max-width: 760px) {
+    .resenha-perfil { padding: 14px 14px 14px 18px; gap: 12px; }
+    .rp-titulo strong { font-size: 15px; }
+}
+

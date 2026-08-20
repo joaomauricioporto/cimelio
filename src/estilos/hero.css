@@ -1,0 +1,298 @@
+/* ================================================================ HERO
+   A abertura. Faixa escura de ponta a ponta, tipografia em largura
+   expandida no tamanho máximo, e a arara de camisas deslizando embaixo.
+
+   A arara é o elemento assinatura: uma fileira de camisas em movimento
+   é literalmente o que um acervo é. É também a ÚNICA animação do site —
+   concentrar o movimento num lugar só faz ele significar alguma coisa.
+   ================================================================== */
+
+.hero {
+    background: var(--ink);
+    /* A malha dá matéria ao retângulo escuro do hero. */
+    color: #FFFFFF;
+    padding: 56px 0 0;
+    margin-bottom: 30px;
+    overflow: hidden;
+    position: relative;
+}
+/* Halo dourado atrás do texto: dá profundidade sem virar gradiente
+   decorativo, e some nas bordas. */
+.hero::before {
+    content: ''; position: absolute; inset: 0;
+    /* Dois halos, um de cada cor do escudo: o azul de um lado, o vinho
+       do outro. Repete no fundo a divisão que a marca tem. */
+    /* Halo neutro, quase imperceptível: dá profundidade sem colorir a
+       tela. Os dois halos coloridos da tentativa anterior competiam
+       com as camisas da arara logo abaixo. */
+    background: radial-gradient(62% 92% at 14% 0%, rgba(255,255,255,.07), transparent 64%);
+    pointer-events: none;
+}
+.hero-texto { position: relative; }
+
+.hero-titulo {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 124;
+    font-weight: 900;
+    font-size: clamp(38px, 7.4vw, 84px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    max-width: 15ch;
+}
+.hero-linha {
+    color: #AEB4C6; font-size: clamp(15px, 1.6vw, 17.5px);
+    line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
+}
+
+.hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+/* O botão de ação principal sobre fundo escuro. Branco puro é o que
+   mais salta contra o quase-preto, e não briga com a camisa. */
+.botao.claro  { background: #FFFFFF; color: var(--ink); font-weight: 600; }
+.botao.vazado {
+    background: transparent; color: #FFFFFF;
+    border: 1px solid #2A365A;
+}
+.botao.vazado:hover { border-color: #FFFFFF; color: #FFFFFF; opacity: 1; }
+
+.hero-conta {
+    margin: 22px 0 0; color: #7B8298; font-size: 13.5px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
+}
+
+/* -------------------------------------------------------- a arara */
+
+.arara {
+    margin-top: 40px;
+    border-top: 1px solid #1E2942;
+    padding: 22px 0 26px;
+    /* As pontas somem no escuro: a fileira não começa nem termina, ela
+       continua fora da tela. */
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.arara-trilho {
+    display: flex; gap: 26px; width: max-content;
+    animation: desliza 46s linear infinite;
+}
+.arara-item {
+    display: block; opacity: .92;
+    filter: drop-shadow(0 5px 14px rgba(0,0,0,.45));
+}
+@keyframes desliza {
+    from { transform: translateX(0); }
+    /* -50% porque a fileira está duplicada: ao chegar na metade, a
+       segunda cópia está exatamente onde a primeira começou. */
+    to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .arara-trilho { animation: none; }
+}
+@media (max-width: 640px) {
+    .hero { padding-top: 38px; }
+    .arara { margin-top: 28px; }
+}
+
+
+
+/* ================================================================ HERO
+   A abertura. Faixa escura de ponta a ponta, tipografia em largura
+   expandida no tamanho máximo, e a arara de camisas deslizando embaixo.
+
+   A arara é o elemento assinatura: uma fileira de camisas em movimento
+   é literalmente o que um acervo é. É também a ÚNICA animação do site —
+   concentrar o movimento num lugar só faz ele significar alguma coisa.
+   ================================================================== */
+
+.hero {
+    background: var(--ink);
+    /* A malha dá matéria ao retângulo escuro do hero. */
+    color: #FFFFFF;
+    padding: 56px 0 0;
+    margin-bottom: 30px;
+    overflow: hidden;
+    position: relative;
+}
+/* Halo dourado atrás do texto: dá profundidade sem virar gradiente
+   decorativo, e some nas bordas. */
+.hero::before {
+    content: ''; position: absolute; inset: 0;
+    /* Dois halos, um de cada cor do escudo: o azul de um lado, o vinho
+       do outro. Repete no fundo a divisão que a marca tem. */
+    /* Halo neutro, quase imperceptível: dá profundidade sem colorir a
+       tela. Os dois halos coloridos da tentativa anterior competiam
+       com as camisas da arara logo abaixo. */
+    background: radial-gradient(62% 92% at 14% 0%, rgba(255,255,255,.07), transparent 64%);
+    pointer-events: none;
+}
+.hero-texto { position: relative; }
+
+.hero-titulo {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 124;
+    font-weight: 900;
+    font-size: clamp(38px, 7.4vw, 84px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    max-width: 15ch;
+}
+.hero-linha {
+    color: #AEB4C6; font-size: clamp(15px, 1.6vw, 17.5px);
+    line-height: 1.55; max-width: 46ch; margin: 18px 0 26px;
+}
+
+.hero-acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+/* O botão de ação principal sobre fundo escuro. Branco puro é o que
+   mais salta contra o quase-preto, e não briga com a camisa. */
+.botao.claro  { background: #FFFFFF; color: var(--ink); font-weight: 600; }
+.botao.vazado {
+    background: transparent; color: #FFFFFF;
+    border: 1px solid #2A365A;
+}
+.botao.vazado:hover { border-color: #FFFFFF; color: #FFFFFF; opacity: 1; }
+
+.hero-conta {
+    margin: 22px 0 0; color: #7B8298; font-size: 13.5px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
+}
+
+/* -------------------------------------------------------- a arara */
+
+.arara {
+    margin-top: 40px;
+    border-top: 1px solid #1E2942;
+    padding: 22px 0 26px;
+    /* As pontas somem no escuro: a fileira não começa nem termina, ela
+       continua fora da tela. */
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.arara-trilho {
+    display: flex; gap: 26px; width: max-content;
+    animation: desliza 46s linear infinite;
+}
+.arara-item {
+    display: block; opacity: .92;
+    filter: drop-shadow(0 5px 14px rgba(0,0,0,.45));
+}
+@keyframes desliza {
+    from { transform: translateX(0); }
+    /* -50% porque a fileira está duplicada: ao chegar na metade, a
+       segunda cópia está exatamente onde a primeira começou. */
+    to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .arara-trilho { animation: none; }
+}
+@media (max-width: 640px) {
+    .hero { padding-top: 38px; }
+    .arara { margin-top: 28px; }
+}
+
+
+
+/* ============================================ AJUSTE DE CELULAR
+
+   Três problemas concretos: o seletor Seguindo/Descobrir quebrava
+   linha, a abertura ocupava a tela inteira antes de mostrar conteúdo,
+   e os cards ficavam grandes demais numa coluna só.
+   ============================================================== */
+
+@media (max-width: 760px) {
+
+    /* O seletor vira controle segmentado colado, ocupando a largura
+       toda. Duas pílulas soltas no celular parecem dois botões sem
+       relação; coladas, leem como uma escolha entre dois estados. */
+    .topo-linha {
+        display: block; margin-bottom: 14px;
+        position: sticky; top: 54px; z-index: 10;
+        background: var(--papel); padding: 12px 0 10px;
+    }
+    .titulo-linha { font-size: 27px; margin-bottom: 12px; }
+    .titulo-linha::after { width: 40px; height: 4px; margin-top: 8px; }
+
+    .topo-linha .abas {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+        border: 1px solid var(--linha); border-radius: 10px;
+        overflow: hidden; background: var(--carta);
+    }
+    .topo-linha .aba {
+        border: 0; border-radius: 0; padding: 11px 0; font-size: 14px;
+        font-weight: 600;
+    }
+    .topo-linha .aba.ativa { background: var(--ink); color: #FFFFFF; }
+
+    /* A abertura encurta: no celular ela empurrava o conteúdo para
+       fora da primeira tela inteira. */
+    .hero { padding-top: 30px; margin-bottom: 22px; }
+    .hero-titulo { font-size: 34px; line-height: 0.98; }
+    .hero-linha { font-size: 14.5px; margin: 14px 0 20px; }
+    .hero-acoes .botao { flex: 1; justify-content: center; }
+    .arara { margin-top: 26px; padding: 16px 0 18px; }
+
+    .painel { margin-top: -10px; padding: 13px; border-radius: 12px; }
+    .faixa { margin-top: 11px; }
+    .competicao { padding: 7px 12px; font-size: 13.5px; }
+
+    /* Duas colunas em vez de uma: camisa é forma reconhecível de
+       relance, não precisa de tela cheia para ser identificada. */
+    .grade { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+    .card .vitrine { min-height: 128px; padding: 14px 0 10px; }
+    .card .vitrine svg, .foto-card { width: 108px; height: 108px; }
+    .card .time { font-size: 13px; }
+    .card .meta { font-size: 11.5px; }
+
+    /* No feed vale o contrário: lá a camisa é o conteúdo, e ocupa tudo. */
+    .linha-tempo { gap: 16px; }
+    .palco { min-height: 250px; padding: 20px 0; }
+    .palco-foto { max-height: 300px; }
+    .evento-info strong { font-size: 17px; }
+    .evento-topo { padding: 12px 14px; }
+    .evento-pe { padding: 13px 14px; }
+    .evento-texto { padding: 0 14px 15px; font-size: 14.5px; }
+
+    /* Perfil */
+    .capa { padding: 22px 0 20px; }
+    .capa-avatar { width: 72px; height: 72px; }
+    .capa-acao { margin-left: 0; width: 100%; }
+    .capa-acao .botao { width: 100%; justify-content: center; }
+    .placar { gap: 18px; margin-top: 16px; }
+    .placar b { font-size: 18px; }
+    .destaques { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+    .destaque-img { min-height: 132px; padding: 14px 0 8px; }
+    .destaque-img img { width: 112px; height: 112px; }
+    .destaque .pos { font-size: 22px; top: 12px; right: 11px; }
+
+    /* Formulários: os pares lado a lado viram um por linha, senão os
+       campos ficam estreitos demais para digitar. */
+    .dois { flex-direction: column; gap: 0; }
+    .cadastro { gap: 18px; }
+    .previa { position: static; width: 100%; padding: 16px; }
+    .form-cadastro { max-width: none; }
+    .lote-item { gap: 12px; }
+    .lote-foto img { width: 96px; height: 96px; }
+
+    /* Página da camisa */
+    .detalhe { gap: 20px; }
+    .galeria { width: 100%; }
+    .foto-principal { width: 100%; max-width: 340px; }
+    .titulo-camisa h1 { font-size: 24px; }
+
+    .container { padding: 0 14px; }
+    .lista-pessoas { gap: 9px; }
+    .tiras-pessoas { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Telas bem estreitas: o placar do perfil quebra em duas linhas em vez
+   de espremer quatro colunas. */
+@media (max-width: 400px) {
+    .placar { gap: 14px 22px; }
+    .hero-titulo { font-size: 30px; }
+    .grade { gap: 9px; }
+}
+

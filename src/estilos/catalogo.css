@@ -1,0 +1,351 @@
+/* =====================================================================
+   CIMELIO — sistema visual
+   =====================================================================
+
+   Direção: o vocabulário do futebol é institucional e impresso — número
+   nas costas, tabela de classificação, placar. A personalidade vem da
+   TIPOGRAFIA, não de decoração: Archivo em largura expandida e peso
+   alto para títulos, que é a mesma lógica de numeração de camisa —
+   pesada, geométrica, legível de longe.
+
+   O corpo usa Instrument Sans, mais estreita e neutra, para o contraste
+   de largura ser o que separa hierarquia. Diferenciar por LARGURA e não
+   por família é a decisão tipográfica central deste projeto.
+
+   A camisa é o conteúdo colorido. Todo o resto é discreto de propósito.
+   ===================================================================== */
+
+/* -------------------------------------------------------------- busca */
+
+.busca {
+    width: 100%; padding: 13px 15px;
+    font-family: var(--corpo); font-size: 15.5px;
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    background: var(--carta); color: var(--ink);
+}
+.busca::placeholder { color: #9A968E; }
+.busca:focus { outline: 2px solid var(--vinho); outline-offset: -1px; border-color: transparent; }
+
+/* ------------------------------------------------- faixa de competição
+   O elemento assinatura. Cada aba carrega o código do país, que é
+   informação real e não enfeite: distingue Serie A italiana de Série A
+   brasileira sem precisar escrever por extenso. */
+
+.faixa {
+    display: flex; gap: 7px; margin: 14px 0 0;
+    overflow-x: auto; padding-bottom: 6px;
+    scrollbar-width: thin;
+}
+.faixa::-webkit-scrollbar { height: 4px; }
+.faixa::-webkit-scrollbar-thumb { background: var(--linha); border-radius: 2px; }
+
+.competicao {
+    display: inline-flex; align-items: center; gap: 7px;
+    flex-shrink: 0; white-space: nowrap;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--linha); background: var(--carta);
+    font-family: var(--corpo); font-size: 14px; font-weight: 500;
+    color: var(--ink); cursor: pointer;
+    transition: border-color .12s, background .12s;
+}
+.competicao:hover { border-color: var(--ink); }
+.competicao[aria-pressed='true'] {
+    background: var(--ink); border-color: var(--ink); color: #FFFFFF;
+}
+.pais {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 100;
+    font-weight: 700; font-size: 10px; letter-spacing: 0.06em;
+    padding: 2px 5px; border-radius: 3px;
+    background: var(--papel); color: var(--fraco);
+}
+.competicao[aria-pressed='true'] .pais { background: #1E2942; color: #A8A49C; }
+
+/* ------------------------------------------------------------- seções */
+
+.secao { margin-top: 30px; }
+.rotulo-secao {
+    display: block; position: relative;
+    padding-bottom: 12px; margin-bottom: 4px;
+    text-transform: uppercase; font-size: clamp(17px, 2.2vw, 22px);
+    font-variation-settings: 'wdth' 122;
+}
+/* Régua dupla no lugar do filete simples: grossa e curta sobre fina e
+   longa, que é a métrica de cabeçalho de tabela impressa. */
+.rotulo-secao::before,
+.rotulo-secao::after { content: ''; position: absolute; left: 0; bottom: 0; }
+.rotulo-secao::before { width: 46px; height: 4px; background: var(--ink); }
+.rotulo-secao::after  { width: 100%; height: 1px; background: var(--linha); }
+/* A busca e a faixa de competição ficam num painel próprio, separando
+   a ferramenta do conteúdo em vez de tudo flutuar no mesmo plano. */
+.painel {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px; margin-top: -14px;
+    position: relative; z-index: 2;
+    box-shadow: 0 6px 20px rgba(20,22,26,.06);
+}
+
+/* -------------------------------------------------------------- grade */
+
+.grade {
+    display: grid; gap: 16px; margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+}
+
+/* O card é uma peça de acervo, não uma miniatura. A camisa ocupa a
+   maior parte dele; o texto é ficha, e fica embaixo, discreto. */
+.card {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 0 0 16px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: border-color .16s, transform .16s, box-shadow .16s;
+}
+.card:hover {
+    border-color: var(--ink); transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(20,22,26,.10);
+}
+/* Faixa superior nas cores da própria camisa: carta de uniforme, e o
+   único ponto onde a cor do clube aparece fora do desenho. */
+.card::before {
+    content: ''; display: block; width: 100%; height: 6px;
+    background: var(--filete, var(--linha));
+}
+.card .vitrine {
+    width: 100%; padding: 20px 0 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #FBFAF8, var(--carta));
+    min-height: 168px;
+}
+.card .time {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 114;
+    font-weight: 800; font-size: 15px; line-height: 1.15;
+    text-transform: uppercase; letter-spacing: -0.005em;
+    margin: 4px 14px 0; text-align: center;
+}
+.card .meta {
+    font-size: 12.5px; color: var(--fraco); margin-top: 5px; text-align: center;
+    font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
+}
+.card .estampa {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 12px; color: var(--ink);
+    letter-spacing: 0.02em;
+}
+.foto-card, .foto-lancamento {
+    width: 148px; height: 148px; object-fit: cover;
+    border-radius: 8px; background: var(--papel);
+}
+.nota-card { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+
+/* ------------------------------------------------------------- vazios */
+
+.vazio {
+    text-align: center; padding: 44px 22px; margin-top: 20px;
+    border: 1px dashed var(--linha); border-radius: var(--raio);
+    background: var(--carta);
+}
+.vazio h2 { margin-bottom: 6px; }
+.vazio p { color: var(--fraco); margin: 0 0 18px; }
+.convite { text-align: center; color: var(--fraco); margin: 34px 0 0; font-size: 14.5px; }
+
+/* ------------------------------------------------------------ botões */
+
+.botao {
+    display: inline-flex; align-items: center; justify-content: center;
+    /* Botão escuro com texto branco em qualquer fundo. Simples de
+       prever e nunca some. */
+    background: var(--ink); color: #FFFFFF; border: 0;
+    padding: 11px 20px; border-radius: var(--raio);
+    font-family: var(--corpo); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: opacity .12s;
+}
+.botao:hover { opacity: .88; }
+.botao:disabled { opacity: .5; cursor: default; }
+.botao.largo { width: 100%; margin-top: 18px; }
+
+.link {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    color: var(--fraco); font-family: var(--corpo); font-size: 14px;
+    text-decoration: underline; text-underline-offset: 2px;
+}
+.link:hover { color: var(--ink); }
+.link-inline { text-decoration: underline; text-underline-offset: 2px; }
+
+/* ------------------------------------------------------------- textos */
+
+.erro  { color: var(--alerta); font-size: 14px; margin: 10px 0 0; }
+.aviso { color: var(--certo);  font-size: 14px; margin: 10px 0 0; }
+.ok    { color: var(--certo);  font-size: 14px; margin: 8px 0 0; }
+.suave { color: var(--fraco); }
+.meta  { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+.rotulo { display: block; font-size: 13.5px; color: var(--fraco); margin: 15px 0 5px; font-weight: 500; }
+
+/* -------------------------------------------------------------- busca */
+
+.busca {
+    width: 100%; padding: 13px 15px;
+    font-family: var(--corpo); font-size: 15.5px;
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    background: var(--carta); color: var(--ink);
+}
+.busca::placeholder { color: #9A968E; }
+.busca:focus { outline: 2px solid var(--vinho); outline-offset: -1px; border-color: transparent; }
+
+/* ------------------------------------------------- faixa de competição
+   O elemento assinatura. Cada aba carrega o código do país, que é
+   informação real e não enfeite: distingue Serie A italiana de Série A
+   brasileira sem precisar escrever por extenso. */
+
+.faixa {
+    display: flex; gap: 7px; margin: 14px 0 0;
+    overflow-x: auto; padding-bottom: 6px;
+    scrollbar-width: thin;
+}
+.faixa::-webkit-scrollbar { height: 4px; }
+.faixa::-webkit-scrollbar-thumb { background: var(--linha); border-radius: 2px; }
+
+.competicao {
+    display: inline-flex; align-items: center; gap: 7px;
+    flex-shrink: 0; white-space: nowrap;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--linha); background: var(--carta);
+    font-family: var(--corpo); font-size: 14px; font-weight: 500;
+    color: var(--ink); cursor: pointer;
+    transition: border-color .12s, background .12s;
+}
+.competicao:hover { border-color: var(--ink); }
+.competicao[aria-pressed='true'] {
+    background: var(--ink); border-color: var(--ink); color: #FFFFFF;
+}
+.pais {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 100;
+    font-weight: 700; font-size: 10px; letter-spacing: 0.06em;
+    padding: 2px 5px; border-radius: 3px;
+    background: var(--papel); color: var(--fraco);
+}
+.competicao[aria-pressed='true'] .pais { background: #1E2942; color: #A8A49C; }
+
+/* ------------------------------------------------------------- seções */
+
+.secao { margin-top: 30px; }
+.rotulo-secao {
+    display: block; position: relative;
+    padding-bottom: 12px; margin-bottom: 4px;
+    text-transform: uppercase; font-size: clamp(17px, 2.2vw, 22px);
+    font-variation-settings: 'wdth' 122;
+}
+/* Régua dupla no lugar do filete simples: grossa e curta sobre fina e
+   longa, que é a métrica de cabeçalho de tabela impressa. */
+.rotulo-secao::before,
+.rotulo-secao::after { content: ''; position: absolute; left: 0; bottom: 0; }
+.rotulo-secao::before { width: 46px; height: 4px; background: var(--ink); }
+.rotulo-secao::after  { width: 100%; height: 1px; background: var(--linha); }
+/* A busca e a faixa de competição ficam num painel próprio, separando
+   a ferramenta do conteúdo em vez de tudo flutuar no mesmo plano. */
+.painel {
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 16px; margin-top: -14px;
+    position: relative; z-index: 2;
+    box-shadow: 0 6px 20px rgba(20,22,26,.06);
+}
+
+/* -------------------------------------------------------------- grade */
+
+.grade {
+    display: grid; gap: 16px; margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+}
+
+/* O card é uma peça de acervo, não uma miniatura. A camisa ocupa a
+   maior parte dele; o texto é ficha, e fica embaixo, discreto. */
+.card {
+    position: relative; overflow: hidden;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 0 0 16px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: border-color .16s, transform .16s, box-shadow .16s;
+}
+.card:hover {
+    border-color: var(--ink); transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(20,22,26,.10);
+}
+/* Faixa superior nas cores da própria camisa: carta de uniforme, e o
+   único ponto onde a cor do clube aparece fora do desenho. */
+.card::before {
+    content: ''; display: block; width: 100%; height: 6px;
+    background: var(--filete, var(--linha));
+}
+.card .vitrine {
+    width: 100%; padding: 20px 0 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #FBFAF8, var(--carta));
+    min-height: 168px;
+}
+.card .time {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 114;
+    font-weight: 800; font-size: 15px; line-height: 1.15;
+    text-transform: uppercase; letter-spacing: -0.005em;
+    margin: 4px 14px 0; text-align: center;
+}
+.card .meta {
+    font-size: 12.5px; color: var(--fraco); margin-top: 5px; text-align: center;
+    font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
+}
+.card .estampa {
+    font-family: var(--titulo); font-variation-settings: 'wdth' 112;
+    font-weight: 800; font-size: 12px; color: var(--ink);
+    letter-spacing: 0.02em;
+}
+.foto-card, .foto-lancamento {
+    width: 148px; height: 148px; object-fit: cover;
+    border-radius: 8px; background: var(--papel);
+}
+.nota-card { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+
+/* ------------------------------------------------------------- vazios */
+
+.vazio {
+    text-align: center; padding: 44px 22px; margin-top: 20px;
+    border: 1px dashed var(--linha); border-radius: var(--raio);
+    background: var(--carta);
+}
+.vazio h2 { margin-bottom: 6px; }
+.vazio p { color: var(--fraco); margin: 0 0 18px; }
+.convite { text-align: center; color: var(--fraco); margin: 34px 0 0; font-size: 14.5px; }
+
+/* ------------------------------------------------------------ botões */
+
+.botao {
+    display: inline-flex; align-items: center; justify-content: center;
+    /* Botão escuro com texto branco em qualquer fundo. Simples de
+       prever e nunca some. */
+    background: var(--ink); color: #FFFFFF; border: 0;
+    padding: 11px 20px; border-radius: var(--raio);
+    font-family: var(--corpo); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: opacity .12s;
+}
+.botao:hover { opacity: .88; }
+.botao:disabled { opacity: .5; cursor: default; }
+.botao.largo { width: 100%; margin-top: 18px; }
+
+.link {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    color: var(--fraco); font-family: var(--corpo); font-size: 14px;
+    text-decoration: underline; text-underline-offset: 2px;
+}
+.link:hover { color: var(--ink); }
+.link-inline { text-decoration: underline; text-underline-offset: 2px; }
+
+/* ------------------------------------------------------------- textos */
+
+.erro  { color: var(--alerta); font-size: 14px; margin: 10px 0 0; }
+.aviso { color: var(--certo);  font-size: 14px; margin: 10px 0 0; }
+.ok    { color: var(--certo);  font-size: 14px; margin: 8px 0 0; }
+.suave { color: var(--fraco); }
+.meta  { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+.rotulo { display: block; font-size: 13.5px; color: var(--fraco); margin: 15px 0 5px; font-weight: 500; }
+

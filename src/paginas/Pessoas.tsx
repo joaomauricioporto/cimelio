@@ -1,61 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { urlDaFoto } from '../lib/fotos';
-
-interface Pessoa {
-    id: string;
-    username: string;
-    nome: string | null;
-    bio: string | null;
-    avatar_path: string | null;
-    peca: { count: number }[];
-}
-
-function useAtraso<T>(valor: T, ms = 300): T {
-    const [lento, setLento] = useState(valor);
-    useEffect(() => {
-        const t = setTimeout(() => setLento(valor), ms);
-        return () => clearTimeout(t);
-    }, [valor, ms]);
-    return lento;
-}
+import { useConsulta, useAtraso } from '../dados/useConsulta';
+import { buscarPessoas } from '../dados/consultas';
 
 export function Pessoas() {
     const [termo, setTermo] = useState('');
-    const [itens, setItens] = useState<Pessoa[]>([]);
-    const [carregando, setCarregando] = useState(true);
     const busca = useAtraso(termo);
 
-    useEffect(() => {
-        let cancelado = false;
-        setCarregando(true);
-
-        (async () => {
-            // count na relação traz o tamanho da coleção sem puxar as
-            // peças: perfil com 200 camisas custa o mesmo que um com 2.
-            let q = supabase
-                .from('perfil')
-                .select('id,username,nome,bio,avatar_path,peca(count)')
-                .limit(40);
-
-            const t = busca.trim();
-            if (t) q = q.or(`username.ilike.%${t}%,nome.ilike.%${t}%`);
-
-            const { data } = await q;
-            if (cancelado) return;
-
-            // Ordena por tamanho da coleção: perfil vazio no topo de uma
-            // busca de descoberta não ajuda ninguém.
-            const lista = ((data as Pessoa[]) ?? []).sort(
-                (a, b) => (b.peca?.[0]?.count ?? 0) - (a.peca?.[0]?.count ?? 0)
-            );
-            setItens(lista);
-            setCarregando(false);
-        })();
-
-        return () => { cancelado = true; };
-    }, [busca]);
+    const { dados: itens, carregando } = useConsulta(
+        () => buscarPessoas(busca.trim()),
+        [busca],
+        { inicial: [] }
+    );
 
     return (
         <div className="container">
@@ -71,7 +28,7 @@ export function Pessoas() {
 
             {carregando && <p className="suave">Buscando…</p>}
 
-            {!carregando && itens.length === 0 && (
+            {!carregando && (itens ?? []).length === 0 && (
                 <div className="vazio">
                     <h2>Ninguém encontrado</h2>
                     <p>Tente outro nome.</p>
@@ -79,7 +36,7 @@ export function Pessoas() {
             )}
 
             <div className="lista-pessoas">
-                {itens.map(p => {
+                {(itens ?? []).map(p => {
                     const total = p.peca?.[0]?.count ?? 0;
                     return (
                         <Link key={p.id} to={`/perfil/${p.username}`} className="cartao-pessoa">

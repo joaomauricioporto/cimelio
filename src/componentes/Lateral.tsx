@@ -36,7 +36,7 @@ export function Lateral() {
 
     return (
         <aside className="lateral">
-            <div className="lateral-fixa">
+            <div className="lateral-fixa malha">
                 <Link to="/" className="lateral-marca">
                     <Logo tamanho={32} />
                     <span>Cimelio</span>

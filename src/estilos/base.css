@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Instrument+Sans:wght@400..600&display=swap');
+
+:root {
+    /* Correção de rumo: as cores do escudo ficam NO escudo.
+       
+       A primeira tentativa espalhou vinho e azul pela interface inteira
+       — navegação, botões, filetes, halos. As duas são escuras e
+       pesadas, e o resultado foi uma tela abafada, sem nenhum ponto de
+       respiro. O dourado antigo funcionava não por ser dourado, mas por
+       ser claro e quente contra o escuro.
+       
+       Agora a interface é neutra e o escudo é o único colorido. Ele
+       ganha força justamente por ser a exceção. */
+    --vinho:  #5F0F1A;   /* só na marca e em filetes de camisa */
+    --azul:   #1B347C;
+
+    --ink:    #14161C;   /* quase preto, levemente frio */
+    --ink-2:  #1E212A;
+
+    /* Branco como destaque em fundo escuro, e tinta em fundo claro.
+       Neutro não compete com a camisa, que é o conteúdo colorido. */
+    /* Sobrou pouco uso direto: quase tudo virou branco literal em fundo
+       escuro ou tinta em fundo claro, porque a regra depende do fundo e
+       não de uma cor única. */
+    --acento: #FFFFFF;
+    --realce: #C4485A;   /* vinho clareado, para o que precisa gritar */
+    --estrela: #E8A33D;  /* nota: âmbar. Estrela vinho lê como aviso. */
+
+    --papel:  #F4F3F0;
+    --carta:  #FFFFFF;
+    --linha:  #E1E0DB;
+    --fraco:  #6E6C66;
+    --alerta: #A32D2D;
+    --certo:  #3B6D11;
+
+    --raio: 10px;
+    --largura: 1080px;
+
+    --corpo: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+    --titulo: 'Archivo', system-ui, sans-serif;
+
+    font-family: var(--corpo);
+    color: var(--ink);
+    background: var(--papel);
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; }
+
+:focus-visible { outline: 2px solid var(--vinho); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}
+
+/* Títulos: largura expandida, peso alto, caixa alta, entreletra apertada.
+   É a métrica de número de camisa aplicada a texto. */
+h1, h2, h3, .display {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 118;
+    font-weight: 800;
+    /* Entreletra negativa cresce com o tamanho: título grande precisa
+       de mais aperto que subtítulo para parecer igualmente compacto. */
+    letter-spacing: -0.022em;
+    line-height: 1.02;
+    margin: 0;
+}
+h2 { letter-spacing: -0.015em; }
+h3 { letter-spacing: -0.008em; }
+h1 { font-size: clamp(24px, 3.2vw, 34px); }
+h2 { font-size: 19px; }
+h3 { font-size: 15px; }
+
+/* Temporada, contagem, nota: números alinham em coluna. */
+.num { font-variant-numeric: tabular-nums; }
+
+.container { max-width: var(--largura); margin: 0 auto; padding: 0 20px; }
+
+
+/* =========================================== IDENTIDADE
+
+   O problema depois de neutralizar a paleta: neutro demais lê como
+   genérico. A personalidade volta por textura e tipografia, não por
+   cor — assim a camisa continua sendo a única coisa colorida.
+
+   Duas ideias, ambas tiradas do assunto:
+
+   1. Malha. Camisa de futebol é tecido furado, e o padrão de furos é
+      reconhecível de perto. Aplicado às superfícies escuras em contraste
+      baixíssimo, ele dá matéria ao que era um retângulo chapado.
+
+   2. Numeral. Número nas costas é o artefato tipográfico mais forte do
+      futebol. Usado grande e vazado, marca seção e posição sem precisar
+      de ícone nem cor.
+   ========================================================= */
+
+:root {
+    /* Tamanho da malha. Fino demais vira ruído na tela retina; grosso
+       demais vira estampa. 7px é onde ela some de longe e aparece de
+       perto, que é como tecido se comporta. */
+    --malha: 7px;
+}
+
+.malha {
+    position: relative;
+}
+.malha::after {
+    content: '';
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,.045) 1px, transparent 0);
+    background-size: var(--malha) var(--malha);
+}
+
+/* Numeral vazado. Contorno em vez de preenchimento porque preenchido
+   competiria com o conteúdo; vazado é marca d'água estrutural. */
+.numeral {
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 125;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 2px currentColor;
+    opacity: .16;
+}
+
+/* Régua dupla: linha grossa curta sobre linha fina longa. É a métrica
+   de cabeçalho de tabela impressa, e substitui o filete simples que
+   todo site usa. */
+.regua {
+    position: relative;
+    padding-bottom: 12px;
+}
+.regua::before,
+.regua::after {
+    content: ''; position: absolute; left: 0; bottom: 0;
+}
+.regua::before { width: 46px; height: 4px; background: currentColor; }
+.regua::after  { width: 100%; height: 1px; background: currentColor; opacity: .18; }

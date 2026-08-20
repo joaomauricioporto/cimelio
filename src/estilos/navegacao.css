@@ -1,0 +1,174 @@
+/* ---------------------------------------------------------------- topo */
+
+.topo {
+    background: var(--ink);
+    position: sticky; top: 0; z-index: 20;
+    /* Filete em vinho: como linha fina ele marca a marca sem pesar,
+       que é o oposto de usar a mesma cor como área. */
+    border-bottom: 3px solid var(--vinho);
+}
+.barra {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; height: 60px;
+}
+.marca {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: #FFFFFF;
+    font-family: var(--titulo);
+    font-variation-settings: 'wdth' 122;
+    font-weight: 800; font-size: 20px;
+    letter-spacing: 0.01em; text-transform: uppercase;
+}
+.marca svg { display: block; }
+.marca span {
+    font-family: var(--corpo); font-weight: 400; font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+    color: #8E93A6;
+}
+@media (max-width: 720px) { .marca span { display: none; } }
+
+.nav { display: flex; align-items: center; gap: 4px; }
+.nav a, .nav .link {
+    color: #C2C7D6; font-size: 14px; font-weight: 500;
+    padding: 7px 11px; border-radius: 7px; text-decoration: none;
+    transition: background .12s, color .12s;
+}
+.nav a:hover, .nav .link:hover { background: var(--ink-2); color: #FFFFFF; }
+.eu { display: inline-flex; align-items: center; gap: 7px; color: #FFFFFF !important; }
+.avatar-mini {
+    width: 22px; height: 22px; border-radius: 50%; object-fit: cover;
+    border: 1px solid #3A3D44;
+}
+/* ------------------------------------------------------- celular */
+
+@media (max-width: 760px) {
+    /* Os links do topo migram para a barra de baixo. Manter os dois
+       seria navegação duplicada ocupando duas bordas da tela. */
+    .nav a:not(.eu), .nav .link { display: none; }
+    .barra { height: 54px; }
+    .marca { font-size: 18px; }
+}
+
+/* ================================================== NAVEGAÇÃO INFERIOR */
+
+.nav-baixo { display: none; }
+
+@media (max-width: 760px) {
+    .nav-baixo {
+        display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+        background: var(--ink);
+        border-top: 1px solid #1E2942;
+        /* padding-bottom acompanha a barra de gestos do iPhone: sem
+           isso, o último item fica embaixo dela e não recebe toque. */
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+        flex: 1; display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 4px;
+        /* 56px: acima dos 44 que a Apple recomenda como alvo mínimo. */
+        min-height: 56px; padding: 8px 2px 9px;
+        color: #7B8298; text-decoration: none;
+    }
+    .nav-item svg { width: 22px; height: 22px; }
+    .nav-item span {
+        font-size: 10.5px; letter-spacing: 0.02em;
+        font-family: var(--titulo); font-variation-settings: 'wdth' 100; font-weight: 600;
+    }
+    .nav-item.ativo { color: #FFFFFF; }
+    .nav-item.ativo span { color: #FFFFFF; }
+
+    /* O botão de registrar é o único preenchido: é a ação que o app
+       existe para receber, e precisa ser encontrada sem procurar. */
+    .nav-item.destaque svg {
+        background: #FFFFFF; color: var(--ink);
+        width: 34px; height: 34px; border-radius: 11px; padding: 6px;
+        margin-bottom: -1px;
+    }
+    .nav-item.destaque { color: #AEB4C6; }
+
+    .nav-avatar {
+        width: 24px; height: 24px; border-radius: 50%;
+        object-fit: cover; border: 1.5px solid currentColor;
+    }
+
+    /* Espaço para a barra não cobrir o fim do conteúdo. */
+    main { padding-bottom: 90px !important; }
+}
+
+main { padding: 0 0 70px; }
+.pagina { padding: 26px 0 60px; }
+
+/* ========================================== ESTRUTURA DE DESKTOP
+
+   A navegação sai do topo e vira coluna. O cabeçalho tinha oito itens
+   numa linha e quebrava em duas — o problema não era espaçamento, era
+   usar formato de cabeçalho de site para navegação de aplicativo.
+
+   Na vertical cabe tudo com folga, e a área central sobra para o
+   conteúdo, que numa tela de 1900px estava desperdiçada.
+   ================================================================= */
+
+.lateral { display: none; }
+.casca { display: block; }
+
+@media (min-width: 900px) {
+    .topo { display: none; }
+
+    .casca { display: grid; grid-template-columns: 244px minmax(0, 1fr); }
+
+    .lateral { display: block; }
+    .lateral-fixa {
+        position: sticky; top: 0; height: 100vh;
+        display: flex; flex-direction: column;
+        background: var(--ink); color: #FFFFFF;
+        padding: 22px 16px 20px;
+        border-right: 1px solid #1E2942;
+    }
+
+    .lateral-marca {
+        display: flex; align-items: center; gap: 11px;
+        color: #FFFFFF; padding: 0 8px 22px;
+        font-family: var(--titulo); font-variation-settings: 'wdth' 122;
+        font-weight: 800; font-size: 21px; text-transform: uppercase;
+        letter-spacing: 0.01em;
+    }
+
+    .lateral-nav { display: flex; flex-direction: column; gap: 3px; }
+    .lateral-item {
+        display: flex; align-items: center; gap: 13px;
+        padding: 11px 12px; border-radius: 10px;
+        color: #9AA0B4; font-size: 15px; font-weight: 500;
+        transition: background .12s, color .12s;
+    }
+    .lateral-item svg { width: 21px; height: 21px; flex-shrink: 0; }
+    .lateral-item:hover { background: var(--ink-2); color: #FFFFFF; }
+    /* O item ativo é preenchido, não sublinhado: numa coluna vertical o
+       preenchimento é o único marcador que se lê de relance. */
+    .lateral-item.ativo { background: var(--ink-2); color: #FFFFFF; }
+
+    .lateral-registrar { margin-top: 18px; width: 100%; }
+
+    .lateral-pe {
+        margin-top: auto; padding-top: 16px;
+        border-top: 1px solid #1E2942;
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .lateral-eu { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .lateral-eu img, .lateral-eu .vazio-avatar {
+        width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+        border: 1px solid #2A365A; flex-shrink: 0;
+    }
+    .lateral-eu b {
+        display: block; font-size: 13.5px; color: #FFFFFF;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
+    }
+    .lateral-eu em {
+        display: block; font-style: normal; font-size: 12px; color: #7B8298;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px;
+    }
+    .lateral-pe .link { color: #7B8298; font-size: 12.5px; flex-shrink: 0; }
+
+    main { padding: 30px 0 70px; }
+    .container { max-width: 1020px; padding: 0 30px; }
+}
+

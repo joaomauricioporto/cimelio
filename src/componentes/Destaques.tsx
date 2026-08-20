@@ -42,7 +42,7 @@ export function Destaques({ pecas }: { pecas: PecaDestaque[] }) {
                 return (
                     <Link key={p.id} to={`/camisa/${c.slug}`} className="destaque"
                           style={{ '--filete': c.cor_secundaria ?? c.cor_base } as React.CSSProperties}>
-                        <span className="pos num">{p.destaque}</span>
+                        <span className="pos numeral">{p.destaque}</span>
 
                         <div className="destaque-img">
                             {foto
