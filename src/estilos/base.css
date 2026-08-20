@@ -100,12 +100,7 @@ h3 { font-size: 15px; }
       de ícone nem cor.
    ========================================================= */
 
-:root {
-    /* Tamanho da malha. Fino demais vira ruído na tela retina; grosso
-       demais vira estampa. 7px é onde ela some de longe e aparece de
-       perto, que é como tecido se comporta. */
-    --malha: 7px;
-}
+
 
 .malha {
     position: relative;
