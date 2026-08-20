@@ -1250,3 +1250,18 @@ main { padding: 0 0 70px; }
     color: var(--fraco); font-size: 13px; text-transform: uppercase;
     letter-spacing: 0.06em;
 }
+
+/* ------------------------------------------------- formas de entrar */
+
+.opcao legend { padding: 0 4px; }
+.conexao {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--linha);
+}
+.conexao:last-of-type { border-bottom: 0; }
+.conexao b { display: block; font-size: 14.5px; font-weight: 600; }
+.conexao em {
+    display: block; font-style: normal; color: var(--fraco);
+    font-size: 13px; margin-top: 2px;
+}
+.conexao .botao { padding: 8px 16px; font-size: 14px; flex-shrink: 0; }

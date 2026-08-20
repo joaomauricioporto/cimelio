@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { enviarAvatar, urlDaFoto } from '../lib/fotos';
+import { Conexoes } from '../componentes/Conexoes';
 
 const REGRA_USERNAME = /^[a-z0-9_]{3,30}$/;
 
@@ -183,6 +184,8 @@ export function EditarPerfil() {
                         </span>
                     </label>
                 </fieldset>
+
+                <Conexoes />
 
                 {erro && <p role="alert" className="erro">{erro}</p>}
 
